@@ -11,12 +11,26 @@
     "clean": "rm -rf build",
     "copy-public": "cp -r public build"
   },
+  "browserslist": {
+    "production": [
+      ">0.25%",
+      "not ie 11",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 Chrome version"
+    ]
+  },
   "devDependencies": {
     "@babel/core": "^7.0.0-rc.1",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-rc.1",
+    "@babel/plugin-syntax-dynamic-import": "^7.0.0-rc.1",
+    "@babel/polyfill": "^7.0.0-rc.1",
     "@babel/preset-env": "^7.0.0-rc.1",
     "babel-eslint": "^9.0.0-beta.3",
     "babel-loader": "^8.0.0-beta.4",
     "chokidar": "^2.0.4",
+    "eslint": "^5.3.0",
     "glslify-loader": "^1.0.2",
     "html-webpack-plugin": "^3.2.0",
     "pretty-ms": "^3.2.0",
@@ -24,7 +38,16 @@
     "react-dev-utils": "^6.0.0-next.b2fd8db8",
     "webpack": "^4.16.5",
     "webpack-command": "^0.4.1",
-    "webpack-serve": "^2.0.2",
-    "ws": "^6.0.0"
+    "webpack-serve": "^2.0.2"
+  },
+  "dependencies": {
+    "datauritoblob": "^1.0.0",
+    "image-promise": "^5.0.1",
+    "lodash": "^4.17.10",
+    "orbit-controls": "^1.2.4",
+    "p-map": "^1.2.0",
+    "three": "^0.95.0",
+    "three-addons": "^1.2.0",
+    "touches": "^1.2.2"
   }
 }

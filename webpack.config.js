@@ -1,5 +1,4 @@
 const path = require('path')
-const webpack = require('webpack')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const openBrowser = require('react-dev-utils/openBrowser')
