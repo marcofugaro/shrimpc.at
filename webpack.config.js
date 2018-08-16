@@ -6,6 +6,7 @@ const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages')
 const prettyMs = require('pretty-ms')
 const chokidar = require('chokidar')
 const WebSocket = require('ws')
+const ThreeWebpackPlugin = require('@wildpeaks/three-webpack-plugin')
 
 module.exports = {
   module: {
@@ -31,6 +32,8 @@ module.exports = {
       inject: true,
       template: './public/index.html',
     }),
+    // Makes you import normally from `three/examples/js` files
+    new ThreeWebpackPlugin(),
   ],
   // import files without doing the ../../../
   resolve: {
