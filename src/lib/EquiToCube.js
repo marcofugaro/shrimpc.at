@@ -1,7 +1,7 @@
 // Credit for this code goes to Matt DesLauriers @mattdesl,
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/EquiToCube.js
-import * as THREE from 'three'
+import { MeshBasicMaterial, BackSide, SphereBufferGeometry, Mesh, Scene, CubeCamera } from 'three'
 
 const CUBE_FACE_SIZE = 1024
 
@@ -18,20 +18,20 @@ export default class EquiToCube {
       this._maxSize = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE)
     }
 
-    this.material = new THREE.MeshBasicMaterial({
+    this.material = new MeshBasicMaterial({
       map: null,
-      side: THREE.BackSide,
+      side: BackSide,
     })
     if (!this._sphere) {
-      this._sphere = new THREE.SphereBufferGeometry(100, 256, 64)
+      this._sphere = new SphereBufferGeometry(100, 256, 64)
     }
 
-    this.mesh = new THREE.Mesh(this._sphere, this.material)
-    this.scene = new THREE.Scene()
+    this.mesh = new Mesh(this._sphere, this.material)
+    this.scene = new Scene()
     this.scene.add(this.mesh)
 
     const mapSize = Math.min(CUBE_FACE_SIZE, this._maxSize)
-    this.camera = new THREE.CubeCamera(1, 1000, mapSize)
+    this.camera = new CubeCamera(1, 1000, mapSize)
     this.cubeTexture = this.camera.renderTarget.texture
 
     // After N seconds, dispose the sphere geometry

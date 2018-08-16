@@ -1,4 +1,4 @@
-import * as THREE from 'three'
+import { Object3D, MeshLambertMaterial, Vector2, Raycaster } from 'three'
 import assets from 'lib/AssetManager'
 
 // tell the asset loader to include this asset
@@ -6,7 +6,7 @@ const gltfKey = assets.queue({
   url: 'assets/honeycomb.gltf',
 })
 
-export default class Shrimps extends THREE.Object3D {
+export default class Shrimps extends Object3D {
   constructor(webgl) {
     super()
     this.webgl = webgl
@@ -14,7 +14,7 @@ export default class Shrimps extends THREE.Object3D {
     // now fetch the loaded resource
     const gltf = assets.get(gltfKey)
 
-    this.material = new THREE.MeshLambertMaterial({ color: 0x7777ff })
+    this.material = new MeshLambertMaterial({ color: 0x7777ff })
 
     // Replaces all meshes material with something basic
     gltf.scene.traverse(child => {
@@ -39,11 +39,11 @@ export default class Shrimps extends THREE.Object3D {
     console.log('Touchstart / mousedown: (%d, %d)', x, y)
 
     // For example, raycasting is easy:
-    const coords = new THREE.Vector2().set(
+    const coords = new Vector2().set(
       (pos[0] / this.webgl.width) * 2 - 1,
       (-pos[1] / this.webgl.height) * 2 + 1,
     )
-    const raycaster = new THREE.Raycaster()
+    const raycaster = new Raycaster()
     raycaster.setFromCamera(coords, this.webgl.camera)
     const hits = raycaster.intersectObject(this, true)
     console.log(hits.length > 0 ? `Hit ${hits[0].object.name}!` : 'No hit')

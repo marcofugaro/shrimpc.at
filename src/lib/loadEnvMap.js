@@ -1,7 +1,14 @@
 // Credit for this code goes to Matt DesLauriers @mattdesl,
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/loadEnvMap.js
-import * as THREE from 'three'
+import {
+  HDRCubeTextureLoader,
+  UnsignedByteType,
+  CubeTextureLoader,
+  RGBM16Encoding,
+  PMREMGenerator,
+  PMREMCubeUVPacker,
+} from 'three'
 const noop = () => {}
 import EquiToCube from './EquiToCube'
 import loadTexture from './loadTexture'
@@ -34,8 +41,8 @@ export default async function loadEnvMap(options) {
   if (isHDR) {
     // load a float HDR texture
     return new Promise((resolve, reject) => {
-      new THREE.HDRCubeTextureLoader().load(
-        THREE.UnsignedByteType,
+      new HDRCubeTextureLoader().load(
+        UnsignedByteType,
         urls,
         map => resolve(buildCubeMap(map, options)),
         noop,
@@ -46,10 +53,10 @@ export default async function loadEnvMap(options) {
 
   // load a RGBM encoded texture
   return new Promise((resolve, reject) => {
-    new THREE.CubeTextureLoader().load(
+    new CubeTextureLoader().load(
       urls,
       cubeMap => {
-        cubeMap.encoding = THREE.RGBM16Encoding
+        cubeMap.encoding = RGBM16Encoding
         resolve(buildCubeMap(cubeMap, options))
       },
       noop,
@@ -61,10 +68,10 @@ export default async function loadEnvMap(options) {
 function buildCubeMap(cubeMap, options) {
   if (options.pbr || typeof options.level === 'number') {
     // prefilter the environment map for irradiance
-    const pmremGenerator = new THREE.PMREMGenerator(cubeMap)
+    const pmremGenerator = new PMREMGenerator(cubeMap)
     pmremGenerator.update(options.renderer)
     if (options.pbr) {
-      const pmremCubeUVPacker = new THREE.PMREMCubeUVPacker(pmremGenerator.cubeLods)
+      const pmremCubeUVPacker = new PMREMCubeUVPacker(pmremGenerator.cubeLods)
       pmremCubeUVPacker.update(options.renderer)
       const target = pmremCubeUVPacker.CubeUVRenderTarget
       cubeMap = target.texture

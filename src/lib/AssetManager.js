@@ -1,7 +1,7 @@
 // Credit for this class goes to Matt DesLauriers @mattdesl,
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/AssetManager.js
-import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/js/loaders/GLTFLoader'
 import pMap from 'p-map'
 
 const isImage = ext => /\.(jpe?g|png|gif|bmp|tga|tif)$/i.test(ext)
@@ -127,8 +127,7 @@ class AssetManager {
     switch (type) {
       case 'gltf':
         return new Promise((resolve, reject) => {
-          console.log(THREE.GLTFLoader)
-          new THREE.GLTFLoader().load(
+          new GLTFLoader().load(
             url,
             resolve,
             () => {},

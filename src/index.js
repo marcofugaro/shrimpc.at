@@ -1,6 +1,3 @@
-// include any additional ThreeJS vendor libraries here
-// require('three/examples/js/loaders/GLTFLoader.js')
-
 import WebGLApp from 'lib/WebGLApp'
 import assets from 'lib/AssetManager'
 import Shrimps from 'scene/Shrimps'
