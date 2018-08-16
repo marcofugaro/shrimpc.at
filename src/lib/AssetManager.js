@@ -3,6 +3,7 @@
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/AssetManager.js
 import { GLTFLoader } from 'three/examples/js/loaders/GLTFLoader'
 import pMap from 'p-map'
+import prettyMs from 'pretty-ms'
 
 const isImage = ext => /\.(jpe?g|png|gif|bmp|tga|tif)$/i.test(ext)
 const isSVG = ext => /\.svg$/i.test(ext)
@@ -90,26 +91,29 @@ class AssetManager {
     }
 
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[📦 assets] Start loading of ${total} queued items`)
+      console.log(`[📦 assets] ⏱ Start loading of ${total} queued items`)
+      this.loadingStart = Date.now()
     }
 
-    return pMap(
+    await pMap(
       queue,
       async (item, i) => {
         try {
           this.#cache[item.url] = await this.loadItem({ renderer, ...item })
-
-          const percent = (i + 1) / total
-          this.#onProgressListeners.forEach(fn => fn(percent))
-
-          return this.#cache[item.url]
         } catch (err) {
           delete this.#cache[item.url]
           console.error(`[📦 assets] Skipping ${item.url} from asset loading: \n${err}`)
         }
+
+        const percent = (i + 1) / total
+        this.#onProgressListeners.forEach(fn => fn(percent))
       },
       { concurrency: this.#asyncConcurrency },
     )
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[📦 assets] ⏱ Assets loaded in ${prettyMs(Date.now() - this.loadingStart)}`)
+    }
   }
 
   // Loads a single asset on demand, returning from

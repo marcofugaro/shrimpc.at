@@ -34,7 +34,6 @@
     "eslint": "^5.3.0",
     "glslify-loader": "^1.0.2",
     "html-webpack-plugin": "^3.2.0",
-    "pretty-ms": "^3.2.0",
     "raw-loader": "^0.5.1",
     "react-dev-utils": "^6.0.0-next.b2fd8db8",
     "webpack": "^4.16.5",
@@ -47,6 +46,7 @@
     "lodash": "^4.17.10",
     "orbit-controls": "^1.2.4",
     "p-map": "^1.2.0",
+    "pretty-ms": "^3.2.0",
     "three": "^0.95.0",
     "three-addons": "^1.2.0",
     "touches": "^1.2.2"
