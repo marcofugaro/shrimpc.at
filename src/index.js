@@ -24,8 +24,34 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   // Add any "WebGL components" here...
   webgl.scene.add(new Shrimps(webgl))
 
-  const light = new THREE.HemisphereLight(0xffffff, 0x080820, 1)
-  webgl.scene.add(light)
+  // turn on shadows in the renderer
+  // TODO are those useful? do some tests
+  webgl.renderer.shadowMap.enabled = true
+  webgl.renderer.shadowMap.type = THREE.PCFSoftShadowMap // default THREE.PCFShadowMap
+
+  const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6)
+  hemiLight.color.setHSL(0.6, 1, 0.6)
+  hemiLight.groundColor.setHSL(0.095, 1, 0.75)
+  webgl.scene.add(hemiLight)
+
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1)
+  dirLight.color.setHSL(0.1, 1, 0.95)
+  dirLight.castShadow = true
+  webgl.scene.add(dirLight)
+
+  // TODO are those useful? do some tests
+  // dirLight.shadow.mapSize.width = 2048
+  // dirLight.shadow.mapSize.height = 2048
+  //
+  // const d = 50
+  //
+  // dirLight.shadow.camera.left = -d
+  // dirLight.shadow.camera.right = d
+  // dirLight.shadow.camera.top = d
+  // dirLight.shadow.camera.bottom = -d
+  //
+  // dirLight.shadow.camera.far = 3500
+  // dirLight.shadow.bias = -0.0001
 
   // start animation loop
   webgl.start()

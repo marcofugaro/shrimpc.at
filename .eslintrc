@@ -1,7 +1,7 @@
 {
   "rules": {
     "semi": "off",
-    "no-unused-vars": "error",
+    "no-unused-vars": ["error", { "vars": "all", "args": "none", "ignoreRestSiblings": true }],
     "no-undef": "error"
   },
   "env": {

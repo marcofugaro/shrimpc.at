@@ -61,7 +61,7 @@ module.exports = merge.smart(
       hotClient: {
         hmr: false,
         logLevel: 'silent',
-        port: 8090,
+        // port: 8090,
       },
       devMiddleware: {
         publicPath: '/',
@@ -75,24 +75,24 @@ module.exports = merge.smart(
 
           // watch public folder also
           // 8090 is webpack-hot-client's port
-          const socket = new WebSocket('ws://localhost:8090')
-          const watcher = chokidar.watch(path.resolve('./public'), {})
-
-          watcher.on('change', () => {
-            socket.send(
-              JSON.stringify({
-                type: 'broadcast',
-                data: {
-                  type: 'window-reload',
-                  data: {},
-                },
-              }),
-            )
-          })
-
-          server.on('close', () => {
-            watcher.close()
-          })
+          // const socket = new WebSocket('ws://localhost:8090')
+          // const watcher = chokidar.watch(path.resolve('./public'), {})
+          //
+          // watcher.on('change', () => {
+          //   socket.send(
+          //     JSON.stringify({
+          //       type: 'broadcast',
+          //       data: {
+          //         type: 'window-reload',
+          //         data: {},
+          //       },
+          //     }),
+          //   )
+          // })
+          //
+          // server.on('close', () => {
+          //   watcher.close()
+          // })
         },
         // don't show all the default webpack bloat
         'build-finished': ({ stats }) => {
