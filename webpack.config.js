@@ -1,4 +1,5 @@
 const path = require('path')
+const merge = require('webpack-merge')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const openBrowser = require('react-dev-utils/openBrowser')
@@ -8,45 +9,47 @@ const chokidar = require('chokidar')
 const WebSocket = require('ws')
 const ThreeWebpackPlugin = require('@wildpeaks/three-webpack-plugin')
 
-module.exports = {
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-        options: {
-          cacheDirectory: true,
-          highlightCode: true,
+module.exports = merge.smart(
+  {
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          exclude: /node_modules/,
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            highlightCode: true,
+          },
         },
-      },
-      {
-        test: /\.(glsl|frag|vert)$/,
-        use: ['raw-loader', 'glslify-loader'],
-      },
+        {
+          test: /\.(glsl|frag|vert)$/,
+          use: ['raw-loader', 'glslify-loader'],
+        },
+      ],
+    },
+    plugins: [
+      // Generates an `index.html` file with the <script> injected.
+      new HtmlWebpackPlugin({
+        inject: true,
+        template: './public/index.html',
+      }),
+      // Makes you import normally from `three/examples/js` files
+      new ThreeWebpackPlugin(),
     ],
-  },
-  plugins: [
-    // Generates an `index.html` file with the <script> injected.
-    new HtmlWebpackPlugin({
-      inject: true,
-      template: './public/index.html',
-    }),
-    // Makes you import normally from `three/examples/js` files
-    new ThreeWebpackPlugin(),
-  ],
-  // import files without doing the ../../../
-  resolve: {
-    modules: ['node_modules', 'src'],
-  },
-  // automatically split vendor and app code
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-      name: 'vendors',
+    // import files without doing the ../../../
+    resolve: {
+      modules: ['node_modules', 'src'],
+    },
+    // automatically split vendor and app code
+    optimization: {
+      splitChunks: {
+        chunks: 'all',
+        name: 'vendors',
+      },
     },
   },
-  ...(process.env.NODE_ENV === 'development' && {
+  process.env.NODE_ENV === 'development' && {
     mode: 'development',
     devtool: 'cheap-module-source-map',
     // turn off performance hints during development
@@ -106,8 +109,8 @@ module.exports = {
         },
       },
     },
-  }),
-  ...(process.env.NODE_ENV === 'production' && {
+  },
+  process.env.NODE_ENV === 'production' && {
     mode: 'production',
     devtool: 'source-map',
     output: {
@@ -144,5 +147,5 @@ module.exports = {
         }),
       ],
     },
-  }),
-}
+  },
+)

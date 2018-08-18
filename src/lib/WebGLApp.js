@@ -1,13 +1,13 @@
 // Credit for this class goes to Matt DesLauriers @mattdesl,
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/webgl/WebGLApp.js
-import { Vector3, WebGLRenderer, PerspectiveCamera, Scene } from 'three'
+import * as THREE from 'three'
 import createOrbitControls from 'orbit-controls'
 import createTouches from 'touches'
 import dataURIToBlob from 'datauritoblob'
 
 export default class WebGLApp {
-  tmpTarget = new Vector3()
+  tmpTarget = new THREE.Vector3()
 
   constructor({
     background = '#000',
@@ -17,7 +17,7 @@ export default class WebGLApp {
     far = 100,
     ...options
   }) {
-    this.renderer = new WebGLRenderer({
+    this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: false,
       // enabled for saving screen shots of the canvas,
@@ -47,7 +47,7 @@ export default class WebGLApp {
     this.maxDeltaTime = options.maxDeltaTime || 1 / 30
 
     // setup a basic camera
-    this.camera = new PerspectiveCamera(fov, 1, near, far)
+    this.camera = new THREE.PerspectiveCamera(fov, 1, near, far)
 
     // set up a simple orbit controller
     this.controls = createOrbitControls({
@@ -62,7 +62,7 @@ export default class WebGLApp {
     this._lastTime = performance.now()
     this._rafID = null
 
-    this.scene = new Scene()
+    this.scene = new THREE.Scene()
 
     // handle resize events
     window.addEventListener('resize', this.resize)
@@ -154,9 +154,8 @@ export default class WebGLApp {
   }
 
   animate = () => {
-    if (!this.running) return
+    if (!this.isRunning) return
     window.requestAnimationFrame(this.animate)
-
     const now = performance.now()
     const dt = Math.min(this.maxDeltaTime, (now - this._lastTime) / 1000)
     this.time += dt

@@ -1,3 +1,4 @@
+import * as THREE from 'three'
 import WebGLApp from 'lib/WebGLApp'
 import assets from 'lib/AssetManager'
 import Shrimps from 'scene/Shrimps'
@@ -8,12 +9,9 @@ const canvas = document.querySelector('#main')
 // Setup the WebGLRenderer
 const webgl = new WebGLApp({
   canvas,
+  backgroundAlpha: 0,
+  alpha: true,
 })
-
-// Set background color
-const background = 'white'
-document.body.style.background = background
-webgl.renderer.setClearColor(background)
 
 // Hide canvas
 webgl.canvas.style.visibility = 'hidden'
@@ -25,6 +23,9 @@ assets.load({ renderer: webgl.renderer }).then(() => {
 
   // Add any "WebGL components" here...
   webgl.scene.add(new Shrimps(webgl))
+
+  const light = new THREE.HemisphereLight(0xffffff, 0x080820, 1)
+  webgl.scene.add(light)
 
   // start animation loop
   webgl.start()

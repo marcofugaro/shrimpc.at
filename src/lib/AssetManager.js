@@ -2,18 +2,13 @@
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/AssetManager.js
 import { GLTFLoader } from 'three/examples/js/loaders/GLTFLoader'
+import { OBJLoader } from 'three/examples/js/loaders/OBJLoader'
+import { MTLLoader } from 'three/examples/js/loaders/MTLLoader'
 import pMap from 'p-map'
 import prettyMs from 'pretty-ms'
-
-const isImage = ext => /\.(jpe?g|png|gif|bmp|tga|tif)$/i.test(ext)
-const isSVG = ext => /\.svg$/i.test(ext)
-const isAudio = ext => /\.(wav|mp3|ogg|mp4)$/i.test(ext)
-const isJSON = ext => /\.json$/i.test(ext)
-const isGLTF = ext => /\.(gltf|glb)$/i.test(ext)
-
+import loadImage from 'image-promise'
 import loadTexture from './loadTexture'
 import loadEnvMap from './loadEnvMap'
-import loadImage from 'image-promise'
 
 class AssetManager {
   #queue = []
@@ -47,15 +42,15 @@ class AssetManager {
     const ext = url.slice(url.lastIndexOf('.'))
 
     switch (true) {
-      case isGLTF(ext):
+      case /\.(gltf|glb)$/i.test(ext):
         return 'gltf'
-      case isJSON(ext):
+      case /\.json$/i.test(ext):
         return 'json'
-      case isSVG(ext):
+      case /\.svg$/i.test(ext):
         return 'svg'
-      case isImage(ext):
+      case /\.(jpe?g|png|gif|bmp|tga|tif)$/i.test(ext):
         return 'image'
-      case isAudio(ext):
+      case /\.(wav|mp3|ogg|mp4)$/i.test(ext):
         return 'audio'
       default:
         throw new Error(`Could not load ${url}, unknown file extension!`)
@@ -131,11 +126,40 @@ class AssetManager {
     switch (type) {
       case 'gltf':
         return new Promise((resolve, reject) => {
-          new GLTFLoader().load(
+          new GLTFLoader().load(url, resolve, null, err =>
+            reject(new Error(`Could not load GLTF asset ${url}. ${err}`)),
+          )
+        })
+      case 'objmtl':
+        return new Promise((resolve, reject) => {
+          const mtlUrl = url.replace(/\.obj$/, '.mtl')
+          new MTLLoader().load(
+            mtlUrl,
+            materials => {
+              // upload the textures to the gpu immediately
+              materials.preload()
+
+              new OBJLoader()
+                .setMaterials(materials)
+                .load(url, resolve, null, err =>
+                  reject(new Error(`Could not load OBJ asset ${url}. ${err}`)),
+                )
+            },
+            null,
+            err => reject(new Error(`Could not load MTL asset ${url}. ${err}`)),
+          )
+        })
+      case 'mtl':
+        return new Promise((resolve, reject) => {
+          new MTLLoader().load(
             url,
-            resolve,
-            () => {},
-            err => reject(new Error(`Could not load GLTF asset ${url}. ${err}`)),
+            materials => {
+              // upload the textures to the gpu immediately
+              materials.preload()
+              resolve(materials)
+            },
+            null,
+            err => reject(new Error(`Could not load OBJ asset ${url}. ${err}`)),
           )
         })
       case 'json':
@@ -159,5 +183,7 @@ class AssetManager {
 }
 
 // asset manager is a singleton, you can require it from
-// different files and use the same instance
+// different files and use the same instance.
+// A plain js object would have worked just fine,
+// fucking java patterns
 export default new AssetManager()

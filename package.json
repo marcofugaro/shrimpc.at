@@ -38,6 +38,7 @@
     "react-dev-utils": "^6.0.0-next.b2fd8db8",
     "webpack": "^4.16.5",
     "webpack-command": "^0.4.1",
+    "webpack-merge": "^4.1.4",
     "webpack-serve": "^2.0.2"
   },
   "dependencies": {

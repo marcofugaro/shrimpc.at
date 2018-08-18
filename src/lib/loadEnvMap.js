@@ -1,15 +1,7 @@
 // Credit for this code goes to Matt DesLauriers @mattdesl,
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/loadEnvMap.js
-import {
-  HDRCubeTextureLoader,
-  UnsignedByteType,
-  CubeTextureLoader,
-  RGBM16Encoding,
-  PMREMGenerator,
-  PMREMCubeUVPacker,
-} from 'three'
-const noop = () => {}
+import * as THREE from 'three'
 import EquiToCube from './EquiToCube'
 import loadTexture from './loadTexture'
 import clamp from 'lodash/clamp'
@@ -41,11 +33,11 @@ export default async function loadEnvMap(options) {
   if (isHDR) {
     // load a float HDR texture
     return new Promise((resolve, reject) => {
-      new HDRCubeTextureLoader().load(
-        UnsignedByteType,
+      new THREE.HDRCubeTextureLoader().load(
+        THREE.UnsignedByteType,
         urls,
         map => resolve(buildCubeMap(map, options)),
-        noop,
+        null,
         () => reject(new Error(`Could not load PBR map: ${basePath}`)),
       )
     })
@@ -53,13 +45,13 @@ export default async function loadEnvMap(options) {
 
   // load a RGBM encoded texture
   return new Promise((resolve, reject) => {
-    new CubeTextureLoader().load(
+    new THREE.CubeTextureLoader().load(
       urls,
       cubeMap => {
-        cubeMap.encoding = RGBM16Encoding
+        cubeMap.encoding = THREE.RGBM16Encoding
         resolve(buildCubeMap(cubeMap, options))
       },
-      noop,
+      null,
       () => reject(new Error(`Could not load PBR map: ${basePath}`)),
     )
   })
@@ -68,10 +60,10 @@ export default async function loadEnvMap(options) {
 function buildCubeMap(cubeMap, options) {
   if (options.pbr || typeof options.level === 'number') {
     // prefilter the environment map for irradiance
-    const pmremGenerator = new PMREMGenerator(cubeMap)
+    const pmremGenerator = new THREE.PMREMGenerator(cubeMap)
     pmremGenerator.update(options.renderer)
     if (options.pbr) {
-      const pmremCubeUVPacker = new PMREMCubeUVPacker(pmremGenerator.cubeLods)
+      const pmremCubeUVPacker = new THREE.PMREMCubeUVPacker(pmremGenerator.cubeLods)
       pmremCubeUVPacker.update(options.renderer)
       const target = pmremCubeUVPacker.CubeUVRenderTarget
       cubeMap = target.texture

@@ -1,21 +1,13 @@
 // Credit for this code goes to Matt DesLauriers @mattdesl,
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/loadTexture.js
-import {
-  Texture,
-  LinearEncoding,
-  RGBFormat,
-  RGBAFormat,
-  ClampToEdgeWrapping,
-  LinearMipMapLinearFilter,
-  LinearFilter,
-} from 'three'
+import * as THREE from 'three'
 import loadImg from 'image-promise'
 
 export default async function loadTexture(url, options) {
-  const texture = new Texture()
+  const texture = new THREE.Texture()
   texture.name = url
-  texture.encoding = options.encoding || LinearEncoding
+  texture.encoding = options.encoding || THREE.LinearEncoding
   setTextureParams(url, texture, options)
 
   try {
@@ -44,12 +36,12 @@ function setTextureParams(url, texture, opt) {
   } else {
     // choose a nice default format
     const isJPEG = url.search(/\.(jpg|jpeg)$/) > 0 || url.search(/^data\:image\/jpeg/) === 0
-    texture.format = isJPEG ? RGBFormat : RGBAFormat
+    texture.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat
   }
   if (opt.repeat) texture.repeat.copy(opt.repeat)
-  texture.wrapS = opt.wrapS || ClampToEdgeWrapping
-  texture.wrapT = opt.wrapT || ClampToEdgeWrapping
-  texture.minFilter = opt.minFilter || LinearMipMapLinearFilter
-  texture.magFilter = opt.magFilter || LinearFilter
+  texture.wrapS = opt.wrapS || THREE.ClampToEdgeWrapping
+  texture.wrapT = opt.wrapT || THREE.ClampToEdgeWrapping
+  texture.minFilter = opt.minFilter || THREE.LinearMipMapLinearFilter
+  texture.magFilter = opt.magFilter || THREE.LinearFilter
   texture.generateMipmaps = opt.generateMipmaps !== false
 }
