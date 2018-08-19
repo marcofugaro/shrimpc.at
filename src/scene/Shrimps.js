@@ -24,6 +24,23 @@ class Shrimp extends THREE.Object3D {
   }
 
   update(dt = 0, time = 0) {
+    // detect the value of x when the object is not visible anymore.
+    // Calculate it only the first time, and save it for later
+    if (!this.parent.screenLimitX) {
+      const someChildIntersects = this.children.some(child =>
+        this.webgl.camera.frustum.intersectsObject(child),
+      )
+      if (this.position.x > 0 && !someChildIntersects) {
+        // somehow the frustum doesn't stretch to the full
+        // canvas, for this the magic number
+        this.parent.screenLimitX = this.position.x + this.position.x * 0.3
+      }
+    } else {
+      if (this.position.x > this.parent.screenLimitX) {
+        this.position.x = -this.position.x
+      }
+    }
+
     this.velocity.add(this.acceleration)
     this.position.add(this.velocity)
 
@@ -56,13 +73,16 @@ export default class Shrimps extends THREE.Object3D {
     super()
     this.webgl = webgl
 
-    this.shrimp = new Shrimp()
+    // move everything behind
+    this.position.z = -10
+
+    this.shrimp = new Shrimp(this.webgl)
     this.add(this.shrimp)
   }
 
   update(dt = 0, time = 0) {
     // force moving the shrimp left
-    this.shrimp.applyForce(new THREE.Vector3(0.001, 0, 0))
+    this.shrimp.applyForce(new THREE.Vector3(0.01, 0, 0))
     this.shrimp.drag(1)
   }
 }

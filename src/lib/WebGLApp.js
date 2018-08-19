@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import createOrbitControls from 'orbit-controls'
 import createTouches from 'touches'
 import dataURIToBlob from 'datauritoblob'
+import Stats from 'stats.js'
 
 export default class WebGLApp {
   tmpTarget = new THREE.Vector3()
@@ -15,6 +16,8 @@ export default class WebGLApp {
     fov = 45,
     near = 0.01,
     far = 100,
+    showFps = false,
+    useOrbitControls = false,
     ...options
   }) {
     this.renderer = new THREE.WebGLRenderer({
@@ -49,13 +52,15 @@ export default class WebGLApp {
     // setup a basic camera
     this.camera = new THREE.PerspectiveCamera(fov, 1, near, far)
 
-    // set up a simple orbit controller
-    this.controls = createOrbitControls({
-      element: this.canvas,
-      parent: window,
-      distance: 4,
-      ...options,
-    })
+    if (useOrbitControls) {
+      // set up a simple orbit controller
+      this.controls = createOrbitControls({
+        element: this.canvas,
+        parent: window,
+        distance: 4,
+        ...options,
+      })
+    }
 
     this.time = 0
     this.isRunning = false
@@ -70,6 +75,12 @@ export default class WebGLApp {
 
     // force an initial resize event
     this.resize()
+
+    if (showFps) {
+      this.stats = new Stats()
+      this.stats.showPanel(0)
+      document.body.appendChild(this.stats.dom)
+    }
   }
 
   resize = (
@@ -115,13 +126,15 @@ export default class WebGLApp {
   }
 
   update = (dt = 0, time = 0) => {
-    this.controls.update()
+    if (this.controls) {
+      this.controls.update()
 
-    // reposition to orbit controls
-    this.camera.up.fromArray(this.controls.up)
-    this.camera.position.fromArray(this.controls.position)
-    this.tmpTarget.fromArray(this.controls.target)
-    this.camera.lookAt(this.tmpTarget)
+      // reposition to orbit controls
+      this.camera.up.fromArray(this.controls.up)
+      this.camera.position.fromArray(this.controls.position)
+      this.tmpTarget.fromArray(this.controls.target)
+      this.camera.lookAt(this.tmpTarget)
+    }
 
     // recursively tell all child objects to update
     this.scene.traverse(obj => {
@@ -156,12 +169,17 @@ export default class WebGLApp {
   animate = () => {
     if (!this.isRunning) return
     window.requestAnimationFrame(this.animate)
+
+    if (this.stats) this.stats.begin()
+
     const now = performance.now()
     const dt = Math.min(this.maxDeltaTime, (now - this._lastTime) / 1000)
     this.time += dt
     this._lastTime = now
     this.update(dt, this.time)
     this.draw()
+
+    if (this.stats) this.stats.end()
   }
 
   traverse = (fn, ...args) => {
