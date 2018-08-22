@@ -1,10 +1,14 @@
 import * as THREE from 'three'
 import WebGLApp from 'lib/WebGLApp'
+import CannonApp from 'lib/CannonApp'
 import assets from 'lib/AssetManager'
 import Shrimps from 'scene/Shrimps'
 
 // Grab our canvas
 const canvas = document.querySelector('#main')
+
+// Setup the cannon physics engine
+const cannon = new CannonApp()
 
 // Setup the WebGLRenderer
 const webgl = new WebGLApp({
@@ -13,6 +17,7 @@ const webgl = new WebGLApp({
   alpha: true,
   showFps: true,
   useOrbitControls: true,
+  cannon,
 })
 
 // Hide canvas

@@ -18,8 +18,9 @@ export default class WebGLApp {
     far = 100,
     showFps = false,
     useOrbitControls = false,
+    cannon,
     ...options
-  }) {
+  } = {}) {
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: false,
@@ -62,6 +63,8 @@ export default class WebGLApp {
       })
     }
 
+    if (cannon) this.cannon = cannon
+
     this.time = 0
     this.isRunning = false
     this._lastTime = performance.now()
@@ -76,6 +79,7 @@ export default class WebGLApp {
     // force an initial resize event
     this.resize()
 
+    // show the fps meter
     if (showFps) {
       this.stats = new Stats()
       this.stats.showPanel(0)
@@ -134,6 +138,11 @@ export default class WebGLApp {
       this.camera.position.fromArray(this.controls.position)
       this.tmpTarget.fromArray(this.controls.target)
       this.camera.lookAt(this.tmpTarget)
+    }
+
+    // update the cannon physics engine
+    if (this.cannon) {
+      this.cannon.update(dt, time)
     }
 
     // recursively tell all child objects to update
