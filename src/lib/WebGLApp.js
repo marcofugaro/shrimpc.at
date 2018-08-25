@@ -52,13 +52,13 @@ export default class WebGLApp {
     // setup a basic camera
     this.camera = new THREE.PerspectiveCamera(fov, 1, near, far)
 
-    if (useOrbitControls) {
+    if (options.controls) {
       // set up a simple orbit controller
       this.controls = createOrbitControls({
         element: this.canvas,
         parent: window,
         distance: 4,
-        ...options,
+        ...(options.controls instanceof Object ? options.controls : {}),
       })
     }
 

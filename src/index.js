@@ -3,6 +3,7 @@ import CANNON from 'cannon'
 import WebGLApp from 'lib/WebGLApp'
 import assets from 'lib/AssetManager'
 import Shrimps from 'scene/Shrimps'
+import Delimiters from 'scene/Delimiters'
 
 window.DEBUG = process.env.NODE_ENV === 'development' || window.location.search.includes('debug')
 
@@ -15,7 +16,9 @@ const webgl = new WebGLApp({
   backgroundAlpha: 0,
   alpha: true,
   showFps: window.DEBUG,
-  useOrbitControls: window.DEBUG,
+  controls: window.DEBUG && {
+    distance: 15,
+  },
   world: new CANNON.World(),
 })
 
@@ -32,8 +35,30 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   // Show canvas
   webgl.canvas.style.visibility = ''
 
+  // Move the camera behind
+  webgl.camera.position.set(0, 0, 15)
+
   // Add any "WebGL components" here...
-  webgl.scene.add(new Shrimps({ webgl }))
+  const shrimps = new Shrimps({ webgl })
+  webgl.scene.add(shrimps)
+  const delimiters = new Delimiters({ webgl })
+  webgl.scene.add(delimiters)
+
+  // defines the interaction between two shrimp materials
+  webgl.world.addContactMaterial(
+    new CANNON.ContactMaterial(shrimps.material, shrimps.material, {
+      friction: 4,
+      restitution: 0.5,
+    }),
+  )
+
+  // defines the interaction between a shrimp and a delimiter
+  webgl.world.addContactMaterial(
+    new CANNON.ContactMaterial(shrimps.material, delimiters.material, {
+      friction: 0,
+      restitution: 1,
+    }),
+  )
 
   // turn on shadows in the renderer
   // TODO are those useful? do some tests
