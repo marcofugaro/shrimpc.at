@@ -1,24 +1,28 @@
 import * as THREE from 'three'
+import CANNON from 'cannon'
 import WebGLApp from 'lib/WebGLApp'
-import CannonApp from 'lib/CannonApp'
 import assets from 'lib/AssetManager'
 import Shrimps from 'scene/Shrimps'
 
+window.DEBUG = process.env.NODE_ENV === 'development' || window.location.search.includes('debug')
+
 // Grab our canvas
 const canvas = document.querySelector('#main')
-
-// Setup the cannon physics engine
-const cannon = new CannonApp()
 
 // Setup the WebGLRenderer
 const webgl = new WebGLApp({
   canvas,
   backgroundAlpha: 0,
   alpha: true,
-  showFps: true,
-  useOrbitControls: true,
-  cannon,
+  showFps: window.DEBUG,
+  useOrbitControls: window.DEBUG,
+  world: new CANNON.World(),
 })
+
+// Attach it to the window to inspect in the console
+if (window.DEBUG) {
+  window.webgl = webgl
+}
 
 // Hide canvas
 webgl.canvas.style.visibility = 'hidden'
@@ -29,7 +33,7 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   webgl.canvas.style.visibility = ''
 
   // Add any "WebGL components" here...
-  webgl.scene.add(new Shrimps(webgl))
+  webgl.scene.add(new Shrimps({ webgl }))
 
   // turn on shadows in the renderer
   // TODO are those useful? do some tests
@@ -60,16 +64,16 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   // dirLight.shadow.camera.far = 3500
   // dirLight.shadow.bias = -0.0001
 
-  // set up the frustum, used to check if
-  // some object are still in view.
-  // somehow three js doesn't expose its frustum
-  webgl.camera.updateMatrix()
-  webgl.camera.updateMatrixWorld()
-  const projScreenMatrix = new THREE.Matrix4().multiplyMatrices(
-    webgl.camera.projectionMatrix,
-    webgl.camera.matrixWorldInverse,
-  )
-  webgl.camera.frustum = new THREE.Frustum().setFromMatrix(projScreenMatrix)
+  // // set up the frustum, used to check if
+  // // some object are still in view.
+  // // somehow three js doesn't expose its frustum
+  // webgl.camera.updateMatrix()
+  // webgl.camera.updateMatrixWorld()
+  // const projScreenMatrix = new THREE.Matrix4().multiplyMatrices(
+  //   webgl.camera.projectionMatrix,
+  //   webgl.camera.matrixWorldInverse,
+  // )
+  // webgl.camera.frustum = new THREE.Frustum().setFromMatrix(projScreenMatrix)
 
   // start animation loop
   webgl.start()

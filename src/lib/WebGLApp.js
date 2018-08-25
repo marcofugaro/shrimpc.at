@@ -18,7 +18,6 @@ export default class WebGLApp {
     far = 100,
     showFps = false,
     useOrbitControls = false,
-    cannon,
     ...options
   } = {}) {
     this.renderer = new THREE.WebGLRenderer({
@@ -63,7 +62,8 @@ export default class WebGLApp {
       })
     }
 
-    if (cannon) this.cannon = cannon
+    // Attach the Cannon physics engine
+    if (options.world) this.world = options.world
 
     this.time = 0
     this.isRunning = false
@@ -140,17 +140,24 @@ export default class WebGLApp {
       this.camera.lookAt(this.tmpTarget)
     }
 
-    // update the cannon physics engine
-    if (this.cannon) {
-      this.cannon.update(dt, time)
-    }
-
     // recursively tell all child objects to update
     this.scene.traverse(obj => {
       if (typeof obj.update === 'function') {
         obj.update(dt, time)
       }
     })
+
+    if (this.world) {
+      // update the Cannon physics engine
+      this.world.step(dt)
+
+      // recursively tell all child bodies to update
+      this.world.bodies.forEach(body => {
+        if (typeof body.update === 'function') {
+          body.update(dt, time)
+        }
+      })
+    }
 
     return this
   }

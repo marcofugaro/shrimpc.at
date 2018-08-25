@@ -6,6 +6,7 @@
     }]
   ],
   "plugins": [
+    "babel-plugin-lodash",
     // Stage 0
    /* "@babel/plugin-proposal-function-bind",
 
