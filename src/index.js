@@ -64,17 +64,6 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   // dirLight.shadow.camera.far = 3500
   // dirLight.shadow.bias = -0.0001
 
-  // // set up the frustum, used to check if
-  // // some object are still in view.
-  // // somehow three js doesn't expose its frustum
-  // webgl.camera.updateMatrix()
-  // webgl.camera.updateMatrixWorld()
-  // const projScreenMatrix = new THREE.Matrix4().multiplyMatrices(
-  //   webgl.camera.projectionMatrix,
-  //   webgl.camera.matrixWorldInverse,
-  // )
-  // webgl.camera.frustum = new THREE.Frustum().setFromMatrix(projScreenMatrix)
-
   // start animation loop
   webgl.start()
   webgl.draw()

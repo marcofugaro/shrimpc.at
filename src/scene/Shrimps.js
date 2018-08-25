@@ -1,15 +1,21 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import assets from 'lib/AssetManager'
-import { range } from 'lodash'
+import { range, random } from 'lodash'
 
 // horizontal gap betwee the restricting planes
-const HORIZONTAL_GAP = 2
+const HORIZONTAL_GAP = 3
 // vertical gap betwee the restricting planes
 const VERTICAL_GAP = 8
 
 // how much to offset the shrimps begind the camera
 const Z_OFFSET = -10
+
+// where the shrimps will die
+const MAX_X_POSITION = 10
+
+// the interval between the spawn of shrimps (seconds)
+const SHRIMP_INTERVAL = 3
 
 const shrimpObjKey = assets.queue({
   url: 'assets/shrimp.obj',
@@ -32,6 +38,7 @@ class Delimiter extends CANNON.Body {
         color: Math.random() * 0xfffff,
         opacity: 0.5,
         transparent: true,
+        depthWrite: false,
       })
       material.side = THREE.DoubleSide
       const groundMesh = new THREE.Mesh(geometry, material)
@@ -55,7 +62,7 @@ class Delimiter extends CANNON.Body {
 }
 
 class Shrimp extends CANNON.Body {
-  // no need to handla position, velocity and acceleration,
+  // no need to handle position, velocity and acceleration,
   // CANNON.Body already has those
 
   mesh = new THREE.Object3D()
@@ -76,8 +83,6 @@ class Shrimp extends CANNON.Body {
       const geometry = new THREE.CylinderGeometry(1, 1, 0.5, 32)
       const material = new THREE.MeshLambertMaterial({
         color: 0x0000ff,
-        opacity: 0.7,
-        transparent: true,
       })
       const cylinderMesh = new THREE.Mesh(geometry, material)
       this.mesh.add(cylinderMesh)
@@ -88,25 +93,6 @@ class Shrimp extends CANNON.Body {
   }
 
   update(dt = 0, time = 0) {
-    // // detect the value of x when the object is not visible anymore.
-    // // Calculate it only the first time, and save it for later
-    // if (!this.webgl.world.screenLimitX) {
-    //   const someChildIntersects = this.mesh.children.some(child =>
-    //     this.webgl.camera.frustum.intersectsObject(child),
-    //   )
-    //
-    //   if (this.position.x > 0 && !someChildIntersects) {
-    //     // somehow the frustum doesn't stretch to the full
-    //     // canvas, for this the magic number
-    //     this.webgl.world.screenLimitX = this.position.x + this.position.x * 0.3
-    //   }
-    // } else {
-    //   if (this.position.x > this.webgl.world.screenLimitX) {
-    //     this.position.x = -this.position.x
-    //     console.log('AYAYAYAYAYY')
-    //   }
-    // }
-
     // sync the mesh to the physical body
     this.mesh.position.copy(this.position)
     this.mesh.quaternion.copy(this.quaternion)
@@ -118,69 +104,51 @@ class Shrimp extends CANNON.Body {
   }
 
   // Fd = - Constant * getMagnitude(velocity)**2 * normalize(velocity)
-  drag(coefficient) {
-    const speed = this.velocity.length()
-
-    const dragMagnitude = coefficient * speed ** 2
-
-    const drag = this.velocity.clone()
-    drag.scale(-1, drag)
-
-    drag.normalize()
-
-    drag.scale(dragMagnitude, drag)
-
-    this.applyGenericForce(drag)
-  }
+  // (ended up not using this because it meeses up with the physics)
+  // drag(coefficient) {
+  //   const speed = this.velocity.length()
+  //
+  //   const dragMagnitude = coefficient * speed ** 2
+  //
+  //   const drag = this.velocity.clone()
+  //   drag.multiplyScalar(-1)
+  //
+  //   drag.normalize()
+  //
+  //   drag.multiplyScalar(dragMagnitude)
+  //
+  //   this.applyGenericForce(drag)
+  // }
 }
 
 export default class Shrimps extends THREE.Object3D {
-  SHRIMPS_NUMBER = 3
   shrimps = []
   delimiters = []
+  shrimpMaterial
+  delimiterMaterial
+  lastShrimpSpawn
 
   constructor({ webgl, ...options }) {
     super(options)
     this.webgl = webgl
 
     // set the material of the shrimps to all the same
-    const shrimpMaterial = new CANNON.Material('shrimp')
+    this.shrimpMaterial = new CANNON.Material('shrimp')
     // defines the interaction between two shrimp materials
     webgl.world.addContactMaterial(
-      new CANNON.ContactMaterial(shrimpMaterial, shrimpMaterial, {
-        friction: 3.4,
-        restitution: 0.1,
+      new CANNON.ContactMaterial(this.shrimpMaterial, this.shrimpMaterial, {
+        friction: 4,
+        restitution: 0.5,
       }),
     )
 
-    // create the shrimps
-    this.shrimps = range(0, this.SHRIMPS_NUMBER).map(i => {
-      return new Shrimp({
-        webgl,
-        material: shrimpMaterial,
-        type: CANNON.Body.DYNAMIC,
-        mass: 1,
-        // move everything behind
-        position: new CANNON.Vec3(i * 3, 0, Z_OFFSET),
-        // put them vertical
-        quaternion: new CANNON.Quaternion().setFromEuler(-Math.PI / 2, 0, 0),
-      })
-    })
-
-    this.shrimps.forEach(shrimp => {
-      // add the body to the cannon.js world
-      webgl.world.addBody(shrimp)
-      // and the mesh to the three.js scene
-      this.add(shrimp.mesh)
-    })
-
     // set the material of the delimiting planes
-    const delimiterMaterial = new CANNON.Material('limiter')
+    this.delimiterMaterial = new CANNON.Material('delimiter')
     // defines the interaction between a shrimp and a delimiter
     webgl.world.addContactMaterial(
-      new CANNON.ContactMaterial(shrimpMaterial, delimiterMaterial, {
+      new CANNON.ContactMaterial(this.shrimpMaterial, this.delimiterMaterial, {
         friction: 0,
-        restitution: 0,
+        restitution: 1,
       }),
     )
 
@@ -208,7 +176,7 @@ export default class Shrimps extends THREE.Object3D {
 
       return new Delimiter({
         webgl,
-        material: delimiterMaterial,
+        material: this.delimiterMaterial,
         type: CANNON.Body.DYNAMIC,
         mass: 0,
         position,
@@ -226,11 +194,47 @@ export default class Shrimps extends THREE.Object3D {
 
   update(dt = 0, time = 0) {
     // force moving the shrimp left
-    this.shrimps[0].applyGenericForce(new CANNON.Vec3(1, 0, 0))
-    this.shrimps[1].applyGenericForce(new CANNON.Vec3(0.5, 0, 0))
-    this.shrimps[2].applyGenericForce(new CANNON.Vec3(0.2, 0, 0))
+    this.shrimps.forEach(shrimp => shrimp.applyGenericForce(new CANNON.Vec3(0.7, 0, 0)))
 
-    // water drag force
-    // this.shrimps.forEach(shrimp => shrimp.drag(1))
+    // spawn new shrimps
+    const seconds = Math.floor(time)
+    if (seconds % SHRIMP_INTERVAL === 0 && seconds / SHRIMP_INTERVAL !== this.lastShrimpSpawn) {
+      this.lastShrimpSpawn = seconds / SHRIMP_INTERVAL
+
+      const shrimp = new Shrimp({
+        webgl: this.webgl,
+        material: this.shrimpMaterial,
+        type: CANNON.Body.DYNAMIC,
+        mass: 1,
+        // simulate the water
+        linearDamping: 0.6,
+        angularDamping: 0.6,
+        angularVelocity: new CANNON.Vec3(0.3 * random(-1, 1), 0.3 * random(-1, 1), 0),
+        // move everything behind
+        position: new CANNON.Vec3(
+          -MAX_X_POSITION,
+          random(-(VERTICAL_GAP / 2) * 0.9, (VERTICAL_GAP / 2) * 0.9),
+          Z_OFFSET,
+        ),
+        // put them vertical
+        quaternion: new CANNON.Quaternion().setFromEuler(-Math.PI / 2, 0, 0),
+      })
+
+      // add the body to the cannon.js world
+      this.webgl.world.addBody(shrimp)
+      // and the mesh to the three.js scene
+      this.add(shrimp.mesh)
+      // save it
+      this.shrimps.push(shrimp)
+    }
+
+    // remove if they exit the field of view
+    this.shrimps.forEach(shrimp => {
+      if (shrimp.position.x < -MAX_X_POSITION || MAX_X_POSITION < shrimp.position.x) {
+        this.webgl.world.removeBody(shrimp)
+        this.remove(shrimp.mesh)
+        this.shrimps.splice(this.shrimps.findIndex(s => s.id === shrimp.id), 1)
+      }
+    })
   }
 }
