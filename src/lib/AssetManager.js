@@ -1,4 +1,4 @@
-// Credit for this class goes to Matt DesLauriers @mattdesl,
+// Inspiration for this class goes to Matt DesLauriers @mattdesl,
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/AssetManager.js
 import { GLTFLoader } from 'three/examples/js/loaders/GLTFLoader'

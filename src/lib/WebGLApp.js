@@ -1,4 +1,4 @@
-// Credit for this class goes to Matt DesLauriers @mattdesl,
+// Inspiration for this class goes to Matt DesLauriers @mattdesl,
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/webgl/WebGLApp.js
 import * as THREE from 'three'
@@ -6,6 +6,7 @@ import createOrbitControls from 'orbit-controls'
 import createTouches from 'touches'
 import dataURIToBlob from 'datauritoblob'
 import Stats from 'stats.js'
+import controlPanel from 'control-panel'
 
 export default class WebGLApp {
   tmpTarget = new THREE.Vector3()
@@ -16,8 +17,6 @@ export default class WebGLApp {
     fov = 45,
     near = 0.01,
     far = 100,
-    showFps = false,
-    useOrbitControls = false,
     ...options
   } = {}) {
     this.renderer = new THREE.WebGLRenderer({
@@ -80,10 +79,19 @@ export default class WebGLApp {
     this.resize()
 
     // show the fps meter
-    if (showFps) {
+    if (options.showFps) {
       this.stats = new Stats()
       this.stats.showPanel(0)
       document.body.appendChild(this.stats.dom)
+    }
+
+    // initialize the control panel
+    if (options.panelInputs) {
+      this.panel = controlPanel(options.panelInputs, {
+        theme: 'dark',
+        position: 'top-right',
+        ...(options.panelOptions instanceof Object ? options.panelOptions : {}),
+      })
     }
   }
 

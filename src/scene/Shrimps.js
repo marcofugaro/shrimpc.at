@@ -6,8 +6,9 @@ import { random } from 'lodash'
 
 // where the shrimps will die
 export const MAX_X_POSITION = 10
+
 // the interval between the spawn of shrimps (seconds)
-export const SHRIMP_INTERVAL = 0.1
+export let SHRIMP_INTERVAL = 1
 
 const shrimpObjKey = assets.queue({
   url: 'assets/shrimp.obj',
@@ -85,6 +86,12 @@ export default class Shrimps extends THREE.Object3D {
   constructor({ webgl, ...options }) {
     super(options)
     this.webgl = webgl
+
+    if (window.DEBUG) {
+      this.webgl.panel.on('input', inputs => {
+        SHRIMP_INTERVAL = inputs['Shrimp Spawn Interval']
+      })
+    }
   }
 
   update(dt = 0, time = 0) {

@@ -1,4 +1,4 @@
-// Credit for this code goes to Matt DesLauriers @mattdesl,
+// Inspiration for this code goes to Matt DesLauriers @mattdesl,
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/loadEnvMap.js
 import * as THREE from 'three'

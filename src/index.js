@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import CANNON from 'cannon'
 import WebGLApp from 'lib/WebGLApp'
 import assets from 'lib/AssetManager'
-import Shrimps from 'scene/Shrimps'
+import Shrimps, { SHRIMP_INTERVAL } from 'scene/Shrimps'
 import Delimiters from 'scene/Delimiters'
 
 window.DEBUG = process.env.NODE_ENV === 'development' || window.location.search.includes('debug')
@@ -19,6 +19,15 @@ const webgl = new WebGLApp({
   controls: window.DEBUG && {
     distance: 15,
   },
+  panelInputs: window.DEBUG && [
+    {
+      type: 'range',
+      label: 'Shrimp Spawn Interval',
+      min: 0,
+      max: 5,
+      initial: SHRIMP_INTERVAL,
+    },
+  ],
   world: new CANNON.World(),
 })
 
