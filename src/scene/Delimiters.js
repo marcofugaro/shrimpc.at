@@ -1,17 +1,24 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import { range } from 'lodash'
+import { shrimpsCollisionId } from 'scene/Shrimps'
 
 // horizontal gap betwee the restricting planes
 export const HORIZONTAL_GAP = 3
 // vertical gap betwee the restricting planes
 export const VERTICAL_GAP = 8
 
+export const delimitersCollisionId = 4
+
 class Delimiter extends CANNON.Body {
   mesh = new THREE.Object3D()
+
   constructor({ webgl, ...options }) {
     super(options)
     this.webgl = webgl
+
+    const groundShape = new CANNON.Plane()
+    this.addShape(groundShape)
 
     if (window.DEBUG) {
       const geometry = new THREE.PlaneGeometry(12, 12)
@@ -30,9 +37,6 @@ class Delimiter extends CANNON.Body {
       this.mesh.position.copy(this.position)
       this.mesh.quaternion.copy(this.quaternion)
     }
-
-    const groundShape = new CANNON.Plane()
-    this.addShape(groundShape)
   }
 }
 
@@ -73,6 +77,9 @@ export default class Delimiters extends THREE.Object3D {
       return new Delimiter({
         webgl,
         material: this.material,
+        // can only collide with shrimps
+        collisionFilterGroup: delimitersCollisionId,
+        collisionFilterMask: shrimpsCollisionId,
         mass: 0,
         position,
         quaternion,

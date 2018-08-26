@@ -1,14 +1,17 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import assets from 'lib/AssetManager'
-import { VERTICAL_GAP } from 'scene/Delimiters'
+import { VERTICAL_GAP, delimitersCollisionId } from 'scene/Delimiters'
+import { armsCollisionId } from 'scene/Arms'
 import { random } from 'lodash'
 
 // where the shrimps will die
 export const MAX_X_POSITION = 10
 
 // the interval between the spawn of shrimps (seconds)
-export let SHRIMP_INTERVAL = 1
+export let SHRIMP_INTERVAL = 3
+
+export const shrimpsCollisionId = 1
 
 const shrimpObjKey = assets.queue({
   url: 'assets/shrimp.obj',
@@ -37,6 +40,9 @@ class Shrimp extends CANNON.Body {
     // // save the shrimp into the bodies
     // shrimpObj.traverse(child => this.addShape(child))
 
+    const shrimpShape = new CANNON.Cylinder(1, 1, 0.5, 32)
+    this.addShape(shrimpShape)
+
     if (window.DEBUG) {
       const geometry = new THREE.CylinderGeometry(1, 1, 0.5, 32)
       const material = new THREE.MeshLambertMaterial({
@@ -45,9 +51,6 @@ class Shrimp extends CANNON.Body {
       const cylinderMesh = new THREE.Mesh(geometry, material)
       this.mesh.add(cylinderMesh)
     }
-
-    const shrimpShape = new CANNON.Cylinder(1, 1, 0.5, 32)
-    this.addShape(shrimpShape)
   }
 
   update(dt = 0, time = 0) {
@@ -102,6 +105,9 @@ export default class Shrimps extends THREE.Object3D {
       const shrimp = new Shrimp({
         webgl: this.webgl,
         material: this.material,
+        // can collide with both arms and walls (and itself)
+        collisionFilterGroup: shrimpsCollisionId,
+        collisionFilterMask: armsCollisionId | delimitersCollisionId | shrimpsCollisionId,
         type: CANNON.Body.DYNAMIC,
         mass: 1,
         // simulate the water

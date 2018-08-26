@@ -4,6 +4,7 @@ import WebGLApp from 'lib/WebGLApp'
 import assets from 'lib/AssetManager'
 import Shrimps, { SHRIMP_INTERVAL } from 'scene/Shrimps'
 import Delimiters from 'scene/Delimiters'
+import Arms from 'scene/Arms'
 
 window.DEBUG = process.env.NODE_ENV === 'development' || window.location.search.includes('debug')
 
@@ -52,6 +53,8 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   webgl.scene.add(shrimps)
   const delimiters = new Delimiters({ webgl })
   webgl.scene.add(delimiters)
+  const arms = new Arms({ webgl })
+  webgl.scene.add(arms)
 
   // defines the interaction between two shrimp materials
   webgl.world.addContactMaterial(
