@@ -1,9 +1,11 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
-import eases from 'eases'
+import TWEEN from '@tweenjs/tween.js'
+import delay from 'delay'
 import CannonSphere from 'lib/CannonSphere'
 import Arm, { PAW_RADIUS, FOREARM_HEIGHT } from 'scene/Arm'
 import { shrimpsCollisionId } from 'scene/Shrimps'
+import { VERTICAL_GAP } from 'scene/Delimiters'
 import { mouseToCoordinates } from 'lib/three-utils'
 
 export const armsCollisionId = 4
@@ -11,11 +13,8 @@ export const armsCollisionId = 4
 // Y of the hinge in a normal position
 export const HINGE_REST_Y = -12
 
-// Y of the hinge at its maximum smacking
-export const HINGE_SMACK_Y = -5
-
-// how long the smack animation lasts (s)
-export const SMACK_DURATION = 0.5
+// how long the smack animation lasts (ms)
+export const SMACK_DURATION = 500
 
 // how much does the arm have to be close to its attractor
 // to be registered as hit
@@ -26,6 +25,8 @@ export default class Arms extends THREE.Object3D {
   // leftArm
   armAttractor
   hinge
+  hingeTween = new TWEEN.Tween()
+  attractorTween = new TWEEN.Tween()
   material = new CANNON.Material('arms')
 
   constructor({ webgl, ...options }) {
@@ -41,8 +42,8 @@ export default class Arms extends THREE.Object3D {
       type: CANNON.Body.DYNAMIC,
       mass: 5,
       // simulate the water
-      linearDamping: 0.9,
-      angularDamping: 0.9,
+      linearDamping: 0.99,
+      angularDamping: 0.99,
     })
 
     this.hinge = new CannonSphere({
@@ -64,7 +65,7 @@ export default class Arms extends THREE.Object3D {
     })
 
     // position them
-    this.rightArm.position.set(-2, 3, 0)
+    this.rightArm.position.set(-2, HINGE_REST_Y + FOREARM_HEIGHT * 1.9, 0)
     this.hinge.position.set(0, HINGE_REST_Y, 0)
 
     // Connect the arm to the hinge through 2 constraints
@@ -88,7 +89,7 @@ export default class Arms extends THREE.Object3D {
       localAnchorA: new CANNON.Vec3(),
       localAnchorB: new CANNON.Vec3(),
       restLength: 0,
-      stiffness: 50,
+      stiffness: 100,
       damping: 1,
     })
     // this.leftArmSpring = new CANNON.Spring(this.leftArm, this.armAttractor, {
@@ -111,29 +112,17 @@ export default class Arms extends THREE.Object3D {
   }
 
   update(dt = 0, time = 0) {
+    TWEEN.update()
+
     if (this.isAttractingRightArm) {
       this.rightArmSpring.applyForce()
 
-      if (!this.smackStart) {
-        this.smackStart = time
-      }
-
-      const elapsed = time - this.smackStart
-
-      this.hinge.position.y = THREE.Math.lerp(
-        HINGE_REST_Y,
-        HINGE_SMACK_Y,
-        eases.quadOut(elapsed / SMACK_DURATION),
-      )
-
-      const hasReachedTarget =
-        this.armAttractor.position.distanceTo(this.rightArm.position) < SMACK_SUCCESSFULL_DISTANCE
-      const hasFinishedAnimation = elapsed >= SMACK_DURATION
-      if (hasReachedTarget || hasFinishedAnimation) {
-        this.isAttractingRightArm = false
-        if (window.DEBUG) this.remove(this.armAttractor.mesh)
-        this.smackStart = null
-      }
+      // const hasReachedTarget =
+      //   this.armAttractor.position.distanceTo(this.rightArm.position) < SMACK_SUCCESSFULL_DISTANCE
+      //
+      // if (hasReachedTarget) {
+      //   this.moveArmBack()
+      // }
     }
     //
     // if (this.isAttractingLeftArm) {
@@ -152,10 +141,46 @@ export default class Arms extends THREE.Object3D {
 
     // position the attractor (and show it if in debug)
     const clickedPoint = mouseToCoordinates({ x, y, targetZ: 0, webgl: this.webgl })
-    this.armAttractor.position.copy(clickedPoint)
+    this.armAttractor.position.copy({ ...clickedPoint, x: clickedPoint.x - 3 })
     if (window.DEBUG) this.add(this.armAttractor.mesh)
 
+    // move the attractor to simulate a smack
+    this.attractorTween = new TWEEN.Tween(this.armAttractor.position)
+      .to({ ...clickedPoint, x: clickedPoint.x + 3 }, SMACK_DURATION)
+      .easing(t => (t < 0.5 ? 0 : 1))
+      .start()
+
+    // attract the arm
     // TODO figure out which arm is attracting
     this.isAttractingRightArm = true
+
+    // move up the arm
+    this.hingeTween = new TWEEN.Tween(this.hinge.position)
+      .to(
+        // TODO use a value proportional to the distance between the lickedPoint and the hinge
+        { x: 0, y: clickedPoint.y - VERTICAL_GAP + Math.abs(clickedPoint.x) * 0.5, z: 0 },
+        SMACK_DURATION,
+      )
+      .easing(TWEEN.Easing.Quadratic.In)
+      .start()
+      .onComplete(async ({ y }) => {
+        if (y === HINGE_REST_Y) {
+          return
+        }
+
+        // TWEEN.js needs to be called not syncronously after
+        await delay(0)
+
+        this.moveArmBack()
+      })
+  }
+
+  moveArmBack() {
+    this.isAttractingRightArm = false
+    if (window.DEBUG) this.remove(this.armAttractor.mesh)
+    this.hingeTween
+      .to({ x: 0, y: HINGE_REST_Y, z: 0 }, SMACK_DURATION * 1.5)
+      .easing(TWEEN.Easing.Quadratic.Out)
+      .start()
   }
 }
