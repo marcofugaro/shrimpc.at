@@ -47,7 +47,6 @@
     "cannon": "^0.6.2",
     "control-panel": "marcofugaro/control-panel",
     "datauritoblob": "^1.0.0",
-    "delay": "^3.1.0",
     "image-promise": "^5.0.1",
     "lodash": "^4.17.10",
     "orbit-controls": "^1.2.4",

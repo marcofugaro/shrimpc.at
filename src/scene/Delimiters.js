@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
-import { range } from 'lodash'
+import _ from 'lodash'
 import { shrimpsCollisionId } from 'scene/Shrimps'
 
 // horizontal gap betwee the restricting planes
@@ -49,7 +49,7 @@ export default class Delimiters extends THREE.Object3D {
     this.webgl = webgl
 
     // create the delimiters
-    this.delimiters = range(0, 4).map(i => {
+    this.delimiters = _.range(0, 4).map(i => {
       let position = new CANNON.Vec3()
       let quaternion = new CANNON.Quaternion()
       switch (i) {

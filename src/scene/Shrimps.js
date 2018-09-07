@@ -3,7 +3,7 @@ import CANNON from 'cannon'
 import assets from 'lib/AssetManager'
 import { VERTICAL_GAP, delimitersCollisionId } from 'scene/Delimiters'
 import { armsCollisionId } from 'scene/Arms'
-import { random } from 'lodash'
+import _ from 'lodash'
 
 // where the shrimps will die
 export const MAX_X_POSITION = 10
@@ -111,13 +111,13 @@ export default class Shrimps extends THREE.Object3D {
         type: CANNON.Body.DYNAMIC,
         mass: 1,
         // simulate the water
-        linearDamping: 0.6,
-        angularDamping: 0.6,
+        linearDamping: 0.8,
+        angularDamping: 0.8,
         // move them around a bit
-        angularVelocity: new CANNON.Vec3(0.3 * random(-1, 1), 0.3 * random(-1, 1), 0),
+        angularVelocity: new CANNON.Vec3(0.3 * _.random(-1, 1), 0.3 * _.random(-1, 1), 0),
         position: new CANNON.Vec3(
           -MAX_X_POSITION,
-          random(-(VERTICAL_GAP / 2) * 0.9, (VERTICAL_GAP / 2) * 0.9),
+          _.random(-(VERTICAL_GAP / 2) * 0.9, (VERTICAL_GAP / 2) * 0.9),
           0,
         ),
         // put them vertical

@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import TWEEN from '@tweenjs/tween.js'
-import delay from 'delay'
 import CannonSphere from 'lib/CannonSphere'
 import Arm, { PAW_RADIUS, FOREARM_HEIGHT } from 'scene/Arm'
 import { shrimpsCollisionId } from 'scene/Shrimps'
@@ -26,15 +25,16 @@ export const SMACK_APERTURE = 3
 export default class Arms extends THREE.Object3D {
   material = new CANNON.Material('arms')
   rightArm
-  // leftArm
-  armAttractor
+  leftArm
   rightHinge
+  leftHinge
+  armAttractor
 
   constructor({ webgl, ...options }) {
     super(options)
     this.webgl = webgl
 
-    this.rightArm = new Arm({
+    const armOptions = {
       webgl,
       material: this.material,
       // can only collide with shrimps (or itself)
@@ -45,16 +45,20 @@ export default class Arms extends THREE.Object3D {
       // simulate the water
       linearDamping: 0.99,
       angularDamping: 0.99,
-    })
+    }
+    this.rightArm = new Arm(armOptions)
+    this.leftArm = new Arm(armOptions)
 
-    this.rightHinge = new CannonSphere({
+    const hingeOptions = {
       webgl,
       radius: 1,
       mass: 0,
       type: CANNON.Body.DYNAMIC,
       // don't make it collide with anything
       collisionFilterMask: 0,
-    })
+    }
+    this.rightHinge = new CannonSphere(hingeOptions)
+    this.leftHinge = new CannonSphere(hingeOptions)
 
     this.armAttractor = new CannonSphere({
       webgl,
@@ -67,23 +71,46 @@ export default class Arms extends THREE.Object3D {
 
     // position them
     this.rightArm.position.set(-2, HINGE_REST_Y + FOREARM_HEIGHT * 1.9, 0)
-    this.rightHinge.position.set(0, HINGE_REST_Y, 0)
+    this.leftArm.position.set(2, HINGE_REST_Y + FOREARM_HEIGHT * 1.9, 0)
+    this.leftArm.quaternion.setFromEuler(0, Math.PI, 0)
+    this.rightHinge.position.set(-2, HINGE_REST_Y, 0)
+    this.leftHinge.position.set(2, HINGE_REST_Y, 0)
 
-    // Connect the arm to the rightHinge through 2 constraints
-    const constraint = new CANNON.PointToPointConstraint(
-      this.rightArm,
-      new CANNON.Vec3(PAW_RADIUS * 1.5, -FOREARM_HEIGHT * 2, -1),
-      this.rightHinge,
-      new CANNON.Vec3(0, 0, -1),
+    // Connect the rightArm to the rightHinge through 2 constraints
+    webgl.world.addConstraint(
+      new CANNON.PointToPointConstraint(
+        this.rightArm,
+        new CANNON.Vec3(PAW_RADIUS * 1.5, -FOREARM_HEIGHT * 2, -1),
+        this.rightHinge,
+        new CANNON.Vec3(0, 0, -1),
+      ),
     )
-    const constraint2 = new CANNON.PointToPointConstraint(
-      this.rightArm,
-      new CANNON.Vec3(PAW_RADIUS * 1.5, -FOREARM_HEIGHT * 2, 1),
-      this.rightHinge,
-      new CANNON.Vec3(0, 0, 1),
+    webgl.world.addConstraint(
+      new CANNON.PointToPointConstraint(
+        this.rightArm,
+        new CANNON.Vec3(PAW_RADIUS * 1.5, -FOREARM_HEIGHT * 2, 1),
+        this.rightHinge,
+        new CANNON.Vec3(0, 0, 1),
+      ),
     )
-    webgl.world.addConstraint(constraint)
-    webgl.world.addConstraint(constraint2)
+
+    // Connect the leftArm to the leftHinge through 2 constraints
+    webgl.world.addConstraint(
+      new CANNON.PointToPointConstraint(
+        this.leftArm,
+        new CANNON.Vec3(PAW_RADIUS * 1.5, -FOREARM_HEIGHT * 2, -1),
+        this.leftHinge,
+        new CANNON.Vec3(0, 0, 1),
+      ),
+    )
+    webgl.world.addConstraint(
+      new CANNON.PointToPointConstraint(
+        this.leftArm,
+        new CANNON.Vec3(PAW_RADIUS * 1.5, -FOREARM_HEIGHT * 2, 1),
+        this.leftHinge,
+        new CANNON.Vec3(0, 0, -1),
+      ),
+    )
 
     // setup the springs that will move the arm
     this.rightArmSpring = new CANNON.Spring(this.rightArm, this.armAttractor, {
@@ -93,21 +120,25 @@ export default class Arms extends THREE.Object3D {
       stiffness: 100,
       damping: 1,
     })
-    // this.leftArmSpring = new CANNON.Spring(this.leftArm, this.armAttractor, {
-    //   localAnchorA: new CANNON.Vec3(),
-    //   localAnchorB: new CANNON.Vec3(),
-    //   restLength: 0,
-    //   stiffness: 50,
-    //   damping: 1,
-    // })
+    this.leftArmSpring = new CANNON.Spring(this.leftArm, this.armAttractor, {
+      localAnchorA: new CANNON.Vec3(),
+      localAnchorB: new CANNON.Vec3(),
+      restLength: 0,
+      stiffness: 100,
+      damping: 1,
+    })
 
     // add the body to the cannon.js world
     // and the mesh to the three.js scene
     this.webgl.world.addBody(this.rightArm)
     this.webgl.world.addBody(this.rightHinge)
+    this.webgl.world.addBody(this.leftArm)
+    this.webgl.world.addBody(this.leftHinge)
     this.webgl.world.addBody(this.armAttractor)
     this.add(this.rightArm.mesh)
     this.add(this.rightHinge.mesh)
+    this.add(this.leftArm.mesh)
+    this.add(this.leftHinge.mesh)
     // not this one, it will be added on click
     // this.add(this.armAttractor.mesh)
   }
@@ -117,6 +148,10 @@ export default class Arms extends THREE.Object3D {
 
     if (this.isAttractingRightArm) {
       this.rightArmSpring.applyForce()
+    }
+
+    if (this.isAttractingLeftArm) {
+      this.leftArmSpring.applyForce()
     }
   }
 
@@ -135,38 +170,54 @@ export default class Arms extends THREE.Object3D {
       .onComplete(this.stopAttracting)
 
     // SMACK!
-    this.hingeTween = this.animateRightArmUp(clickedPoint)
+    this.hingeTween = this.animateArmUp(clickedPoint)
       .start()
-      .chain(this.animateRightArmBack())
+      .chain(this.animateArmBack())
   }
 
-  animateRightArmUp = clickedPoint => {
-    return new TWEEN.Tween(this.rightHinge.position)
+  animateArmUp = clickedPoint => {
+    const hinge = this.isAttractingRightArm ? this.rightHinge : this.leftHinge
+
+    return new TWEEN.Tween(hinge.position)
       .to(
         // TODO use a value proportional to the distance between the lickedPoint and the rightHinge
-        { x: 0, y: clickedPoint.y - VERTICAL_GAP + Math.abs(clickedPoint.x) * 0.5, z: 0 },
+        { ...hinge.position, y: clickedPoint.y - VERTICAL_GAP + Math.abs(clickedPoint.x) * 0.5 },
         SMACK_DURATION,
       )
       .easing(TWEEN.Easing.Quadratic.In)
   }
 
-  animateRightArmBack = () => {
-    return new TWEEN.Tween(this.rightHinge.position)
-      .to({ x: 0, y: HINGE_REST_Y, z: 0 }, SMACK_DURATION * 1.5)
+  animateArmBack = () => {
+    const hinge = this.isAttractingRightArm ? this.rightHinge : this.leftHinge
+
+    return new TWEEN.Tween(hinge.position)
+      .to({ ...hinge.position, y: HINGE_REST_Y }, SMACK_DURATION * 1.5)
       .easing(TWEEN.Easing.Quadratic.Out)
   }
 
   animateAttractor = clickedPoint => {
-    // TODO figure out if animate left to right or contrary
-    this.armAttractor.position.copy({ ...clickedPoint, x: clickedPoint.x - SMACK_APERTURE })
+    let startX
+    let endX
+    if (clickedPoint.x > 0) {
+      startX = clickedPoint.x + SMACK_APERTURE
+      endX = clickedPoint.x - SMACK_APERTURE
+    } else {
+      startX = clickedPoint.x - SMACK_APERTURE
+      endX = clickedPoint.x + SMACK_APERTURE
+    }
+
+    this.armAttractor.position.copy({ ...clickedPoint, x: startX })
     return new TWEEN.Tween(this.armAttractor.position)
-      .to({ ...clickedPoint, x: clickedPoint.x + SMACK_APERTURE }, SMACK_DURATION)
+      .to({ ...clickedPoint, x: endX }, SMACK_DURATION)
       .easing(t => (t <= 0.5 ? 0 : 1))
   }
 
   startAttracting = clickedPoint => {
-    // TODO figure out which arm is attracting
-    this.isAttractingRightArm = true
+    if (clickedPoint.x > 0) {
+      this.isAttractingLeftArm = true
+    } else {
+      this.isAttractingRightArm = true
+    }
     if (window.DEBUG) this.add(this.armAttractor.mesh)
   }
 
