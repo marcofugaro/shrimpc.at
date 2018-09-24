@@ -50,8 +50,10 @@ class AssetManager {
         return 'svg'
       case /\.(jpe?g|png|gif|bmp|tga|tif)$/i.test(ext):
         return 'image'
-      case /\.(wav|mp3|ogg|mp4)$/i.test(ext):
+      case /\.(wav|mp3)$/i.test(ext):
         return 'audio'
+      case /\.(mp4|webm|ogg|ogv)$/i.test(ext):
+        return 'video'
       default:
         throw new Error(`Could not load ${url}, unknown file extension!`)
     }
@@ -168,7 +170,7 @@ class AssetManager {
         return loadEnvMap({ renderer, ...options })
       case 'svg':
       case 'image':
-        return loadImage(url)
+        return loadImage(url, { crossorigin: 'anonymous' })
       case 'texture':
         return loadTexture(url, { renderer, ...options })
       case 'audio':
@@ -176,6 +178,11 @@ class AssetManager {
         // store them in memory, that might be inefficient.
         // Rather load them outside of the queue
         return fetch(url).then(response => response.arrayBuffer())
+      case 'video':
+        // You might not want to load big video files and
+        // store them in memory, that might be inefficient.
+        // Rather load them outside of the queue
+        return fetch(url).then(response => response.blob())
       default:
         throw new Error(`Could not load ${url}, the type ${type} is unknown!`)
     }

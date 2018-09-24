@@ -2,7 +2,7 @@
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/loadTexture.js
 import * as THREE from 'three'
-import loadImg from 'image-promise'
+import loadImage from 'image-promise'
 
 export default async function loadTexture(url, options) {
   const texture = new THREE.Texture()
@@ -11,7 +11,7 @@ export default async function loadTexture(url, options) {
   setTextureParams(url, texture, options)
 
   try {
-    const image = await loadImg(url)
+    const image = await loadImage(url, { crossorigin: 'anonymous' })
 
     texture.image = image
     texture.needsUpdate = true
