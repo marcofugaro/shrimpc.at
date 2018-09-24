@@ -3,6 +3,7 @@ import CANNON from 'cannon'
 import assets from 'lib/AssetManager'
 import { VERTICAL_GAP, delimitersCollisionId } from 'scene/Delimiters'
 import { armsCollisionId } from 'scene/Arms'
+import { headCollisionId } from 'scene/Head'
 import _ from 'lodash'
 
 // where the shrimps will die
@@ -107,7 +108,8 @@ export default class Shrimps extends THREE.Object3D {
         material: this.material,
         // can collide with both arms and walls (and itself)
         collisionFilterGroup: shrimpsCollisionId,
-        collisionFilterMask: armsCollisionId | delimitersCollisionId | shrimpsCollisionId,
+        collisionFilterMask:
+          armsCollisionId | delimitersCollisionId | shrimpsCollisionId | headCollisionId,
         type: CANNON.Body.DYNAMIC,
         mass: 1,
         // simulate the water

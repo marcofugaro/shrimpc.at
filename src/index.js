@@ -5,6 +5,7 @@ import assets from 'lib/AssetManager'
 import Shrimps, { SHRIMP_INTERVAL } from 'scene/Shrimps'
 import Delimiters from 'scene/Delimiters'
 import Arms from 'scene/Arms'
+import Head from 'scene/Head'
 
 window.DEBUG = process.env.NODE_ENV === 'development' || window.location.search.includes('debug')
 
@@ -55,6 +56,8 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   webgl.scene.add(delimiters)
   const arms = new Arms({ webgl })
   webgl.scene.add(arms)
+  const head = new Head({ webgl })
+  webgl.scene.add(head)
 
   // defines the interaction between two shrimp materials
   webgl.world.addContactMaterial(
@@ -69,6 +72,22 @@ assets.load({ renderer: webgl.renderer }).then(() => {
     new CANNON.ContactMaterial(shrimps.material, delimiters.material, {
       friction: 0,
       restitution: 1,
+    }),
+  )
+
+  // defines the interaction between an arm and the head
+  webgl.world.addContactMaterial(
+    new CANNON.ContactMaterial(arms.material, head.material, {
+      friction: 0.2,
+      restitution: 0.01,
+    }),
+  )
+
+  // defines the interaction between a shrimp and the head
+  webgl.world.addContactMaterial(
+    new CANNON.ContactMaterial(shrimps.material, head.material, {
+      friction: 0.2,
+      restitution: 0.01,
     }),
   )
 

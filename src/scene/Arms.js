@@ -4,10 +4,11 @@ import TWEEN from '@tweenjs/tween.js'
 import CannonSphere from 'lib/CannonSphere'
 import Arm, { PAW_RADIUS, FOREARM_HEIGHT } from 'scene/Arm'
 import { shrimpsCollisionId } from 'scene/Shrimps'
+import { headCollisionId } from 'scene/Head'
 import { VERTICAL_GAP } from 'scene/Delimiters'
 import { mouseToCoordinates } from 'lib/three-utils'
 
-export const armsCollisionId = 4
+export const armsCollisionId = 2
 
 // Y of the rightHinge in a normal position
 export const HINGE_REST_Y = -12
@@ -39,7 +40,7 @@ export default class Arms extends THREE.Object3D {
       material: this.material,
       // can only collide with shrimps (or itself)
       collisionFilterGroup: armsCollisionId,
-      collisionFilterMask: shrimpsCollisionId | armsCollisionId,
+      collisionFilterMask: shrimpsCollisionId | armsCollisionId | headCollisionId,
       type: CANNON.Body.DYNAMIC,
       mass: 5,
       // simulate the water
