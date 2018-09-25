@@ -15,9 +15,9 @@ export let SHRIMP_INTERVAL = 3
 
 export const shrimpsCollisionId = 1
 
-const shrimpObjKey = assets.queue({
-  url: 'assets/shrimp.obj',
-  type: 'objmtl',
+const shrimpGltfKey = assets.queue({
+  url: 'assets/shrimp.gltf',
+  type: 'gltf',
 })
 
 // TODO test shadows
@@ -36,8 +36,23 @@ class Shrimp extends CANNON.Body {
     super(options)
     this.webgl = webgl
 
-    const shrimpObj = assets.get(shrimpObjKey)
-    this.mesh.copy(shrimpObj)
+    const shrimpGltf = assets.get(shrimpGltfKey)
+    this.mesh.copy(shrimpGltf.scene)
+
+    // position the shrimp correctly
+    this.mesh.traverse(child => {
+      if (!child.isMesh) {
+        return
+      }
+
+      child.translateX(2)
+      child.translateY(-1.72)
+      child.translateZ(0.45)
+      child.rotateZ(Math.PI / 2)
+      child.scale.x = 1.2
+      child.scale.y = 1.2
+      child.scale.z = 1.2
+    })
 
     const shrimpShape = new CANNON.Cylinder(1, 1, 0.5, 32)
     this.addShape(shrimpShape)

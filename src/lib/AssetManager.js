@@ -2,9 +2,6 @@
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/AssetManager.js
 import { GLTFLoader } from 'three/examples/js/loaders/GLTFLoader'
-import { OBJLoader2 } from 'lib/OBJLoader2'
-// TODO use the next import when three-webpack-plugin releases 3.0.0
-// import { OBJLoader2 } from 'three/examples/js/loaders/OBJLoader2'
 import pMap from 'p-map'
 import prettyMs from 'pretty-ms'
 import loadImage from 'image-promise'
@@ -131,25 +128,6 @@ class AssetManager {
         return new Promise((resolve, reject) => {
           new GLTFLoader().load(url, resolve, null, err =>
             reject(new Error(`Could not load GLTF asset ${url}. ${err}`)),
-          )
-        })
-      case 'objmtl':
-        return new Promise((resolve, reject) => {
-          const mtlUrl = url.replace(/\.obj$/, '.mtl')
-          const objLoader = new OBJLoader2()
-          objLoader.setLogging(false)
-          objLoader.loadMtl(
-            mtlUrl,
-            null,
-            materials => {
-              objLoader.setMaterials(materials)
-              objLoader.load(url, e => resolve(e.detail.loaderRootNode), null, err =>
-                reject(new Error(`Could not load OBJ asset ${url}. ${err}`), null, true),
-              )
-            },
-            null,
-            err => reject(new Error(`Could not load MTL asset ${url}. ${err}`)),
-            // 'anonymous',
           )
         })
       case 'json':
