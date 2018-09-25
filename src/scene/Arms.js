@@ -8,6 +8,7 @@ import { headCollisionId } from 'scene/Head'
 import { VERTICAL_GAP } from 'scene/Delimiters'
 import { mouseToCoordinates } from 'lib/three-utils'
 
+// must be powers of 2!
 export const armsCollisionId = 2
 
 // Y of the rightHinge in a normal position

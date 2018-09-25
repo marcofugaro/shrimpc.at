@@ -4,6 +4,7 @@ import { VERTICAL_GAP } from 'scene/Delimiters'
 import { shrimpsCollisionId } from 'scene/Shrimps'
 import { armsCollisionId } from 'scene/Arms'
 
+// must be powers of 2!
 export const headCollisionId = 8
 
 export const HEAD_RADIUS = 2
@@ -51,7 +52,7 @@ export default class HeadComponent extends THREE.Object3D {
       // can only collide with shrimps or arms
       collisionFilterGroup: headCollisionId,
       collisionFilterMask: shrimpsCollisionId | armsCollisionId,
-      type: CANNON.Body.STATIC,
+      type: CANNON.Body.KINEMATIC,
       mass: 5,
       // simulate the water
       linearDamping: 0.99,

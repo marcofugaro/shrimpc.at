@@ -8,6 +8,7 @@ export const HORIZONTAL_GAP = 3
 // vertical gap betwee the restricting planes
 export const VERTICAL_GAP = 8
 
+// must be powers of 2!
 export const delimitersCollisionId = 4
 
 class Delimiter extends CANNON.Body {

@@ -62,7 +62,7 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   // defines the interaction between two shrimp materials
   webgl.world.addContactMaterial(
     new CANNON.ContactMaterial(shrimps.material, shrimps.material, {
-      friction: 4,
+      friction: 1,
       restitution: 0.5,
     }),
   )
@@ -71,7 +71,7 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   webgl.world.addContactMaterial(
     new CANNON.ContactMaterial(shrimps.material, delimiters.material, {
       friction: 0,
-      restitution: 1,
+      restitution: 0,
     }),
   )
 
@@ -87,7 +87,7 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   webgl.world.addContactMaterial(
     new CANNON.ContactMaterial(shrimps.material, head.material, {
       friction: 0.2,
-      restitution: 0.01,
+      restitution: 0.1,
     }),
   )
 
