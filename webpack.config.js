@@ -64,9 +64,9 @@ module.exports = merge.smart(
     // turn off performance hints during development
     performance: false,
     devServer: {
-      contentBase: './public/',
-      publicPath: '/',
       port: 8080,
+      publicPath: '/',
+      contentBase: './public/',
       // trigger reload when files in contentBase folder change
       watchContentBase: true,
       // serve everything in gzip
