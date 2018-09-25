@@ -2,8 +2,9 @@
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/AssetManager.js
 import { GLTFLoader } from 'three/examples/js/loaders/GLTFLoader'
-import { OBJLoader } from 'three/examples/js/loaders/OBJLoader'
-import { MTLLoader } from 'three/examples/js/loaders/MTLLoader'
+import { OBJLoader2 } from 'lib/OBJLoader2'
+// TODO use the next import when three-webpack-plugin releases 3.0.0
+// import { OBJLoader2 } from 'three/examples/js/loaders/OBJLoader2'
 import pMap from 'p-map'
 import prettyMs from 'pretty-ms'
 import loadImage from 'image-promise'
@@ -135,33 +136,20 @@ class AssetManager {
       case 'objmtl':
         return new Promise((resolve, reject) => {
           const mtlUrl = url.replace(/\.obj$/, '.mtl')
-          new MTLLoader().load(
+          const objLoader = new OBJLoader2()
+          objLoader.setLogging(false)
+          objLoader.loadMtl(
             mtlUrl,
+            null,
             materials => {
-              // upload the textures to the gpu immediately
-              materials.preload()
-
-              new OBJLoader()
-                .setMaterials(materials)
-                .load(url, resolve, null, err =>
-                  reject(new Error(`Could not load OBJ asset ${url}. ${err}`)),
-                )
+              objLoader.setMaterials(materials)
+              objLoader.load(url, e => resolve(e.detail.loaderRootNode), null, err =>
+                reject(new Error(`Could not load OBJ asset ${url}. ${err}`), null, true),
+              )
             },
             null,
             err => reject(new Error(`Could not load MTL asset ${url}. ${err}`)),
-          )
-        })
-      case 'mtl':
-        return new Promise((resolve, reject) => {
-          new MTLLoader().load(
-            url,
-            materials => {
-              // upload the textures to the gpu immediately
-              materials.preload()
-              resolve(materials)
-            },
-            null,
-            err => reject(new Error(`Could not load OBJ asset ${url}. ${err}`)),
+            // 'anonymous',
           )
         })
       case 'json':

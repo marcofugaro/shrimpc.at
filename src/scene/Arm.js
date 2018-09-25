@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
+import { getRandomTransparentColor } from 'lib/three-utils'
 
 export const PAW_RADIUS = 1
 export const FOREARM_HEIGHT = 4
@@ -27,27 +28,23 @@ export default class Arm extends CANNON.Body {
     )
 
     if (window.DEBUG) {
+      const color = getRandomTransparentColor()
+
       const handMesh = new THREE.Mesh(
         new THREE.SphereGeometry(hand.radius, 32, 32),
-        new THREE.MeshLambertMaterial({
-          color: 0xff0000,
-        }),
+        new THREE.MeshLambertMaterial(color),
       )
       this.mesh.add(handMesh)
 
       const forearmMesh = new THREE.Mesh(
         new THREE.CylinderGeometry(FOREARM_WIDTH, FOREARM_WIDTH, FOREARM_HEIGHT, 32),
-        new THREE.MeshLambertMaterial({
-          color: 0xff0000,
-        }),
+        new THREE.MeshLambertMaterial(color),
       )
       this.mesh.add(forearmMesh)
 
       const armMesh = new THREE.Mesh(
         new THREE.CylinderGeometry(FOREARM_WIDTH, FOREARM_WIDTH, FOREARM_HEIGHT, 32),
-        new THREE.MeshLambertMaterial({
-          color: 0xff0000,
-        }),
+        new THREE.MeshLambertMaterial(color),
       )
       this.mesh.add(armMesh)
 

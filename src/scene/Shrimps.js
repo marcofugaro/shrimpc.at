@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
+import _ from 'lodash'
 import assets from 'lib/AssetManager'
 import { VERTICAL_GAP, delimitersCollisionId } from 'scene/Delimiters'
 import { armsCollisionId } from 'scene/Arms'
 import { headCollisionId } from 'scene/Head'
-import _ from 'lodash'
 
 // where the shrimps will die
 export const MAX_X_POSITION = 10
@@ -33,13 +33,8 @@ class Shrimp extends CANNON.Body {
     super(options)
     this.webgl = webgl
 
-    // const shrimpObj = assets.get(shrimpObjKey)
-    //
-    // // save the shrimp into the meshes
-    // this.mesh.copy(shrimpObj)
-    //
-    // // save the shrimp into the bodies
-    // shrimpObj.traverse(child => this.addShape(child))
+    const shrimpObj = assets.get(shrimpObjKey)
+    this.mesh.copy(shrimpObj)
 
     const shrimpShape = new CANNON.Cylinder(1, 1, 0.5, 32)
     this.addShape(shrimpShape)
@@ -48,6 +43,7 @@ class Shrimp extends CANNON.Body {
       const geometry = new THREE.CylinderGeometry(1, 1, 0.5, 32)
       const material = new THREE.MeshLambertMaterial({
         color: 0x0000ff,
+        opacity: 0.5,
       })
       const cylinderMesh = new THREE.Mesh(geometry, material)
       this.mesh.add(cylinderMesh)

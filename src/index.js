@@ -78,8 +78,8 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   // defines the interaction between an arm and the head
   webgl.world.addContactMaterial(
     new CANNON.ContactMaterial(arms.material, head.material, {
-      friction: 0.2,
-      restitution: 0.01,
+      friction: 0,
+      restitution: 0,
     }),
   )
 

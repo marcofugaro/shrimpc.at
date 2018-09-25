@@ -17,3 +17,12 @@ export function mouseToCoordinates({ x, y, targetZ, webgl }) {
 
   return pos
 }
+
+export function getRandomTransparentColor(opacity = 0.5) {
+  return {
+    color: Math.random() * 0xfffff,
+    transparent: true,
+    opacity,
+    depthWrite: false,
+  }
+}

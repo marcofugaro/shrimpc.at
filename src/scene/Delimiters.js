@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
 import { shrimpsCollisionId } from 'scene/Shrimps'
+import { getRandomTransparentColor } from 'lib/three-utils'
 
 // horizontal gap betwee the restricting planes
 export const HORIZONTAL_GAP = 3
@@ -23,12 +24,7 @@ class Delimiter extends CANNON.Body {
 
     if (window.DEBUG) {
       const geometry = new THREE.PlaneGeometry(12, 12)
-      const material = new THREE.MeshLambertMaterial({
-        color: Math.random() * 0xfffff,
-        opacity: 0.5,
-        transparent: true,
-        depthWrite: false,
-      })
+      const material = new THREE.MeshLambertMaterial(getRandomTransparentColor())
       material.side = THREE.DoubleSide
       const groundMesh = new THREE.Mesh(geometry, material)
       this.mesh.add(groundMesh)

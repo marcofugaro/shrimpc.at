@@ -3,6 +3,7 @@ import CANNON from 'cannon'
 import { VERTICAL_GAP } from 'scene/Delimiters'
 import { shrimpsCollisionId } from 'scene/Shrimps'
 import { armsCollisionId } from 'scene/Arms'
+import { getRandomTransparentColor } from 'lib/three-utils'
 
 // must be powers of 2!
 export const headCollisionId = 8
@@ -23,9 +24,7 @@ class Head extends CANNON.Body {
       this.mesh.add(
         new THREE.Mesh(
           new THREE.SphereGeometry(head.radius, 32, 32),
-          new THREE.MeshLambertMaterial({
-            color: 0xff0000,
-          }),
+          new THREE.MeshLambertMaterial(getRandomTransparentColor()),
         ),
       )
     }
