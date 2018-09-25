@@ -93,9 +93,9 @@ assets.load({ renderer: webgl.renderer }).then(() => {
 
   // turn on shadows in the renderer
   // TODO are those useful? do some tests
-  webgl.renderer.shadowMap.enabled = true
-  webgl.renderer.shadowMap.type = THREE.PCFSoftShadowMap // default THREE.PCFShadowMap
-
+  // webgl.renderer.shadowMap.enabled = true
+  // webgl.renderer.shadowMap.type = THREE.PCFSoftShadowMap // default THREE.PCFShadowMap
+  //
   const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6)
   hemiLight.color.setHSL(0.6, 1, 0.6)
   hemiLight.groundColor.setHSL(0.095, 1, 0.75)

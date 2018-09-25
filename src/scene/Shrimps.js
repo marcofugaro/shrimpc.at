@@ -5,6 +5,7 @@ import assets from 'lib/AssetManager'
 import { VERTICAL_GAP, delimitersCollisionId } from 'scene/Delimiters'
 import { armsCollisionId } from 'scene/Arms'
 import { headCollisionId } from 'scene/Head'
+import { getRandomTransparentColor } from 'lib/three-utils'
 
 // where the shrimps will die
 export const MAX_X_POSITION = 10
@@ -22,6 +23,8 @@ const shrimpObjKey = assets.queue({
 // TODO test shadows
 // sphere.castShadow = true; //default is false
 // sphere.receiveShadow = false; //default
+
+const debugColor = getRandomTransparentColor()
 
 class Shrimp extends CANNON.Body {
   // no need to handle position, velocity and acceleration,
@@ -41,10 +44,7 @@ class Shrimp extends CANNON.Body {
 
     if (window.DEBUG) {
       const geometry = new THREE.CylinderGeometry(1, 1, 0.5, 32)
-      const material = new THREE.MeshLambertMaterial({
-        color: 0x0000ff,
-        opacity: 0.5,
-      })
+      const material = new THREE.MeshLambertMaterial(debugColor)
       const cylinderMesh = new THREE.Mesh(geometry, material)
       this.mesh.add(cylinderMesh)
     }

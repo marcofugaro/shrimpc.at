@@ -16,8 +16,8 @@ export default class CannonSphere extends CANNON.Body {
           new THREE.SphereGeometry(radius, 32, 32),
           new THREE.MeshLambertMaterial({
             color: Math.random() * 0xffffff,
-            opacity: 0.5,
             transparent: true,
+            opacity: 0.5,
             depthWrite: false,
           }),
         ),

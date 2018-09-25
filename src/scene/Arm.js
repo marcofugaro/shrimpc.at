@@ -6,6 +6,8 @@ export const PAW_RADIUS = 1
 export const FOREARM_HEIGHT = 4
 export const FOREARM_WIDTH = 0.9
 
+const debugColor = getRandomTransparentColor()
+
 export default class Arm extends CANNON.Body {
   mesh = new THREE.Object3D()
 
@@ -28,23 +30,21 @@ export default class Arm extends CANNON.Body {
     )
 
     if (window.DEBUG) {
-      const color = getRandomTransparentColor()
-
       const handMesh = new THREE.Mesh(
         new THREE.SphereGeometry(hand.radius, 32, 32),
-        new THREE.MeshLambertMaterial(color),
+        new THREE.MeshLambertMaterial(debugColor),
       )
       this.mesh.add(handMesh)
 
       const forearmMesh = new THREE.Mesh(
         new THREE.CylinderGeometry(FOREARM_WIDTH, FOREARM_WIDTH, FOREARM_HEIGHT, 32),
-        new THREE.MeshLambertMaterial(color),
+        new THREE.MeshLambertMaterial(debugColor),
       )
       this.mesh.add(forearmMesh)
 
       const armMesh = new THREE.Mesh(
         new THREE.CylinderGeometry(FOREARM_WIDTH, FOREARM_WIDTH, FOREARM_HEIGHT, 32),
-        new THREE.MeshLambertMaterial(color),
+        new THREE.MeshLambertMaterial(debugColor),
       )
       this.mesh.add(armMesh)
 
