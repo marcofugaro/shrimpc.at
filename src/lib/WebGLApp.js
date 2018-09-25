@@ -95,11 +95,11 @@ export default class WebGLApp {
     }
   }
 
-  resize = (
+  resize = ({
     width = window.innerWidth,
     height = window.innerHeight,
     pixelRatio = Math.min(this.maxPixelRatio, window.devicePixelRatio),
-  ) => {
+  } = {}) => {
     this.width = width
     this.height = height
     this.pixelRatio = pixelRatio
@@ -124,7 +124,7 @@ export default class WebGLApp {
   // convenience function to trigger a PNG download of the canvas
   saveScreenshot = ({ width = 2560, height = 1440, fileName = 'image.png' }) => {
     // force a specific output size
-    this.resize(width, height, 1, true)
+    this.resize({ width, height, pixelRatio: 1 })
     this.draw()
 
     const dataURI = this.canvas.toDataURL('image/png')
