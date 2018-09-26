@@ -20,6 +20,10 @@ const shrimpGltfKey = assets.queue({
   type: 'gltf',
 })
 
+// if I don't do this, the shrimp is not visible
+// TODO understand why
+new THREE.BufferGeometry()
+
 // TODO test shadows
 // sphere.castShadow = true; //default is false
 // sphere.receiveShadow = false; //default
