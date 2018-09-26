@@ -15,6 +15,22 @@ export default class Arm extends CANNON.Body {
     super(options)
     this.webgl = webgl
 
+    // add the sprite
+    const sprite = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: options.sprite,
+        color: 0xffffff,
+        depthTest: false,
+        transparent: true,
+        opacity: window.DEBUG ? 0.6 : 1,
+      }),
+    )
+    sprite.center.x = options.spriteCenter.x
+    sprite.center.y = options.spriteCenter.y
+    sprite.scale.multiplyScalar(10)
+    this.mesh.add(sprite)
+    this.rotationFactor = options.rotationFactor
+
     // ⚠️ Warning! order of creation is important!
     const hand = new CANNON.Sphere(PAW_RADIUS)
     this.addShape(hand, new CANNON.Vec3(0, 0, 0))
@@ -49,11 +65,18 @@ export default class Arm extends CANNON.Body {
       this.mesh.add(armMesh)
 
       // sync the shapes to their meshes
-      this.mesh.children.forEach((mesh, i) => {
-        const position = this.shapeOffsets[i]
-        const quaternion = this.shapeOrientations[i]
-        mesh.position.copy(position)
-        mesh.quaternion.copy(quaternion)
+      let meshIndex = 0
+      this.mesh.traverse(child => {
+        if (!child.isMesh) {
+          return
+        }
+
+        const position = this.shapeOffsets[meshIndex]
+        const quaternion = this.shapeOrientations[meshIndex]
+        child.position.copy(position)
+        child.quaternion.copy(quaternion)
+
+        meshIndex++
       })
     }
   }
@@ -62,5 +85,20 @@ export default class Arm extends CANNON.Body {
     // sync the mesh to the physical body
     this.mesh.position.copy(this.position)
     this.mesh.quaternion.copy(this.quaternion)
+
+    this.mesh.traverse(child => {
+      if (!child.isSprite) {
+        return
+      }
+
+      // fucking shitty cannon.js,
+      // what about using the function's return?
+      const eulerRotation = new CANNON.Vec3()
+      this.quaternion.toEuler(eulerRotation, 'YZX')
+
+      // make the sprite rotation follow the arm
+      const zRotation = eulerRotation.z
+      child.material.rotation = zRotation * this.rotationFactor
+    })
   }
 }

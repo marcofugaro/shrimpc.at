@@ -45,13 +45,9 @@ class Shrimp extends CANNON.Body {
         return
       }
 
-      child.translateX(2)
-      child.translateY(-1.72)
-      child.translateZ(0.45)
+      child.position.set(2, -1.72, 0.45)
       child.rotateZ(Math.PI / 2)
-      child.scale.x = 1.2
-      child.scale.y = 1.2
-      child.scale.z = 1.2
+      child.scale.multiplyScalar(1.2)
     })
 
     const shrimpShape = new CANNON.Cylinder(1, 1, 0.5, 32)
@@ -78,17 +74,17 @@ class Shrimp extends CANNON.Body {
 
   // Fd = - Constant * getMagnitude(velocity)**2 * normalize(velocity)
   // (ended up not using this because it meeses up with the physics)
-  // drag(coefficient) {
+  // applyDrag(coefficient) {
   //   const speed = this.velocity.length()
   //
   //   const dragMagnitude = coefficient * speed ** 2
   //
   //   const drag = this.velocity.clone()
-  //   drag.multiplyScalar(-1)
+  //   drag.scale(-1, drag)
   //
   //   drag.normalize()
   //
-  //   drag.multiplyScalar(dragMagnitude)
+  //   drag.scale(dragMagnitude, drag)
   //
   //   this.applyGenericForce(drag)
   // }

@@ -7,6 +7,7 @@ import { shrimpsCollisionId } from 'scene/Shrimps'
 import { headCollisionId } from 'scene/Head'
 import { VERTICAL_GAP } from 'scene/Delimiters'
 import { mouseToCoordinates } from 'lib/three-utils'
+import assets from 'lib/AssetManager'
 
 // must be powers of 2!
 export const armsCollisionId = 2
@@ -23,6 +24,16 @@ export const SMACK_SUCCESSFULL_DISTANCE = 1.5
 
 // how much the attractor must wobble
 export const SMACK_APERTURE = 3
+
+const rightArmSpriteKey = assets.queue({
+  url: 'assets/cat-right-arm.png',
+  type: 'texture',
+})
+
+const leftArmSpriteKey = assets.queue({
+  url: 'assets/cat-left-arm.png',
+  type: 'texture',
+})
 
 export default class Arms extends THREE.Object3D {
   material = new CANNON.Material('arms')
@@ -48,8 +59,18 @@ export default class Arms extends THREE.Object3D {
       linearDamping: 0.99,
       angularDamping: 0.99,
     }
-    this.rightArm = new Arm(armOptions)
-    this.leftArm = new Arm(armOptions)
+    this.rightArm = new Arm({
+      ...armOptions,
+      sprite: assets.get(rightArmSpriteKey),
+      spriteCenter: { x: 0.31, y: 0.9 },
+      rotationFactor: 1,
+    })
+    this.leftArm = new Arm({
+      ...armOptions,
+      sprite: assets.get(leftArmSpriteKey),
+      spriteCenter: { x: 1 - 0.31, y: 0.9 },
+      rotationFactor: -1,
+    })
 
     const hingeOptions = {
       webgl,
