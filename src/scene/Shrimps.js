@@ -73,25 +73,25 @@ class Shrimp extends CANNON.Body {
 
   // apply a force in its center of mass
   applyGenericForce(force) {
-    this.applyLocalForce(force, new CANNON.Vec3())
+    const centerInWorldCoords = this.pointToWorldFrame(new CANNON.Vec3())
+    this.applyForce(force, centerInWorldCoords)
   }
 
   // Fd = - Constant * getMagnitude(velocity)**2 * normalize(velocity)
-  // (ended up not using this because it meeses up with the physics)
-  // applyDrag(coefficient) {
-  //   const speed = this.velocity.length()
-  //
-  //   const dragMagnitude = coefficient * speed ** 2
-  //
-  //   const drag = this.velocity.clone()
-  //   drag.scale(-1, drag)
-  //
-  //   drag.normalize()
-  //
-  //   drag.scale(dragMagnitude, drag)
-  //
-  //   this.applyGenericForce(drag)
-  // }
+  applyDrag(coefficient) {
+    const speed = this.velocity.length()
+
+    const dragMagnitude = coefficient * speed ** 2
+
+    const drag = this.velocity.clone()
+    drag.scale(-1, drag)
+
+    drag.normalize()
+
+    drag.scale(dragMagnitude, drag)
+
+    this.applyGenericForce(drag)
+  }
 }
 
 export default class Shrimps extends THREE.Object3D {
@@ -124,8 +124,9 @@ export default class Shrimps extends THREE.Object3D {
         type: CANNON.Body.DYNAMIC,
         mass: 1,
         // simulate the water
-        linearDamping: 0.8,
-        angularDamping: 0.8,
+        angularDamping: 0.98,
+        // movement damping is handled by the drag force
+        // linearDamping: 0.98,
         // move them around a bit
         angularVelocity: new CANNON.Vec3(0.3 * _.random(-1, 1), 0.3 * _.random(-1, 1), 0),
         position: new CANNON.Vec3(
@@ -145,16 +146,19 @@ export default class Shrimps extends THREE.Object3D {
       this.shrimps.push(shrimp)
     }
 
-    // remove if they exit the field of view
     this.shrimps.forEach(shrimp => {
+      // apply a quadratic drag force to simulate water
+      shrimp.applyDrag(0.8)
+
+      // the force moving the shrimp left
+      shrimp.applyGenericForce(new CANNON.Vec3(0.7, 0, 0))
+
+      // remove it if they exit the field of view
       if (shrimp.position.x < -MAX_X_POSITION || MAX_X_POSITION < shrimp.position.x) {
         this.webgl.world.removeBody(shrimp)
         this.remove(shrimp.mesh)
         this.shrimps.splice(this.shrimps.findIndex(s => s.id === shrimp.id), 1)
       }
     })
-
-    // the force moving the shrimp left
-    this.shrimps.forEach(shrimp => shrimp.applyGenericForce(new CANNON.Vec3(0.7, 0, 0)))
   }
 }
