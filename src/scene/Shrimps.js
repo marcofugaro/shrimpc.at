@@ -151,7 +151,7 @@ export default class Shrimps extends THREE.Object3D {
       shrimp.applyDrag(0.8)
 
       // the force moving the shrimp left
-      shrimp.applyGenericForce(new CANNON.Vec3(0.7, 0, 0))
+      shrimp.applyGenericForce(new CANNON.Vec3(0.6, 0, 0))
 
       // remove it if they exit the field of view
       if (shrimp.position.x < -MAX_X_POSITION || MAX_X_POSITION < shrimp.position.x) {

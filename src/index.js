@@ -7,7 +7,7 @@ import Delimiters from 'scene/Delimiters'
 import Arms from 'scene/Arms'
 import Head from 'scene/Head'
 
-window.DEBUG = process.env.NODE_ENV === 'development' || window.location.search.includes('debug')
+window.DEBUG = window.location.search.includes('debug')
 
 // Grab our canvas
 const canvas = document.querySelector('#main')
