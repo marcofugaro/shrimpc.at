@@ -64,6 +64,9 @@ export default class WebGLApp {
     // Attach the Cannon physics engine
     if (options.world) this.world = options.world
 
+    // Attach Tween.js
+    if (options.tween) this.tween = options.tween
+
     this.time = 0
     this.isRunning = false
     this._lastTime = performance.now()
@@ -165,6 +168,11 @@ export default class WebGLApp {
           body.update(dt, time)
         }
       })
+    }
+
+    if (this.tween) {
+      // update the Tween.js engine
+      this.tween.update()
     }
 
     return this

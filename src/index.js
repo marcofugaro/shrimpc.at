@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
+import TWEEN from '@tweenjs/tween.js'
 import WebGLApp from 'lib/WebGLApp'
 import assets from 'lib/AssetManager'
 import Shrimps, { SHRIMP_INTERVAL } from 'scene/Shrimps'
@@ -31,6 +32,7 @@ const webgl = new WebGLApp({
     },
   ],
   world: new CANNON.World(),
+  tween: TWEEN,
 })
 
 // Attach it to the window to inspect in the console

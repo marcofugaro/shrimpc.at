@@ -1,30 +1,13 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import TWEEN from '@tweenjs/tween.js'
-import CannonSphere from 'lib/CannonSphere'
-import Arm, { PAW_RADIUS, FOREARM_HEIGHT } from 'scene/Arm'
+import Arm from 'scene/Arm'
 import { shrimpsCollisionId } from 'scene/Shrimps'
 import { mouseToCoordinates } from 'lib/three-utils'
 import assets from 'lib/AssetManager'
 
 // must be powers of 2!
 export const armsCollisionId = 2
-
-// Y of the rightHinge in a normal position
-export const HINGE_REST_Y = -12
-
-// X space between the arms
-export const ARMS_SPACE = 7
-
-// how long the smack animation lasts (ms)
-export const SMACK_DURATION = 500
-
-// how much does the arm have to be close to its attractor
-// to be registered as hit
-export const SMACK_SUCCESSFULL_DISTANCE = 1.5
-
-// how much the attractor must wobble
-export const SMACK_APERTURE = 3
 
 const rightArmSpriteKey = assets.queue({
   url: 'assets/cat-right-arm.png',
@@ -87,10 +70,6 @@ export default class Arms extends THREE.Object3D {
     this.add(this.rightArm.attractor.mesh)
     this.add(this.leftArm.hinge.mesh)
     this.add(this.leftArm.attractor.mesh)
-  }
-
-  update(dt = 0, time = 0) {
-    TWEEN.update()
   }
 
   onTouchStart(event, [x, y]) {

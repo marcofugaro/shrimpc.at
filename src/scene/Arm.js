@@ -5,12 +5,14 @@ import CannonSphere from 'lib/CannonSphere'
 import { getRandomTransparentColor } from 'lib/three-utils'
 import { VERTICAL_GAP } from 'scene/Delimiters'
 
+// basic dimensions
 export const PAW_RADIUS = 1
 export const FOREARM_HEIGHT = 4
 export const FOREARM_WIDTH = 0.9
 export const ARM_WIDTH = 1
 export const ARM_HEIGHT = 4
 
+// arm sprite scale unit
 export const SPRITE_SIZE = 12
 
 // Y of the rightHinge in a normal position
@@ -18,9 +20,19 @@ export const HINGE_REST_Y = -12
 
 // X space between the arms
 export const ARMS_SPACE = 7
+
+// how long the smack animation lasts (ms)
 export const SMACK_DURATION = 500
+
+// how much does the arm have to be close to its attractor
+// to be registered as hit
 export const SMACK_SUCCESSFULL_DISTANCE = 1.5
+
+// how much the attractor must wobble
 export const SMACK_APERTURE = 3
+
+// how much the attractor will attract
+export const SPRING_STIFFNESS = 120
 
 const debugColor = getRandomTransparentColor()
 
@@ -154,7 +166,7 @@ export default class Arm extends CANNON.Body {
       localAnchorA: new CANNON.Vec3(),
       localAnchorB: new CANNON.Vec3(),
       restLength: 0,
-      stiffness: 120,
+      stiffness: SPRING_STIFFNESS,
       damping: 1,
     })
   }
@@ -186,43 +198,42 @@ export default class Arm extends CANNON.Body {
 
   // SMACK!
   smack = clickedPoint => {
-    // stop the old animations and attractions
-    if (this.attractorTween) this.attractorTween.stop()
-    if (this.attractorTweenBack) this.attractorTweenBack.stop()
+    this.clickedPoint = clickedPoint
 
-    this.attractorTween = this.animateAttractor(clickedPoint)
-    this.attractorTweenBack = this.moveAttractorBack()
-    this.attractorTween = this.attractorTween.start().chain(this.attractorTweenBack)
+    // stop the old animations and attractions
+    if (this.smackAnimation) this.smackAnimation.stop()
+
+    this.smackAnimation = this.animateAttractor.start().chain(this.moveAttractorBack)
   }
 
   // OW!
   leap = clickedPoint => {
-    // stop the old animations and attractions
-    if (this.hingeTween) this.hingeTween.stop()
-    if (this.hingeTweenBack) this.hingeTweenBack.stop()
+    this.clickedPoint = clickedPoint
 
-    this.hingeTween = this.animateArmUp(clickedPoint)
-    this.hingeTweenBack = this.animateArmBack()
-    this.hingeTween = this.hingeTween.start().chain(this.hingeTweenBack)
+    // stop the old animations and attractions
+    if (this.leapAnimation) this.leapAnimation.stop()
+
+    this.leapAnimation = this.animateArmUp.start().chain(this.animateArmBack)
   }
 
   // animate the attractor first one way then the other
   // to simulate the smack
-  animateAttractor = clickedPoint => {
-    const startX = clickedPoint.x + SMACK_APERTURE * this.way
-    const endX = clickedPoint.x - SMACK_APERTURE * this.way
+  get animateAttractor() {
+    const startX = this.clickedPoint.x + SMACK_APERTURE * this.way
+    const endX = this.clickedPoint.x - SMACK_APERTURE * this.way
 
-    this.attractor.position.x = startX
-    return new TWEEN.Tween(this.attractor.position)
+    return new TWEEN.Tween({ x: startX })
       .to({ x: endX }, SMACK_DURATION)
       .easing(t => (t <= 0.5 ? 0 : 1))
+      .onUpdate(({ x }) => {
+        this.attractor.position.x = x
+      })
   }
 
   // reset the arm attractor position
   // to keep the arms in place
-  moveAttractorBack = () => {
-    const originalStiffness = this.spring.stiffness
-    const reducedStiffness = this.spring.stiffness * 0.33333
+  get moveAttractorBack() {
+    const reducedStiffness = SPRING_STIFFNESS * 0.33333
 
     // this is a TRICK, basically we want the stiffness
     // to be one third until the end.
@@ -236,7 +247,7 @@ export default class Arm extends CANNON.Body {
     const wait = SMACK_DURATION * 0.9
 
     const end = () => {
-      this.spring.stiffness = originalStiffness
+      this.spring.stiffness = SPRING_STIFFNESS
     }
 
     return new TWEEN.Tween({})
@@ -247,13 +258,12 @@ export default class Arm extends CANNON.Body {
   }
 
   // go forward arm!
-  animateArmUp = clickedPoint => {
+  get animateArmUp() {
     return new TWEEN.Tween(this.hinge.position)
       .to(
         // TODO use a value proportional to the distance between the lickedPoint and the rightHinge
         {
-          ...this.hinge.position,
-          y: clickedPoint.y - VERTICAL_GAP + Math.abs(clickedPoint.x) * 0.5,
+          y: this.clickedPoint.y - VERTICAL_GAP + Math.abs(this.clickedPoint.x) * 0.5,
         },
         SMACK_DURATION,
       )
@@ -261,9 +271,9 @@ export default class Arm extends CANNON.Body {
   }
 
   // arm go back good job!
-  animateArmBack = () => {
+  get animateArmBack() {
     return new TWEEN.Tween(this.hinge.position)
-      .to({ ...this.hinge.position, y: HINGE_REST_Y }, SMACK_DURATION * 1.5)
+      .to({ y: HINGE_REST_Y }, SMACK_DURATION * 1.5)
       .easing(TWEEN.Easing.Quadratic.Out)
   }
 }
