@@ -2,7 +2,6 @@ import * as THREE from 'three'
 import CANNON from 'cannon'
 import { VERTICAL_GAP } from 'scene/Delimiters'
 import { shrimpsCollisionId } from 'scene/Shrimps'
-import { armsCollisionId } from 'scene/Arms'
 import { getRandomTransparentColor } from 'lib/three-utils'
 import assets from 'lib/AssetManager'
 import { mapRange, degToRad, lerp } from 'canvas-sketch-util/math'
@@ -11,7 +10,7 @@ import eases from 'eases'
 // must be powers of 2!
 export const headCollisionId = 8
 
-export const HEAD_RADIUS = 2.3
+export const HEAD_RADIUS = 2.5
 
 // unit is degrees
 export const MAX_HEAD_ROTATION_X = 23
@@ -92,9 +91,9 @@ export default class HeadComponent extends THREE.Object3D {
     this.head = new Head({
       webgl,
       material: this.material,
-      // can only collide with shrimps or arms
+      // can only collide with shrimps
       collisionFilterGroup: headCollisionId,
-      collisionFilterMask: shrimpsCollisionId | armsCollisionId,
+      collisionFilterMask: shrimpsCollisionId,
       type: CANNON.Body.KINEMATIC,
       mass: 5,
     })
@@ -124,6 +123,8 @@ export default class HeadComponent extends THREE.Object3D {
     const targetRotationX = degToRad(this.rotationY)
     const targetRotationY = degToRad(this.rotationX)
 
+    // fucking shitty cannon.js,
+    // what about using the function's return?
     const currentRotation = new CANNON.Vec3()
     this.head.quaternion.toEuler(currentRotation)
 

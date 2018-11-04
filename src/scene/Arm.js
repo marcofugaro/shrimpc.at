@@ -5,6 +5,10 @@ import { getRandomTransparentColor } from 'lib/three-utils'
 export const PAW_RADIUS = 1
 export const FOREARM_HEIGHT = 4
 export const FOREARM_WIDTH = 0.9
+export const ARM_WIDTH = 1
+export const ARM_HEIGHT = 4
+
+export const SPRITE_SIZE = 12
 
 const debugColor = getRandomTransparentColor()
 
@@ -27,7 +31,7 @@ export default class Arm extends CANNON.Body {
     )
     sprite.center.x = options.spriteCenter.x
     sprite.center.y = options.spriteCenter.y
-    sprite.scale.multiplyScalar(10)
+    sprite.scale.multiplyScalar(SPRITE_SIZE)
     this.mesh.add(sprite)
     this.rotationFactor = options.rotationFactor
 
@@ -36,12 +40,16 @@ export default class Arm extends CANNON.Body {
     this.addShape(hand, new CANNON.Vec3(0, 0, 0))
 
     const forearm = new CANNON.Cylinder(FOREARM_WIDTH, FOREARM_WIDTH, FOREARM_HEIGHT, 32)
-    this.addShape(forearm, new CANNON.Vec3(0, -FOREARM_HEIGHT / 2, 0))
+    this.addShape(
+      forearm,
+      new CANNON.Vec3(0.2, -FOREARM_HEIGHT / 2, 0),
+      new CANNON.Quaternion().setFromEuler(0, 0, THREE.Math.degToRad(7)),
+    )
 
-    const arm = new CANNON.Cylinder(FOREARM_WIDTH, FOREARM_WIDTH, FOREARM_HEIGHT, 32)
+    const arm = new CANNON.Cylinder(ARM_WIDTH, ARM_WIDTH, ARM_HEIGHT, 32)
     this.addShape(
       arm,
-      new CANNON.Vec3(0.7, -(FOREARM_HEIGHT / 2 + FOREARM_HEIGHT) * 0.95, 0),
+      new CANNON.Vec3(0.9, -(ARM_HEIGHT / 2 + ARM_HEIGHT) * 0.98, 0),
       new CANNON.Quaternion().setFromEuler(0, 0, THREE.Math.degToRad(20)),
     )
 
@@ -59,7 +67,7 @@ export default class Arm extends CANNON.Body {
       this.mesh.add(forearmMesh)
 
       const armMesh = new THREE.Mesh(
-        new THREE.CylinderGeometry(FOREARM_WIDTH, FOREARM_WIDTH, FOREARM_HEIGHT, 32),
+        new THREE.CylinderGeometry(ARM_WIDTH, ARM_WIDTH, ARM_HEIGHT, 32),
         new THREE.MeshLambertMaterial(debugColor),
       )
       this.mesh.add(armMesh)

@@ -8,7 +8,7 @@ import { headCollisionId } from 'scene/Head'
 import { getRandomTransparentColor } from 'lib/three-utils'
 
 // where the shrimps will die
-export const MAX_X_POSITION = 10
+export const MAX_X_POSITION = 12
 
 // the interval between the spawn of shrimps (seconds)
 export let SHRIMP_INTERVAL = 3
@@ -154,7 +154,7 @@ export default class Shrimps extends THREE.Object3D {
       shrimp.applyGenericForce(new CANNON.Vec3(0.6, 0, 0))
 
       // remove it if they exit the field of view
-      if (shrimp.position.x < -MAX_X_POSITION || MAX_X_POSITION < shrimp.position.x) {
+      if (MAX_X_POSITION < shrimp.position.x) {
         this.webgl.world.removeBody(shrimp)
         this.remove(shrimp.mesh)
         this.shrimps.splice(this.shrimps.findIndex(s => s.id === shrimp.id), 1)
