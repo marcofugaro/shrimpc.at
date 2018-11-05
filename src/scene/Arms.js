@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
-import TWEEN from '@tweenjs/tween.js'
 import Arm from 'scene/Arm'
 import { shrimpsCollisionId } from 'scene/Shrimps'
 import { mouseToCoordinates } from 'lib/three-utils'
@@ -28,7 +27,6 @@ export default class Arms extends THREE.Object3D {
     super(options)
     this.webgl = webgl
 
-    // CREATE THE ARMS
     const armOptions = {
       webgl,
       material: this.material,

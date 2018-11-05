@@ -4,8 +4,8 @@ import _ from 'lodash'
 import { shrimpsCollisionId } from 'scene/Shrimps'
 import { getRandomTransparentColor } from 'lib/three-utils'
 
-// horizontal gap betwee the restricting planes
-export const HORIZONTAL_GAP = 3
+// horizontal gap between the restricting planes
+export const HORIZONTAL_GAP = 2.2
 // vertical gap betwee the restricting planes
 export const VERTICAL_GAP = 8
 

@@ -6,7 +6,7 @@ import { getRandomTransparentColor } from 'lib/three-utils'
 import { VERTICAL_GAP } from 'scene/Delimiters'
 
 // basic dimensions
-export const PAW_RADIUS = 1
+export const PAW_RADIUS = 1.2
 export const FOREARM_HEIGHT = 4
 export const FOREARM_WIDTH = 0.9
 export const ARM_WIDTH = 1
@@ -261,7 +261,6 @@ export default class Arm extends CANNON.Body {
   get animateArmUp() {
     return new TWEEN.Tween(this.hinge.position)
       .to(
-        // TODO use a value proportional to the distance between the lickedPoint and the rightHinge
         {
           y: this.clickedPoint.y - VERTICAL_GAP + Math.abs(this.clickedPoint.x) * 0.5,
         },

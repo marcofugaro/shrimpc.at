@@ -13,6 +13,9 @@ export const MAX_X_POSITION = 12
 // the interval between the spawn of shrimps (seconds)
 export let SHRIMP_INTERVAL = 3
 
+export const SHRIMP_RADIUS = 1
+export const SHRIMP_HEIGHT = 0.5
+
 export const shrimpsCollisionId = 1
 
 const shrimpGltfKey = assets.queue({
@@ -54,11 +57,11 @@ class Shrimp extends CANNON.Body {
       child.scale.multiplyScalar(1.2)
     })
 
-    const shrimpShape = new CANNON.Cylinder(1, 1, 0.5, 32)
+    const shrimpShape = new CANNON.Cylinder(SHRIMP_RADIUS, SHRIMP_RADIUS, SHRIMP_HEIGHT, 32)
     this.addShape(shrimpShape)
 
     if (window.DEBUG) {
-      const geometry = new THREE.CylinderGeometry(1, 1, 0.5, 32)
+      const geometry = new THREE.CylinderGeometry(SHRIMP_RADIUS, SHRIMP_RADIUS, SHRIMP_HEIGHT, 32)
       const material = new THREE.MeshLambertMaterial(debugColor)
       const cylinderMesh = new THREE.Mesh(geometry, material)
       this.mesh.add(cylinderMesh)
