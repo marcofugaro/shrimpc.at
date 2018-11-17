@@ -14,7 +14,7 @@ export const HEAD_RADIUS = 2.5
 
 // unit is degrees
 export const MAX_HEAD_ROTATION_X = 23
-export const MAX_HEAD_ROTATION_Y = 30
+export const MAX_HEAD_ROTATION_Y = 33
 
 const catHeadKey = assets.queue({
   url: 'assets/cat-head.png',
@@ -38,14 +38,14 @@ class Head extends CANNON.Body {
 
     const headMaterial = new THREE.MeshStandardMaterial({
       displacementMap: assets.get(catHeadDisplacementKey),
-      displacementScale: 2,
-      // displacementBias: -0.428408,
+      displacementScale: 1.2,
+      // displacementBias: 0,
 
       metalness: 0,
 
       map: assets.get(catHeadKey),
 
-      depthTest: false,
+      depthTest: !window.DEBUG,
       transparent: true,
     })
 
@@ -114,26 +114,29 @@ export default class HeadComponent extends THREE.Object3D {
       0,
       this.webgl.height,
       -MAX_HEAD_ROTATION_Y,
-      MAX_HEAD_ROTATION_Y * 0.2,
+      // the magic number is because the head is not
+      // at the center of the page
+      MAX_HEAD_ROTATION_Y * 0.18,
     )
   }
 
   // follow the mouse but with a bit of lerping
   update(dt = 0, time = 0) {
+    const headMesh = this.head.mesh.children[0]
+
+    if (!headMesh) {
+      return
+    }
+
+    const currentRotationX = headMesh.rotation.x
+    const currentRotationY = headMesh.rotation.y
+
     const targetRotationX = degToRad(this.rotationY)
     const targetRotationY = degToRad(this.rotationX)
 
-    // fucking shitty cannon.js,
-    // what about using the function's return?
-    const currentRotation = new CANNON.Vec3()
-    this.head.quaternion.toEuler(currentRotation)
+    const lerpedRotationX = lerp(currentRotationX, targetRotationX, eases.quadInOut(dt * 10))
+    const lerpedRotationY = lerp(currentRotationY, targetRotationY, eases.quadInOut(dt * 10))
 
-    const currentRotationX = currentRotation.x
-    const currentRotationY = currentRotation.y
-
-    const rotationX = lerp(currentRotationX, targetRotationX, eases.quadInOut(dt * 10))
-    const rotationY = lerp(currentRotationY, targetRotationY, eases.quadInOut(dt * 10))
-
-    this.head.quaternion.setFromEuler(rotationX, rotationY, 0)
+    headMesh.rotation.set(lerpedRotationX, lerpedRotationY, 0)
   }
 }
