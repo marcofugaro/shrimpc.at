@@ -7,6 +7,7 @@ import Shrimps, { SHRIMP_INTERVAL } from 'scene/Shrimps'
 import Delimiters from 'scene/Delimiters'
 import Arms from 'scene/Arms'
 import Head from 'scene/Head'
+import Body from 'scene/Body'
 
 window.DEBUG = window.location.search.includes('debug')
 
@@ -52,14 +53,16 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   webgl.camera.position.set(0, 0, 15)
 
   // Add any "WebGL components" here...
-  const shrimps = new Shrimps({ webgl })
-  webgl.scene.add(shrimps)
   const delimiters = new Delimiters({ webgl })
   webgl.scene.add(delimiters)
+  const body = new Body({ webgl })
+  webgl.scene.add(body)
   const arms = new Arms({ webgl })
   webgl.scene.add(arms)
   const head = new Head({ webgl })
   webgl.scene.add(head)
+  const shrimps = new Shrimps({ webgl })
+  webgl.scene.add(shrimps)
 
   // defines the interaction between two shrimp materials
   webgl.world.addContactMaterial(
