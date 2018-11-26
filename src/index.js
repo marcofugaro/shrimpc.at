@@ -8,6 +8,7 @@ import Delimiters from 'scene/Delimiters'
 import Arms from 'scene/Arms'
 import Head from 'scene/Head'
 import Body from 'scene/Body'
+import Van from 'scene/Van'
 
 window.DEBUG = window.location.search.includes('debug')
 
@@ -63,6 +64,8 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   webgl.scene.add(head)
   const shrimps = new Shrimps({ webgl })
   webgl.scene.add(shrimps)
+  const van = new Van({ webgl })
+  webgl.scene.add(van)
 
   // defines the interaction between two shrimp materials
   webgl.world.addContactMaterial(
@@ -75,14 +78,6 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   // defines the interaction between a shrimp and a delimiter
   webgl.world.addContactMaterial(
     new CANNON.ContactMaterial(shrimps.material, delimiters.material, {
-      friction: 0,
-      restitution: 0,
-    }),
-  )
-
-  // defines the interaction between an arm and the head
-  webgl.world.addContactMaterial(
-    new CANNON.ContactMaterial(arms.material, head.material, {
       friction: 0,
       restitution: 0,
     }),

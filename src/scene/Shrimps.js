@@ -16,6 +16,7 @@ export let SHRIMP_INTERVAL = 3
 export const SHRIMP_RADIUS = 1
 export const SHRIMP_HEIGHT = 0.5
 
+// must be powers of 2!
 export const shrimpsCollisionId = 1
 
 const shrimpGltfKey = assets.queue({
