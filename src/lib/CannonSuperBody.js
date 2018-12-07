@@ -10,6 +10,12 @@ export default class CannonSuperBody extends CANNON.Body {
     this.applyForce(force, centerInWorldCoords)
   }
 
+  // apply an impulse in its center of mass
+  applyGenericImpulse(impulse) {
+    const centerInWorldCoords = this.pointToWorldFrame(new CANNON.Vec3())
+    this.applyImpulse(impulse, centerInWorldCoords)
+  }
+
   // Fd = - Constant * getMagnitude(velocity)**2 * normalize(velocity)
   applyDrag(coefficient) {
     const speed = this.velocity.length()

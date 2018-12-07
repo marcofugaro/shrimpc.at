@@ -1,9 +1,10 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
+import _ from 'lodash'
 import assets from 'lib/AssetManager'
 import CannonSuperBody from 'lib/CannonSuperBody'
 import { vanCollision } from 'scene/collisions'
-import { HORIZONTAL_GAP } from 'scene/Delimiters'
+import { VERTICAL_GAP, HORIZONTAL_GAP } from 'scene/Delimiters'
 import { getRandomTransparentColor } from 'lib/three-utils'
 
 // where the vans will die
@@ -91,9 +92,11 @@ export default class VanComponent extends THREE.Object3D {
       angularDamping: 0.98,
       // movement damping is handled by the drag force
       // linearDamping: 0.98,
-      position: new CANNON.Vec3(-MAX_X_POSITION - VAN_DIMENSIONS[0], 0, 0),
-      // put them vertical
-      // quaternion: new CANNON.Quaternion().setFromEuler(-Math.PI / 2, 0, 0),
+      position: new CANNON.Vec3(
+        -MAX_X_POSITION - VAN_DIMENSIONS[0],
+        _.random(0, VERTICAL_GAP / 2 - VAN_DIMENSIONS[1] / 2),
+        0,
+      ),
     })
 
     // add the body to the cannon.js world
@@ -102,6 +105,9 @@ export default class VanComponent extends THREE.Object3D {
     this.add(van.mesh)
     // save it
     this.vans.push(van)
+
+    // give it a push!
+    van.applyGenericImpulse(new CANNON.Vec3(800, 0, 0))
   }
 
   update(dt = 0, time = 0) {
