@@ -1,6 +1,6 @@
 const path = require('path')
 const merge = require('webpack-merge')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const TerserJsPlugin = require('terser-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const openBrowser = require('react-dev-utils/openBrowser')
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin')
@@ -130,8 +130,8 @@ module.exports = merge.smart(
     },
     optimization: {
       minimizer: [
-        new UglifyJsPlugin({
-          uglifyOptions: {
+        new TerserJsPlugin({
+          terserOptions: {
             parse: {
               // we want uglify-js to parse ecma 8 code. However, we don't want it
               // to apply any minfication steps that turns valid ecma 5 code
