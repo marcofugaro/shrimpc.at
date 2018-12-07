@@ -1,14 +1,11 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import { VERTICAL_GAP } from 'scene/Delimiters'
-import { shrimpsCollisionId } from 'scene/Shrimps'
+import { headCollision } from 'scene/collisions'
 import { getRandomTransparentColor } from 'lib/three-utils'
 import assets from 'lib/AssetManager'
 import { mapRange, degToRad, lerp } from 'canvas-sketch-util/math'
 import eases from 'eases'
-
-// must be powers of 2!
-export const headCollisionId = 8
 
 export const HEAD_RADIUS = 2.5
 
@@ -91,9 +88,8 @@ export default class HeadComponent extends THREE.Object3D {
     this.head = new Head({
       webgl,
       material: this.material,
-      // can only collide with shrimps
-      collisionFilterGroup: headCollisionId,
-      collisionFilterMask: shrimpsCollisionId,
+      collisionFilterGroup: headCollision.id,
+      collisionFilterMask: headCollision.collideWith,
       type: CANNON.Body.KINEMATIC,
       mass: 5,
     })

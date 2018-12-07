@@ -2,9 +2,8 @@ import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
 import assets from 'lib/AssetManager'
-import { VERTICAL_GAP, delimitersCollisionId } from 'scene/Delimiters'
-import { armsCollisionId } from 'scene/Arms'
-import { headCollisionId } from 'scene/Head'
+import { shrimpCollision } from 'scene/collisions'
+import { VERTICAL_GAP } from 'scene/Delimiters'
 import { getRandomTransparentColor } from 'lib/three-utils'
 
 // where the shrimps will die
@@ -15,9 +14,6 @@ export let SHRIMP_INTERVAL = 3
 
 export const SHRIMP_RADIUS = 1
 export const SHRIMP_HEIGHT = 0.5
-
-// must be powers of 2!
-export const shrimpsCollisionId = 1
 
 const shrimpGltfKey = assets.queue({
   url: 'assets/shrimp.gltf',
@@ -121,10 +117,8 @@ export default class Shrimps extends THREE.Object3D {
       const shrimp = new Shrimp({
         webgl: this.webgl,
         material: this.material,
-        // can collide with both arms and walls (and itself)
-        collisionFilterGroup: shrimpsCollisionId,
-        collisionFilterMask:
-          armsCollisionId | delimitersCollisionId | shrimpsCollisionId | headCollisionId,
+        collisionFilterGroup: shrimpCollision.id,
+        collisionFilterMask: shrimpCollision.collideWith,
         type: CANNON.Body.DYNAMIC,
         mass: 1,
         // simulate the water

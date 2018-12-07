@@ -1,16 +1,13 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
-import { shrimpsCollisionId } from 'scene/Shrimps'
+import { delimiterCollision } from 'scene/collisions'
 import { getRandomTransparentColor } from 'lib/three-utils'
 
 // horizontal gap between the restricting planes
 export const HORIZONTAL_GAP = 2.2
 // vertical gap betwee the restricting planes
 export const VERTICAL_GAP = 8
-
-// must be powers of 2!
-export const delimitersCollisionId = 4
 
 class Delimiter extends CANNON.Body {
   mesh = new THREE.Object3D()
@@ -74,9 +71,8 @@ export default class Delimiters extends THREE.Object3D {
       return new Delimiter({
         webgl,
         material: this.material,
-        // can only collide with shrimps
-        collisionFilterGroup: delimitersCollisionId,
-        collisionFilterMask: shrimpsCollisionId,
+        collisionFilterGroup: delimiterCollision.id,
+        collisionFilterMask: delimiterCollision.collideWith,
         mass: 0,
         position,
         quaternion,

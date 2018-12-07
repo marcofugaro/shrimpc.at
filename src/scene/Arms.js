@@ -1,12 +1,9 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import Arm from 'scene/Arm'
-import { shrimpsCollisionId } from 'scene/Shrimps'
+import { armCollision } from 'scene/collisions'
 import { mouseToCoordinates } from 'lib/three-utils'
 import assets from 'lib/AssetManager'
-
-// must be powers of 2!
-export const armsCollisionId = 2
 
 const rightArmSpriteKey = assets.queue({
   url: 'assets/cat-right-arm.png',
@@ -30,9 +27,9 @@ export default class Arms extends THREE.Object3D {
     const armOptions = {
       webgl,
       material: this.material,
-      // can only collide with shrimps (or itself)
-      collisionFilterGroup: armsCollisionId,
-      collisionFilterMask: shrimpsCollisionId | armsCollisionId,
+      // can only collide with shrimps, van (or itself)
+      collisionFilterGroup: armCollision.id,
+      collisionFilterMask: armCollision.collideWith,
       type: CANNON.Body.DYNAMIC,
       mass: 5,
       // simulate the water

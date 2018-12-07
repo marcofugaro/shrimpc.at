@@ -1,19 +1,15 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import assets from 'lib/AssetManager'
-import { armsCollisionId } from 'scene/Arms'
-import { headCollisionId } from 'scene/Head'
-import { shrimpsCollisionId } from 'scene/Shrimps'
+import { vanCollision } from 'scene/collisions'
+import { HORIZONTAL_GAP } from 'scene/Delimiters'
 import { getRandomTransparentColor } from 'lib/three-utils'
 
 // where the vans will die
 export const MAX_X_POSITION = 12
 
 // collision box dimensions
-const VAN_DIMENSIONS = [7, 2.8, 2.8]
-
-// must be powers of 2!
-export const vansCollisionId = 32
+const VAN_DIMENSIONS = [7, HORIZONTAL_GAP, 2.8]
 
 const debugColor = getRandomTransparentColor()
 
@@ -40,7 +36,7 @@ class Van extends CANNON.Body {
       child.scale.multiplyScalar(3.5 / VAN_DIMENSIONS[0])
     })
 
-    const vanShape = new CANNON.Box(new CANNON.Vec3(...VAN_DIMENSIONS))
+    const vanShape = new CANNON.Box(new CANNON.Vec3(...VAN_DIMENSIONS.map(d => d * 0.5)))
     this.addShape(vanShape)
 
     if (window.DEBUG) {
@@ -111,16 +107,15 @@ export default class VanComponent extends THREE.Object3D {
     const van = new Van({
       webgl: this.webgl,
       material: this.material,
-      // can collide with both arms and shrimps (and itself)
-      collisionFilterGroup: vansCollisionId,
-      collisionFilterMask: armsCollisionId | shrimpsCollisionId | headCollisionId | vansCollisionId,
+      collisionFilterGroup: vanCollision.id,
+      collisionFilterMask: vanCollision.collideWith,
       type: CANNON.Body.DYNAMIC,
-      mass: 5,
+      mass: 50,
       // simulate the water
       angularDamping: 0.98,
       // movement damping is handled by the drag force
       // linearDamping: 0.98,
-      position: new CANNON.Vec3(-MAX_X_POSITION, 0, 0),
+      position: new CANNON.Vec3(-MAX_X_POSITION - VAN_DIMENSIONS[0], 0, 0),
       // put them vertical
       // quaternion: new CANNON.Quaternion().setFromEuler(-Math.PI / 2, 0, 0),
     })
@@ -139,7 +134,7 @@ export default class VanComponent extends THREE.Object3D {
       van.applyDrag(0.8)
 
       // the force moving the van left
-      van.applyGenericForce(new CANNON.Vec3(2.6, 0, 0))
+      van.applyGenericForce(new CANNON.Vec3(500, 0, 0))
 
       // remove it if they exit the field of view
       if (MAX_X_POSITION < van.position.x) {
