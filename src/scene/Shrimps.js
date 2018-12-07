@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
 import assets from 'lib/AssetManager'
+import CannonSuperBody from 'lib/CannonSuperBody'
 import { shrimpCollision } from 'scene/collisions'
 import { VERTICAL_GAP } from 'scene/Delimiters'
 import { getRandomTransparentColor } from 'lib/three-utils'
@@ -30,7 +31,7 @@ new THREE.BufferGeometry()
 
 const debugColor = getRandomTransparentColor()
 
-class Shrimp extends CANNON.Body {
+class Shrimp extends CannonSuperBody {
   // no need to handle position, velocity and acceleration,
   // CANNON.Body already has those
 
@@ -69,28 +70,6 @@ class Shrimp extends CANNON.Body {
     // sync the mesh to the physical body
     this.mesh.position.copy(this.position)
     this.mesh.quaternion.copy(this.quaternion)
-  }
-
-  // apply a force in its center of mass
-  applyGenericForce(force) {
-    const centerInWorldCoords = this.pointToWorldFrame(new CANNON.Vec3())
-    this.applyForce(force, centerInWorldCoords)
-  }
-
-  // Fd = - Constant * getMagnitude(velocity)**2 * normalize(velocity)
-  applyDrag(coefficient) {
-    const speed = this.velocity.length()
-
-    const dragMagnitude = coefficient * speed ** 2
-
-    const drag = this.velocity.clone()
-    drag.scale(-1, drag)
-
-    drag.normalize()
-
-    drag.scale(dragMagnitude, drag)
-
-    this.applyGenericForce(drag)
   }
 }
 

@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import assets from 'lib/AssetManager'
+import CannonSuperBody from 'lib/CannonSuperBody'
 import { vanCollision } from 'scene/collisions'
 import { HORIZONTAL_GAP } from 'scene/Delimiters'
 import { getRandomTransparentColor } from 'lib/three-utils'
@@ -9,11 +10,12 @@ import { getRandomTransparentColor } from 'lib/three-utils'
 export const MAX_X_POSITION = 12
 
 // collision box dimensions
-const VAN_DIMENSIONS = [7, HORIZONTAL_GAP, 2.8]
+// in order: x, y, and z width
+const VAN_DIMENSIONS = [7, 2.8, HORIZONTAL_GAP]
 
 const debugColor = getRandomTransparentColor()
 
-class Van extends CANNON.Body {
+class Van extends CannonSuperBody {
   mesh = new THREE.Object3D()
 
   constructor({ webgl, ...options }) {
@@ -51,28 +53,6 @@ class Van extends CANNON.Body {
     // sync the mesh to the physical body
     this.mesh.position.copy(this.position)
     this.mesh.quaternion.copy(this.quaternion)
-  }
-
-  // apply a force in its center of mass
-  applyGenericForce(force) {
-    const centerInWorldCoords = this.pointToWorldFrame(new CANNON.Vec3())
-    this.applyForce(force, centerInWorldCoords)
-  }
-
-  // Fd = - Constant * getMagnitude(velocity)**2 * normalize(velocity)
-  applyDrag(coefficient) {
-    const speed = this.velocity.length()
-
-    const dragMagnitude = coefficient * speed ** 2
-
-    const drag = this.velocity.clone()
-    drag.scale(-1, drag)
-
-    drag.normalize()
-
-    drag.scale(dragMagnitude, drag)
-
-    this.applyGenericForce(drag)
   }
 }
 
