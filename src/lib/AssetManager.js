@@ -68,6 +68,22 @@ class AssetManager {
     return this.#cache[url]
   }
 
+  // Loads a single asset
+  async loadSingle({ renderer, ...item }) {
+    // renderer is used to load textures and env maps,
+    // but require it always since it is an extensible pattern
+    if (!renderer) {
+      throw new Error('You must provide a renderer to the load function')
+    }
+
+    try {
+      this.#cache[item.url] = await this._loadItem({ renderer, ...item })
+    } catch (err) {
+      delete this.#cache[item.url]
+      console.error(`[📦 assets] Skipping ${item.url} from asset loading: \n${err}`)
+    }
+  }
+
   // Loads all queued assets
   async load({ renderer }) {
     // renderer is used to load textures and env maps,
@@ -86,7 +102,7 @@ class AssetManager {
       return
     }
 
-    if (process.env.NODE_ENV === 'development') {
+    if (window.DEBUG || process.env.NODE_ENV === 'development') {
       console.log(`[📦 assets] ⏱ Start loading of ${total} queued items`)
       this.loadingStart = Date.now()
     }
@@ -95,7 +111,7 @@ class AssetManager {
       queue,
       async (item, i) => {
         try {
-          this.#cache[item.url] = await this.loadItem({ renderer, ...item })
+          this.#cache[item.url] = await this._loadItem({ renderer, ...item })
         } catch (err) {
           delete this.#cache[item.url]
           console.error(`[📦 assets] Skipping ${item.url} from asset loading: \n${err}`)
@@ -107,7 +123,7 @@ class AssetManager {
       { concurrency: this.#asyncConcurrency },
     )
 
-    if (process.env.NODE_ENV === 'development') {
+    if (window.DEBUG || process.env.NODE_ENV === 'development') {
       console.log(`[📦 assets] ⏱ Assets loaded in ${prettyMs(Date.now() - this.loadingStart)}`)
     }
   }
@@ -115,12 +131,12 @@ class AssetManager {
   // Loads a single asset on demand, returning from
   // cache if it exists otherwise adding it to the cache
   // after loading.
-  async loadItem({ url, type, renderer, ...options }) {
+  async _loadItem({ url, type, renderer, ...options }) {
     if (url in this.#cache) {
       return this.#cache[url]
     }
 
-    if (process.env.NODE_ENV === 'development') {
+    if (window.DEBUG || process.env.NODE_ENV === 'development') {
       console.log(`[📦 assets] Loading ${url}`)
     }
 
@@ -153,12 +169,6 @@ class AssetManager {
       default:
         throw new Error(`Could not load ${url}, the type ${type} is unknown!`)
     }
-  }
-
-  // Used when you want to cache some items you
-  // loaded with loadItem
-  cacheItem(url, item) {
-    this.#cache[url] = item
   }
 }
 

@@ -23,9 +23,7 @@ class Van extends CannonSuperBody {
     this.webgl = webgl
 
     const vanGltf = assets.get('assets/van.gltf')
-    vanGltf.scene.children.forEach(child => {
-      this.mesh.add(child)
-    })
+    this.mesh.copy(vanGltf.scene)
 
     // position the van correctly
     this.mesh.traverse(child => {
@@ -67,14 +65,12 @@ export default class VanComponent extends THREE.Object3D {
     // not loaded with the other assets because
     // it's not needed immediately
     assets
-      .loadItem({
+      .loadSingle({
         url: 'assets/van.gltf',
         type: 'gltf',
         renderer: webgl.renderer,
       })
-      .then(vanGltf => {
-        assets.cacheItem('assets/van.gltf', vanGltf)
-
+      .then(() => {
         window.addEventListener('keydown', e => {
           if (e.key === ' ') {
             this.createVan()
@@ -114,7 +110,7 @@ export default class VanComponent extends THREE.Object3D {
       van.applyDrag(0.8)
 
       // the force moving the van left
-      van.applyGenericForce(new CANNON.Vec3(500, 0, 0))
+      van.applyGenericForce(new CANNON.Vec3(400, 0, 0))
 
       // remove it if they exit the field of view
       if (MAX_X_POSITION < van.position.x) {
