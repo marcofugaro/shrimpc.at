@@ -36,7 +36,6 @@ class Delimiter extends CANNON.Body {
 
 export default class Delimiters extends THREE.Object3D {
   delimiters = []
-  material = new CANNON.Material('delimiter')
 
   constructor({ webgl, ...options }) {
     super(options)
@@ -70,7 +69,7 @@ export default class Delimiters extends THREE.Object3D {
 
       return new Delimiter({
         webgl,
-        material: this.material,
+        material: delimiterCollision.material,
         collisionFilterGroup: delimiterCollision.id,
         collisionFilterMask: delimiterCollision.collideWith,
         mass: 0,

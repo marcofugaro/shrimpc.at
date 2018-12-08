@@ -75,7 +75,6 @@ class Shrimp extends CannonSuperBody {
 
 export default class Shrimps extends THREE.Object3D {
   shrimps = []
-  material = new CANNON.Material('shrimp')
 
   constructor({ webgl, ...options }) {
     super(options)
@@ -95,7 +94,7 @@ export default class Shrimps extends THREE.Object3D {
 
       const shrimp = new Shrimp({
         webgl: this.webgl,
-        material: this.material,
+        material: shrimpCollision.material,
         collisionFilterGroup: shrimpCollision.id,
         collisionFilterMask: shrimpCollision.collideWith,
         type: CANNON.Body.DYNAMIC,

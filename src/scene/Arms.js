@@ -16,7 +16,6 @@ const leftArmSpriteKey = assets.queue({
 })
 
 export default class Arms extends THREE.Object3D {
-  material = new CANNON.Material('arms')
   rightArm
   leftArm
 
@@ -26,7 +25,7 @@ export default class Arms extends THREE.Object3D {
 
     const armOptions = {
       webgl,
-      material: this.material,
+      material: armCollision.material,
       // can only collide with shrimps, van (or itself)
       collisionFilterGroup: armCollision.id,
       collisionFilterMask: armCollision.collideWith,

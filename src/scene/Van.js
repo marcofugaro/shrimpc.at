@@ -57,7 +57,6 @@ class Van extends CannonSuperBody {
 
 export default class VanComponent extends THREE.Object3D {
   vans = []
-  material = new CANNON.Material('van')
 
   constructor({ webgl, ...options }) {
     super(options)
@@ -83,7 +82,7 @@ export default class VanComponent extends THREE.Object3D {
   createVan() {
     const van = new Van({
       webgl: this.webgl,
-      material: this.material,
+      material: vanCollision.material,
       collisionFilterGroup: vanCollision.id,
       collisionFilterMask: vanCollision.collideWith,
       type: CANNON.Body.DYNAMIC,

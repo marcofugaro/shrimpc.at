@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
+import _ from 'lodash'
 import { VERTICAL_GAP } from 'scene/Delimiters'
+import { MAX_X_POSITION } from 'scene/Shrimps'
 import { headCollision } from 'scene/collisions'
 import { getRandomTransparentColor } from 'lib/three-utils'
 import assets from 'lib/AssetManager'
@@ -75,9 +77,7 @@ class Head extends CANNON.Body {
 }
 
 export default class HeadComponent extends THREE.Object3D {
-  material = new CANNON.Material('head')
   head
-
   rotationX = 0
   rotationY = 0
 
@@ -87,7 +87,7 @@ export default class HeadComponent extends THREE.Object3D {
 
     this.head = new Head({
       webgl,
-      material: this.material,
+      material: headCollision.material,
       collisionFilterGroup: headCollision.id,
       collisionFilterMask: headCollision.collideWith,
       type: CANNON.Body.KINEMATIC,
@@ -96,6 +96,10 @@ export default class HeadComponent extends THREE.Object3D {
 
     // position it
     this.head.position.set(0, -VERTICAL_GAP / 2, 0)
+    this.rotationY = -MAX_HEAD_ROTATION_Y * 0.6
+
+    // if nothing happens after some seconds look at shrimp
+    this.startLookingDebounced()
 
     // add the body to the cannon.js world
     // and the mesh to the three.js scene
@@ -104,6 +108,8 @@ export default class HeadComponent extends THREE.Object3D {
   }
 
   onTouchMove(e, [x, y]) {
+    this.stopLooking()
+
     this.rotationX = mapRange(x, 0, this.webgl.width, -MAX_HEAD_ROTATION_X, MAX_HEAD_ROTATION_X)
     this.rotationY = mapRange(
       y,
@@ -116,8 +122,66 @@ export default class HeadComponent extends THREE.Object3D {
     )
   }
 
-  // follow the mouse but with a bit of lerping
   update(dt = 0, time = 0) {
+    // animate the looking at the shrimp
+    if (this.shrimpLookingAt) {
+      this.lookAtShrimp(dt, time)
+    }
+
+    // follow the rotation but with a bit of lerping
+    this.lerpRotation(dt, time)
+  }
+
+  startLooking() {
+    const shrimps = this.webgl.scene.shrimps.shrimps
+    const shrimp = _.sample(shrimps.filter(s => s.position.x < 0))
+
+    // 404 no shrimp found
+    // try again later
+    if (!shrimp) {
+      this.startLookingDebounced()
+      return
+    }
+
+    this.shrimpLookingAt = shrimp
+  }
+
+  startLookingDebounced = _.debounce(this.startLooking, 5000)
+
+  // stop looking at shrimp and reset the timer to start again
+  stopLooking() {
+    this.shrimpLookingAt = null
+    this.startLookingDebounced()
+  }
+
+  lookAtShrimp(dt, time) {
+    this.rotationX = mapRange(
+      this.shrimpLookingAt.position.x,
+      // the magic number is because MAX_X_POSITION is
+      // outside the viewport
+      -MAX_X_POSITION * 0.75,
+      MAX_X_POSITION * 0.75,
+      -MAX_HEAD_ROTATION_X,
+      MAX_HEAD_ROTATION_X,
+    )
+    this.rotationY = mapRange(
+      this.shrimpLookingAt.position.y,
+      VERTICAL_GAP / 2,
+      -VERTICAL_GAP / 2,
+      -MAX_HEAD_ROTATION_Y,
+      // the magic number is because the head is not
+      // at the center of the page
+      MAX_HEAD_ROTATION_Y * 0.18,
+    )
+
+    // start again if the shrimp is a goner
+    if (this.shrimpLookingAt.position.x > MAX_X_POSITION) {
+      this.shrimpLookingAt = null
+      this.startLooking()
+    }
+  }
+
+  lerpRotation(dt, time) {
     const headMesh = this.head.mesh.children[0]
 
     if (!headMesh) {

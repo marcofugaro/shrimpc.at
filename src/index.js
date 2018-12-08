@@ -9,6 +9,7 @@ import Arms from 'scene/Arms'
 import Head from 'scene/Head'
 import Body from 'scene/Body'
 import Van from 'scene/Van'
+import { initCustomCollisions } from 'scene/collisions'
 
 window.DEBUG = window.location.search.includes('debug')
 
@@ -54,42 +55,20 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   webgl.camera.position.set(0, 0, 15)
 
   // Add any "WebGL components" here...
-  const delimiters = new Delimiters({ webgl })
-  webgl.scene.add(delimiters)
-  const body = new Body({ webgl })
-  webgl.scene.add(body)
-  const arms = new Arms({ webgl })
-  webgl.scene.add(arms)
-  const head = new Head({ webgl })
-  webgl.scene.add(head)
-  const shrimps = new Shrimps({ webgl })
-  webgl.scene.add(shrimps)
-  const van = new Van({ webgl })
-  webgl.scene.add(van)
+  webgl.scene.delimiters = new Delimiters({ webgl })
+  webgl.scene.add(webgl.scene.delimiters)
+  webgl.scene.body = new Body({ webgl })
+  webgl.scene.add(webgl.scene.body)
+  webgl.scene.arms = new Arms({ webgl })
+  webgl.scene.add(webgl.scene.arms)
+  webgl.scene.head = new Head({ webgl })
+  webgl.scene.add(webgl.scene.head)
+  webgl.scene.shrimps = new Shrimps({ webgl })
+  webgl.scene.add(webgl.scene.shrimps)
+  webgl.scene.van = new Van({ webgl })
+  webgl.scene.add(webgl.scene.van)
 
-  // defines the interaction between two shrimp materials
-  webgl.world.addContactMaterial(
-    new CANNON.ContactMaterial(shrimps.material, shrimps.material, {
-      friction: 1,
-      restitution: 0.5,
-    }),
-  )
-
-  // defines the interaction between a shrimp and a delimiter
-  webgl.world.addContactMaterial(
-    new CANNON.ContactMaterial(shrimps.material, delimiters.material, {
-      friction: 0,
-      restitution: 0,
-    }),
-  )
-
-  // defines the interaction between a shrimp and the head
-  webgl.world.addContactMaterial(
-    new CANNON.ContactMaterial(shrimps.material, head.material, {
-      friction: 0.2,
-      restitution: 0.1,
-    }),
-  )
+  initCustomCollisions(webgl.world)
 
   // turn on shadows in the renderer
   // TODO are those useful? do some tests
