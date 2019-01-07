@@ -1,13 +1,37 @@
 const path = require('path')
+const { execSync } = require('child_process')
 const merge = require('webpack-merge')
 const TerserJsPlugin = require('terser-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const openBrowser = require('react-dev-utils/openBrowser')
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin')
+const { prepareUrls } = require('react-dev-utils/WebpackDevServerUtils')
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages')
 const prettyMs = require('pretty-ms')
 const ThreeWebpackPlugin = require('@wildpeaks/three-webpack-plugin')
+const EventHooksPlugin = require('event-hooks-webpack-plugin')
+const chalk = require('chalk')
+const indentString = require('indent-string')
+const _ = require('lodash')
 
+const PORT = 8080
+const urls = prepareUrls('http', '0.0.0.0', PORT)
+
+// make the console >tree command look pretty
+function beautifyTree(tree) {
+  const trimEnd = s => s.slice(0, s.indexOf('\n\n'))
+  const addByteUnit = s => s.replace(/\[ *([0-9]+)\]/g, '[$1B]')
+  const replaceBrackets = s => s.replace(/\[(.+)\]/g, chalk.yellow('$1'))
+  const boldFirstLine = s => s.replace(/^(.*\n)/g, chalk.bold('$1'))
+  const colorIt = s => chalk.cyan(s)
+  const indent = s => indentString(s, 2)
+
+  const beautify = _.flow([trimEnd, addByteUnit, replaceBrackets, boldFirstLine, colorIt, indent])
+
+  return beautify(tree)
+}
+
+// beautifyTree(execSync('tree --du -h --dirsfirst build/').toString())
 module.exports = merge.smart(
   {
     module: {
@@ -46,6 +70,12 @@ module.exports = merge.smart(
         name: 'vendors',
       },
     },
+    // turn off performance hints
+    performance: false,
+    // turn off the default webpack bloat
+    // TODO re-enable this when it will be more beautiful
+    // https://github.com/webpack/webpack-cli/issues/575
+    stats: false,
   },
   //
   //  $$$$$$\    $$$$$$$$\     $$$$$$\     $$$$$$$\    $$$$$$$$\
@@ -61,10 +91,8 @@ module.exports = merge.smart(
     mode: 'development',
     // a good compromise betwee fast and readable sourcemaps
     devtool: 'cheap-module-source-map',
-    // turn off performance hints during development
-    performance: false,
     devServer: {
-      port: 8080,
+      port: PORT,
       publicPath: '/',
       contentBase: './public/',
       // trigger reload when files in contentBase folder change
@@ -77,36 +105,42 @@ module.exports = merge.smart(
       // uncomment these lines to enable HMR
       // hot: true,
       // hotOnly: true,
-      after(app, options) {
+      after() {
         // try to open into the already existing tab
-        openBrowser(`http://localhost:8080`)
+        openBrowser(urls.localUrlForBrowser)
       },
     },
     plugins: [
       // Automatic rediscover of packages after `npm install`
       new WatchMissingNodeModulesPlugin('node_modules'),
+      // TODO use webpack's api when it will be implemented
+      // https://github.com/webpack/webpack-dev-server/issues/1509
+      new EventHooksPlugin({
+        // debounced because it gets called two times somehow
+        beforeCompile: _.debounce(() => {
+          console.clear()
+          console.log('Compiling...')
+        }, 0),
+        done(stats) {
+          if (stats.hasErrors()) {
+            const statsJson = stats.toJson({ all: false, warnings: true, errors: true })
+            const messages = formatWebpackMessages(statsJson)
+            console.clear()
+            console.log(chalk.red('Failed to compile.'))
+            console.log()
+            console.log(messages.errors[0])
+            return
+          }
+
+          const time = prettyMs(stats.endTime - stats.startTime)
+          console.clear()
+          console.log(chalk.green(`Compiled successfully in ${chalk.cyan(time)}`))
+          console.log()
+          console.log(`  ${chalk.bold(`Local`)}:           ${chalk.cyan(urls.localUrlForTerminal)}`)
+          console.log(`  ${chalk.bold(`On your network`)}: ${chalk.cyan(urls.lanUrlForTerminal)}`)
+        },
+      }),
     ],
-    // serve: {
-    //   on: {
-    //     listening: ({ server, options }) => {
-    //       // try to open into the already existing tab
-    //       openBrowser(`http://localhost:${options.port}`)
-    //     },
-    //     // don't show all the default webpack bloat
-    //     'build-finished': ({ stats }) => {
-    //       if (stats.hasErrors()) {
-    //         return
-    //       }
-    //
-    //       const time = prettyMs(stats.endTime - stats.startTime)
-    //       console.log(`Compiled successfully in ${time}`)
-    //     },
-    //     'compiler-error': stats => {
-    //       const messages = formatWebpackMessages(stats.json)
-    //       console.log(messages.errors[0])
-    //     },
-    //   },
-    // },
   },
   //
   // $$$$$$$\     $$\   $$\    $$$$$$\    $$\          $$$$$$$\
@@ -128,6 +162,33 @@ module.exports = merge.smart(
       // change this if you're deploying on a subfolder
       publicPath: '/',
     },
+    plugins: [
+      // TODO use webpack's api when it will be implemented
+      // https://github.com/webpack/webpack-dev-server/issues/1509
+      new EventHooksPlugin({
+        // debounced because it gets called two times somehow
+        beforeCompile: _.debounce(() => {
+          console.log('Compiling...')
+        }, 0),
+        done(stats) {
+          if (stats.hasErrors()) {
+            const statsJson = stats.toJson({ all: false, warnings: true, errors: true })
+            const messages = formatWebpackMessages(statsJson)
+            console.log(chalk.red('Failed to compile.'))
+            console.log()
+            console.log(messages.errors[0])
+          }
+        },
+        afterEmit() {
+          const tree = execSync('tree --du -h --dirsfirst build/').toString()
+          console.log(chalk.green(`Compiled successfully!`))
+          console.log(`The folder ${chalk.bold(`build/`)} is ready to be deployed`)
+          console.log()
+          console.log(beautifyTree(tree))
+          console.log()
+        },
+      }),
+    ],
     optimization: {
       minimizer: [
         new TerserJsPlugin({
