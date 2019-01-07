@@ -1,8 +1,7 @@
 // Inspiration for this class goes to Matt DesLauriers @mattdesl,
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/AssetManager.js
-// import { GLTFLoader } from 'three/examples/js/loaders/GLTFLoader'
-import { GLTF2Loader } from 'lib/GLTF2Loader'
+import { GLTFLoader } from 'lib/GLTFLoader'
 import pMap from 'p-map'
 import prettyMs from 'pretty-ms'
 import loadImage from 'image-promise'
@@ -143,7 +142,7 @@ class AssetManager {
     switch (type) {
       case 'gltf':
         return new Promise((resolve, reject) => {
-          new GLTF2Loader().load(url, resolve, null, err =>
+          new GLTFLoader().load(url, resolve, null, err =>
             reject(new Error(`Could not load GLTF asset ${url}. ${err}`)),
           )
         })
