@@ -119,14 +119,14 @@ module.exports = merge.smart(
         // debounced because it gets called two times somehow
         beforeCompile: _.debounce(() => {
           console.clear()
-          console.log('Compiling...')
+          console.log('⏳ Compiling...')
         }, 0),
         done(stats) {
           if (stats.hasErrors()) {
             const statsJson = stats.toJson({ all: false, warnings: true, errors: true })
             const messages = formatWebpackMessages(statsJson)
             console.clear()
-            console.log(chalk.red('Failed to compile.'))
+            console.log(chalk.red('❌ Failed to compile.'))
             console.log()
             console.log(messages.errors[0])
             return
@@ -134,7 +134,7 @@ module.exports = merge.smart(
 
           const time = prettyMs(stats.endTime - stats.startTime)
           console.clear()
-          console.log(chalk.green(`Compiled successfully in ${chalk.cyan(time)}`))
+          console.log(chalk.green(`✅ Compiled successfully in ${chalk.cyan(time)}`))
           console.log()
           console.log(`  ${chalk.bold(`Local`)}:           ${chalk.cyan(urls.localUrlForTerminal)}`)
           console.log(`  ${chalk.bold(`On your network`)}: ${chalk.cyan(urls.lanUrlForTerminal)}`)
@@ -168,20 +168,20 @@ module.exports = merge.smart(
       new EventHooksPlugin({
         // debounced because it gets called two times somehow
         beforeCompile: _.debounce(() => {
-          console.log('Compiling...')
+          console.log('⏳ Compiling...')
         }, 0),
         done(stats) {
           if (stats.hasErrors()) {
             const statsJson = stats.toJson({ all: false, warnings: true, errors: true })
             const messages = formatWebpackMessages(statsJson)
-            console.log(chalk.red('Failed to compile.'))
+            console.log(chalk.red('❌ Failed to compile.'))
             console.log()
             console.log(messages.errors[0])
           }
         },
         afterEmit() {
           const tree = execSync('tree --du -h --dirsfirst build/').toString()
-          console.log(chalk.green(`Compiled successfully!`))
+          console.log(chalk.green(`✅ Compiled successfully!`))
           console.log(`The folder ${chalk.bold(`build/`)} is ready to be deployed`)
           console.log()
           console.log(beautifyTree(tree))
