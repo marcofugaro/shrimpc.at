@@ -17,13 +17,13 @@ export const SHRIMP_RADIUS = 1
 export const SHRIMP_HEIGHT = 0.5
 
 const shrimpGltfKey = assets.queue({
-  url: 'assets/shrimp.gltf',
+  url: 'assets/shrimp.glb',
   type: 'gltf',
 })
 
 // if I don't do this, the shrimp is not visible
 // TODO understand why
-new THREE.BufferGeometry()
+new THREE.BufferGeometry() // eslint-disable-line
 
 // TODO test shadows
 // sphere.castShadow = true; //default is false
@@ -50,9 +50,9 @@ class Shrimp extends CannonSuperBody {
         return
       }
 
-      child.position.set(2, -1.72, 0.45)
-      child.rotateZ(Math.PI / 2)
-      child.scale.multiplyScalar(1.2)
+      child.rotateY(Math.PI / 8)
+      child.rotateX(Math.PI / 2)
+      child.scale.multiplyScalar(0.88)
     })
 
     const shrimpShape = new CANNON.Cylinder(SHRIMP_RADIUS, SHRIMP_RADIUS, SHRIMP_HEIGHT, 32)
@@ -104,7 +104,7 @@ export default class Shrimps extends THREE.Object3D {
         // movement damping is handled by the drag force
         // linearDamping: 0.98,
         // move them around a bit
-        angularVelocity: new CANNON.Vec3(0.3 * _.random(-1, 1), 0.3 * _.random(-1, 1), 0),
+        // angularVelocity: new CANNON.Vec3(0.3 * _.random(-1, 1), 0.3 * _.random(-1, 1), 0),
         position: new CANNON.Vec3(
           -MAX_X_POSITION,
           _.random(-(VERTICAL_GAP / 2) * 0.9, (VERTICAL_GAP / 2) * 0.9),

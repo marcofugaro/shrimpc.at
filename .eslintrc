@@ -2,5 +2,8 @@
   "extends": "eslint-config-accurapp",
   "env": {
     "browser": true
+  },
+  "rules": {
+    "no-copy-paste-default-export/default": "off"
   }
 }

@@ -37,7 +37,7 @@
     "raw-loader": "^1.0.0",
     "react-dev-utils": "^7.0.1",
     "webpack": "^4.28.3",
-    "webpack-cli": "^3.2.0",
+    "webpack-cli": "^3.2.1",
     "webpack-dev-server": "^3.1.14",
     "webpack-merge": "^4.2.1"
   },
@@ -48,7 +48,7 @@
     "control-panel": "marcofugaro/control-panel",
     "datauritoblob": "^1.0.0",
     "eases": "^1.0.8",
-    "image-promise": "^5.0.1",
+    "image-promise": "^6.0.0",
     "lodash": "^4.17.11",
     "orbit-controls": "^1.2.4",
     "p-map": "^2.0.0",

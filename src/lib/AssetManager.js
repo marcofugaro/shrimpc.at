@@ -77,6 +77,7 @@ class AssetManager {
 
     try {
       this.#cache[item.url] = await this._loadItem({ renderer, ...item })
+      return item.url
     } catch (err) {
       delete this.#cache[item.url]
       console.error(`[📦 assets] Skipping ${item.url} from asset loading: \n${err}`)

@@ -23,19 +23,23 @@ class Van extends CannonSuperBody {
     super(options)
     this.webgl = webgl
 
-    const vanGltf = assets.get('assets/van.gltf')
-    this.mesh.copy(vanGltf.scene)
+    const vanGltf = assets.get('assets/van.glb')
+    const van = vanGltf.scene.clone()
 
     // position the van correctly
-    this.mesh.traverse(child => {
+    van.traverse(child => {
       if (!child.isMesh) {
         return
       }
 
-      child.position.set(0, -1.9, 0)
-      child.rotateY(Math.PI / 2)
-      child.scale.multiplyScalar(3.5 / VAN_DIMENSIONS[0])
+      child.material.side = THREE.DoubleSide
+
+      child.position.set(0, -1.98, 0)
+      child.rotation.y = Math.PI / 2
+      child.scale.multiplyScalar(16 / VAN_DIMENSIONS[0])
     })
+
+    this.mesh.add(van)
 
     const vanShape = new CANNON.Box(new CANNON.Vec3(...VAN_DIMENSIONS.map(d => d * 0.5)))
     this.addShape(vanShape)
@@ -46,12 +50,61 @@ class Van extends CannonSuperBody {
       const mesh = new THREE.Mesh(geometry, material)
       this.mesh.add(mesh)
     }
+
+    // add the shrimps inside
+    const shrimpGltf = assets.get('assets/shrimp.glb')
+    this.vanShrimps = _.range(0, 8).map(() => shrimpGltf.scene.clone())
+
+    // position the shrimps in the van
+    this.vanShrimps.forEach((shrimp, i) => {
+      shrimp.traverse(child => {
+        if (!child.isMesh) {
+          return
+        }
+
+        // make the driver big, the second small, and the others random
+        switch (i) {
+          case 0:
+            child.rotateY(Math.PI / 2.7)
+            child.scale.multiplyScalar(0.65)
+            break
+          case 1:
+            child.rotateY(Math.PI / 2.3)
+            child.scale.multiplyScalar(0.45)
+            break
+          default:
+            child.rotateY(Math.PI / _.random(2.3, 2.7))
+            child.scale.multiplyScalar(_.random(0.4, 0.65))
+        }
+
+        const x = 2 - Math.floor(i / 2) * 1.4
+        const y = 0.2
+        const z = -0.7 * Math.cos((i % 2) * Math.PI)
+        child.position.set(x, y, z)
+
+        // save it for later
+        this.initialY = y
+      })
+
+      this.mesh.add(shrimp)
+    })
   }
 
   update(dt = 0, time = 0) {
     // sync the mesh to the physical body
     this.mesh.position.copy(this.position)
     this.mesh.quaternion.copy(this.quaternion)
+
+    // make the shrimps jump up and down
+    this.vanShrimps.forEach((shrimp, i) => {
+      shrimp.traverse(child => {
+        if (!child.isMesh) {
+          return
+        }
+
+        child.position.y = this.initialY + Math.sin(time * 20 + i) * 0.09
+      })
+    })
   }
 }
 
@@ -66,7 +119,7 @@ export default class VanComponent extends THREE.Object3D {
     // it's not needed immediately
     assets
       .loadSingle({
-        url: 'assets/van.gltf',
+        url: 'assets/van.glb',
         type: 'gltf',
         renderer: webgl.renderer,
       })
