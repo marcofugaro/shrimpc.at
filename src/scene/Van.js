@@ -6,6 +6,7 @@ import CannonSuperBody from 'lib/CannonSuperBody'
 import { vanCollision } from 'scene/collisions'
 import { VERTICAL_GAP, HORIZONTAL_GAP } from 'scene/Delimiters'
 import { getRandomTransparentColor } from 'lib/three-utils'
+import { playAudioFromBuffer } from 'lib/audio-utils'
 
 // where the vans will die
 export const MAX_X_POSITION = 12
@@ -117,19 +118,29 @@ export default class VanComponent extends THREE.Object3D {
 
     // not loaded with the other assets because
     // it's not needed immediately
-    assets
-      .loadSingle({
+    Promise.all([
+      assets.loadSingle({
         url: 'assets/van.glb',
         type: 'gltf',
         renderer: webgl.renderer,
+      }),
+      assets.loadSingle({
+        url: 'assets/striscia-clacson.mp3',
+        type: 'audio',
+        renderer: webgl.renderer,
+      }),
+    ]).then(([vanKey, hornKey]) => {
+      window.addEventListener('keydown', e => {
+        if (e.key === ' ') {
+          this.createVan()
+
+          const hornBuffer = assets.get(hornKey)
+          playAudioFromBuffer(hornBuffer)
+        }
       })
-      .then(() => {
-        window.addEventListener('keydown', e => {
-          if (e.key === ' ') {
-            this.createVan()
-          }
-        })
-      })
+
+      console.log('Tip! Press Space 😉')
+    })
   }
 
   createVan() {

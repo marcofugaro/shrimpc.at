@@ -21,15 +21,11 @@ const shrimpGltfKey = assets.queue({
   type: 'gltf',
 })
 
-// if I don't do this, the shrimp is not visible
-// TODO understand why
-new THREE.BufferGeometry() // eslint-disable-line
-
 // TODO test shadows
 // sphere.castShadow = true; //default is false
 // sphere.receiveShadow = false; //default
 
-const debugColor = getRandomTransparentColor()
+const debugColor = getRandomTransparentColor(0.75)
 
 class Shrimp extends CannonSuperBody {
   // no need to handle position, velocity and acceleration,
@@ -41,6 +37,64 @@ class Shrimp extends CannonSuperBody {
     super(options)
     this.webgl = webgl
 
+    const radius1 = 0.4
+    const height1 = 1.4
+    const shrimpShape1 = new CANNON.Cylinder(radius1, radius1, height1, 32)
+    this.addShape(
+      shrimpShape1,
+      new CANNON.Vec3(0.7, -0.05, -0.15),
+      new CANNON.Quaternion().setFromEuler(0, THREE.Math.degToRad(5), 0),
+    )
+
+    const radius2 = 0.3
+    const height2 = 1.4
+    const shrimpShape2 = new CANNON.Cylinder(radius2, radius2, height2, 32)
+    this.addShape(
+      shrimpShape2,
+      new CANNON.Vec3(0, 0, -0.65),
+      new CANNON.Quaternion().setFromEuler(0, THREE.Math.degToRad(70), 0),
+    )
+
+    const radius3 = 0.2
+    const height3 = 2
+    const shrimpShape3 = new CANNON.Cylinder(radius3, radius3, height3, 32)
+    this.addShape(
+      shrimpShape3,
+      new CANNON.Vec3(-0.7, 0, 0.1),
+      new CANNON.Quaternion().setFromEuler(0, THREE.Math.degToRad(-40), 0),
+    )
+
+    if (window.DEBUG) {
+      const material = new THREE.MeshLambertMaterial(debugColor)
+
+      const geometry1 = new THREE.CylinderGeometry(radius1, radius1, height1, 32)
+      const cylinderMesh1 = new THREE.Mesh(geometry1, material)
+      this.mesh.add(cylinderMesh1)
+
+      const geometry2 = new THREE.CylinderGeometry(radius2, radius2, height2, 32)
+      const cylinderMesh2 = new THREE.Mesh(geometry2, material)
+      this.mesh.add(cylinderMesh2)
+
+      const geometry3 = new THREE.CylinderGeometry(radius3, radius3, height3, 32)
+      const cylinderMesh3 = new THREE.Mesh(geometry3, material)
+      this.mesh.add(cylinderMesh3)
+
+      // sync the shapes to their meshes
+      let meshIndex = 0
+      this.mesh.traverse(child => {
+        if (!child.isMesh) {
+          return
+        }
+
+        const position = this.shapeOffsets[meshIndex]
+        const quaternion = this.shapeOrientations[meshIndex]
+        child.position.copy(position)
+        child.quaternion.copy(quaternion)
+
+        meshIndex++
+      })
+    }
+
     const shrimpGltf = assets.get(shrimpGltfKey)
     this.mesh.copy(shrimpGltf.scene)
 
@@ -50,20 +104,10 @@ class Shrimp extends CannonSuperBody {
         return
       }
 
-      child.rotateY(Math.PI / 8)
-      child.rotateX(Math.PI / 2)
+      child.rotateY(THREE.Math.degToRad(23))
+      child.rotateX(THREE.Math.degToRad(90))
       child.scale.multiplyScalar(0.88)
     })
-
-    const shrimpShape = new CANNON.Cylinder(SHRIMP_RADIUS, SHRIMP_RADIUS, SHRIMP_HEIGHT, 32)
-    this.addShape(shrimpShape)
-
-    if (window.DEBUG) {
-      const geometry = new THREE.CylinderGeometry(SHRIMP_RADIUS, SHRIMP_RADIUS, SHRIMP_HEIGHT, 32)
-      const material = new THREE.MeshLambertMaterial(debugColor)
-      const cylinderMesh = new THREE.Mesh(geometry, material)
-      this.mesh.add(cylinderMesh)
-    }
   }
 
   update(dt = 0, time = 0) {
