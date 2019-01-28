@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
-import { VERTICAL_GAP } from 'scene/Delimiters'
 import { MAX_X_POSITION } from 'scene/Shrimps'
 import { headCollision } from 'scene/collisions'
 import { getRandomTransparentColor } from 'lib/three-utils'
@@ -10,6 +9,7 @@ import { mapRange, degToRad, lerp } from 'canvas-sketch-util/math'
 import eases from 'eases'
 
 export const HEAD_RADIUS = 2.5
+export const CAT_OFFSET_Y = 4
 
 // unit is degrees
 export const MAX_HEAD_ROTATION_X = 23
@@ -54,7 +54,7 @@ class Head extends CANNON.Body {
 
     // position it
     headMesh.scale.setScalar(1.5)
-    headMesh.position.y = 0.2
+    headMesh.position.y = 1
     headMesh.position.z = 0.01
 
     this.mesh.add(headMesh)
@@ -95,8 +95,11 @@ export default class HeadComponent extends THREE.Object3D {
     })
 
     // position it
-    this.head.position.set(0, -VERTICAL_GAP / 2, 0)
+    this.head.position.set(0, -CAT_OFFSET_Y * 1.22, 0)
     this.rotationY = -MAX_HEAD_ROTATION_Y * 0.6
+
+    // save it for later
+    this.initialY = this.head.position.y
 
     // if nothing happens after some seconds look at shrimp
     this.startLookingDebounced()
@@ -127,6 +130,9 @@ export default class HeadComponent extends THREE.Object3D {
     if (this.shrimpLookingAt) {
       this.lookAtShrimp(dt, time)
     }
+
+    // breathe.
+    this.head.position.y = this.initialY + Math.sin(Number(time)) * 0.07
 
     // follow the rotation but with a bit of lerping
     this.lerpRotation(dt, time)
@@ -166,8 +172,8 @@ export default class HeadComponent extends THREE.Object3D {
     )
     this.rotationY = mapRange(
       this.shrimpLookingAt.position.y,
-      VERTICAL_GAP / 2,
-      -VERTICAL_GAP / 2,
+      CAT_OFFSET_Y,
+      -CAT_OFFSET_Y,
       -MAX_HEAD_ROTATION_Y,
       // the magic number is because the head is not
       // at the center of the page
@@ -175,7 +181,7 @@ export default class HeadComponent extends THREE.Object3D {
     )
 
     // start again if the shrimp is a goner
-    if (this.shrimpLookingAt.position.x > MAX_X_POSITION) {
+    if (this.shrimpLookingAt.position.x > MAX_X_POSITION * 1.2) {
       this.shrimpLookingAt = null
       this.startLooking()
     }

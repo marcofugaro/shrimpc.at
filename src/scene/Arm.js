@@ -3,7 +3,7 @@ import CANNON from 'cannon'
 import TWEEN from '@tweenjs/tween.js'
 import CannonSphere from 'lib/CannonSphere'
 import { getRandomTransparentColor } from 'lib/three-utils'
-import { VERTICAL_GAP } from 'scene/Delimiters'
+import { CAT_OFFSET_Y } from 'scene/Head'
 
 // basic dimensions
 export const PAW_RADIUS = 1.2
@@ -262,7 +262,7 @@ export default class Arm extends CANNON.Body {
     return new TWEEN.Tween(this.hinge.position)
       .to(
         {
-          y: this.clickedPoint.y - VERTICAL_GAP + Math.abs(this.clickedPoint.x) * 0.5,
+          y: this.clickedPoint.y - CAT_OFFSET_Y * 2 + Math.abs(this.clickedPoint.x) * 0.5,
         },
         SMACK_DURATION,
       )

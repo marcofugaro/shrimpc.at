@@ -6,8 +6,8 @@ import { getRandomTransparentColor } from 'lib/three-utils'
 
 // horizontal gap between the restricting planes
 export const HORIZONTAL_GAP = 2.2
-// vertical gap betwee the restricting planes
-export const VERTICAL_GAP = 8
+// vertical gap between the restricting planes
+export const VERTICAL_GAP = 12
 
 class Delimiter extends CANNON.Body {
   mesh = new THREE.Object3D()

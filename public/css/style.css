@@ -5,11 +5,8 @@ body {
 video {
   display: block;
   object-fit: cover;
-  object-position: 25% 50%;
   width: 100%;
   height: 100%;
-  /* TODO bake the blur into the video */
-  /* filter: blur(2px); */
 }
 
 canvas {

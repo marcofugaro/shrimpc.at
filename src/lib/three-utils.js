@@ -26,3 +26,11 @@ export function getRandomTransparentColor(opacity = 0.5) {
     depthWrite: false,
   }
 }
+
+// the dimensions of a slice of the furstum, at a distance from the camera
+export function getFrustumSliceSize({ camera, distance }) {
+  const height = Math.tan(((camera.fov * Math.PI) / 180) * 0.5) * distance * 2
+  const width = height * camera.aspect
+
+  return { width, height }
+}

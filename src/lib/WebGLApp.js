@@ -119,6 +119,17 @@ export default class WebGLApp {
     }
     this.camera.updateProjectionMatrix()
 
+    // recursively tell all child objects to resize
+    this.scene.traverse(obj => {
+      if (typeof obj.resize === 'function') {
+        obj.resize({
+          width,
+          height,
+          pixelRatio,
+        })
+      }
+    })
+
     // draw a frame to ensure the new size has been registered visually
     this.draw()
     return this

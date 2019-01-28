@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { VERTICAL_GAP } from 'scene/Delimiters'
+import { CAT_OFFSET_Y } from 'scene/Head'
 import assets from 'lib/AssetManager'
 
 const catBodyKey = assets.queue({
@@ -26,7 +26,7 @@ export default class Body extends THREE.Object3D {
     sprite.center.x = 0.5
     sprite.center.y = 1
     sprite.scale.multiplyScalar(10)
-    sprite.position.set(0, -VERTICAL_GAP / 2, 0)
+    sprite.position.set(0, -CAT_OFFSET_Y, 0)
 
     this.add(sprite)
   }

@@ -182,7 +182,7 @@ export default class VanComponent extends THREE.Object3D {
       van.applyGenericForce(new CANNON.Vec3(400, 0, 0))
 
       // remove it if they exit the field of view
-      if (MAX_X_POSITION < van.position.x) {
+      if (MAX_X_POSITION + VAN_DIMENSIONS[0] / 2 < van.position.x) {
         this.webgl.world.removeBody(van)
         this.remove(van.mesh)
         this.vans.splice(this.vans.findIndex(v => v.id === van.id), 1)

@@ -5,10 +5,10 @@ import assets from 'lib/AssetManager'
 import CannonSuperBody from 'lib/CannonSuperBody'
 import { shrimpCollision } from 'scene/collisions'
 import { VERTICAL_GAP } from 'scene/Delimiters'
-import { getRandomTransparentColor } from 'lib/three-utils'
+import { getRandomTransparentColor, getFrustumSliceSize } from 'lib/three-utils'
 
 // where the shrimps will die
-export const MAX_X_POSITION = 12
+export let MAX_X_POSITION = 20
 
 // the interval between the spawn of shrimps (seconds)
 export let SHRIMP_INTERVAL = 3
@@ -119,6 +119,7 @@ class Shrimp extends CannonSuperBody {
 
 export default class Shrimps extends THREE.Object3D {
   shrimps = []
+  shrimpInterval = SHRIMP_INTERVAL
 
   constructor({ webgl, ...options }) {
     super(options)
@@ -127,14 +128,26 @@ export default class Shrimps extends THREE.Object3D {
     if (window.DEBUG) {
       this.webgl.panel.on('input', inputs => {
         SHRIMP_INTERVAL = inputs['Shrimp Spawn Interval']
+        this.shrimpInterval = SHRIMP_INTERVAL
       })
     }
+
+    this.resize()
+  }
+
+  resize() {
+    const camera = this.webgl.camera
+
+    // frustum dimensions when the z is 0
+    // TODO make it sharable with the van
+    MAX_X_POSITION = getFrustumSliceSize({ camera, distance: camera.position.z }).width / 2
   }
 
   update(dt = 0, time = 0) {
     // spawn new shrimps
-    if (!this.lastSpawnTimestamp || time - this.lastSpawnTimestamp > SHRIMP_INTERVAL) {
+    if (!this.lastSpawnTimestamp || time - this.lastSpawnTimestamp > this.shrimpInterval) {
       this.lastSpawnTimestamp = time
+      this.shrimpInterval = _.random(SHRIMP_INTERVAL * 0.1, SHRIMP_INTERVAL)
 
       const shrimp = new Shrimp({
         webgl: this.webgl,
@@ -147,16 +160,23 @@ export default class Shrimps extends THREE.Object3D {
         angularDamping: 0.98,
         // movement damping is handled by the drag force
         // linearDamping: 0.98,
-        // move them around a bit
-        // angularVelocity: new CANNON.Vec3(0.3 * _.random(-1, 1), 0.3 * _.random(-1, 1), 0),
         position: new CANNON.Vec3(
-          -MAX_X_POSITION,
-          _.random(-(VERTICAL_GAP / 2) * 0.9, (VERTICAL_GAP / 2) * 0.9),
+          // a bit left and right
+          _.random(-MAX_X_POSITION, MAX_X_POSITION * 0.3),
+          // up the visible frustum
+          (VERTICAL_GAP / 2) * 1.2,
           0,
         ),
-        // put them vertical
-        quaternion: new CANNON.Quaternion().setFromEuler(-Math.PI / 2, 0, 0),
+        // orient them randomly
+        quaternion: new CANNON.Quaternion().setFromEuler(
+          0,
+          _.random(0, Math.PI),
+          _.random(0, Math.PI),
+        ),
       })
+
+      // give them a push down!
+      shrimp.applyGenericImpulse(new CANNON.Vec3(0, -100, 0))
 
       // add the body to the cannon.js world
       this.webgl.world.addBody(shrimp)
@@ -174,7 +194,7 @@ export default class Shrimps extends THREE.Object3D {
       shrimp.applyGenericForce(new CANNON.Vec3(0.6, 0, 0))
 
       // remove it if they exit the field of view
-      if (MAX_X_POSITION < shrimp.position.x) {
+      if (MAX_X_POSITION * 1.3 < shrimp.position.x) {
         this.webgl.world.removeBody(shrimp)
         this.remove(shrimp.mesh)
         this.shrimps.splice(this.shrimps.findIndex(s => s.id === shrimp.id), 1)
