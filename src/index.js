@@ -10,6 +10,7 @@ import Head from 'scene/Head'
 import Body from 'scene/Body'
 import Van from 'scene/Van'
 import { initCustomCollisions } from 'scene/collisions'
+import { getFrustumSliceSize } from 'lib/three-utils'
 
 window.DEBUG = window.location.search.includes('debug')
 
@@ -98,6 +99,19 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   //
   // dirLight.shadow.camera.far = 3500
   // dirLight.shadow.bias = -0.0001
+
+  // calculate the frustum dimensions on the z = 0 plane
+  // it will be used to check if the elements go outside of it
+  webgl.frustumSize = getFrustumSliceSize({
+    camera: webgl.camera,
+    distance: webgl.camera.position.z,
+  })
+  window.addEventListener('resize', () => {
+    webgl.frustumSize = getFrustumSliceSize({
+      camera: webgl.camera,
+      distance: webgl.camera.position.z,
+    })
+  })
 
   // start animation loop
   webgl.start()

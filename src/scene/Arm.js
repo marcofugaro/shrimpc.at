@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import CANNON from 'cannon'
 import TWEEN from '@tweenjs/tween.js'
 import CannonSphere from 'lib/CannonSphere'
+import CannonSuperBody from 'lib/CannonSuperBody'
 import { getRandomTransparentColor } from 'lib/three-utils'
 import { CAT_OFFSET_Y } from 'scene/Head'
 
@@ -36,7 +37,7 @@ export const SPRING_STIFFNESS = 120
 
 const debugColor = getRandomTransparentColor()
 
-export default class Arm extends CANNON.Body {
+export default class Arm extends CannonSuperBody {
   mesh = new THREE.Object3D()
 
   constructor({ webgl, ...options }) {
@@ -194,6 +195,11 @@ export default class Arm extends CANNON.Body {
     // always attract the arm and sync with its y position
     this.spring.applyForce()
     this.attractor.position.y = this.position.y
+
+    // BUG, the arm would stay down if it would invert, push it back up
+    if (this.position.y - 2 < this.hinge.position.y) {
+      this.applyGenericImpulse(new CANNON.Vec3(0, 50, 0))
+    }
   }
 
   // SMACK!

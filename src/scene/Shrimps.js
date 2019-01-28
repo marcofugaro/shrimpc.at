@@ -5,13 +5,10 @@ import assets from 'lib/AssetManager'
 import CannonSuperBody from 'lib/CannonSuperBody'
 import { shrimpCollision } from 'scene/collisions'
 import { VERTICAL_GAP } from 'scene/Delimiters'
-import { getRandomTransparentColor, getFrustumSliceSize } from 'lib/three-utils'
-
-// where the shrimps will die
-export let MAX_X_POSITION = 20
+import { getRandomTransparentColor } from 'lib/three-utils'
 
 // the interval between the spawn of shrimps (seconds)
-export let SHRIMP_INTERVAL = 3
+export let SHRIMP_INTERVAL = 4
 
 export const SHRIMP_RADIUS = 1
 export const SHRIMP_HEIGHT = 0.5
@@ -131,19 +128,11 @@ export default class Shrimps extends THREE.Object3D {
         this.shrimpInterval = SHRIMP_INTERVAL
       })
     }
-
-    this.resize()
-  }
-
-  resize() {
-    const camera = this.webgl.camera
-
-    // frustum dimensions when the z is 0
-    // TODO make it sharable with the van
-    MAX_X_POSITION = getFrustumSliceSize({ camera, distance: camera.position.z }).width / 2
   }
 
   update(dt = 0, time = 0) {
+    const maxX = this.webgl.frustumSize.width / 2
+
     // spawn new shrimps
     if (!this.lastSpawnTimestamp || time - this.lastSpawnTimestamp > this.shrimpInterval) {
       this.lastSpawnTimestamp = time
@@ -162,7 +151,7 @@ export default class Shrimps extends THREE.Object3D {
         // linearDamping: 0.98,
         position: new CANNON.Vec3(
           // a bit left and right
-          _.random(-MAX_X_POSITION, MAX_X_POSITION * 0.3),
+          _.random(-maxX, maxX * 0.3),
           // up the visible frustum
           (VERTICAL_GAP / 2) * 1.2,
           0,
@@ -194,7 +183,7 @@ export default class Shrimps extends THREE.Object3D {
       shrimp.applyGenericForce(new CANNON.Vec3(0.6, 0, 0))
 
       // remove it if they exit the field of view
-      if (MAX_X_POSITION * 1.3 < shrimp.position.x) {
+      if (maxX * 1.3 < shrimp.position.x) {
         this.webgl.world.removeBody(shrimp)
         this.remove(shrimp.mesh)
         this.shrimps.splice(this.shrimps.findIndex(s => s.id === shrimp.id), 1)

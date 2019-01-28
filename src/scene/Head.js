@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
-import { MAX_X_POSITION } from 'scene/Shrimps'
 import { headCollision } from 'scene/collisions'
 import { getRandomTransparentColor } from 'lib/three-utils'
 import assets from 'lib/AssetManager'
@@ -161,12 +160,14 @@ export default class HeadComponent extends THREE.Object3D {
   }
 
   lookAtShrimp(dt, time) {
+    const maxX = this.webgl.frustumSize.width / 2
+
     this.rotationX = mapRange(
       this.shrimpLookingAt.position.x,
-      // the magic number is because MAX_X_POSITION is
+      // the magic number is because maxX is
       // outside the viewport
-      -MAX_X_POSITION * 0.75,
-      MAX_X_POSITION * 0.75,
+      -maxX * 0.75,
+      maxX * 0.75,
       -MAX_HEAD_ROTATION_X,
       MAX_HEAD_ROTATION_X,
     )
@@ -181,7 +182,7 @@ export default class HeadComponent extends THREE.Object3D {
     )
 
     // start again if the shrimp is a goner
-    if (this.shrimpLookingAt.position.x > MAX_X_POSITION * 1.2) {
+    if (this.shrimpLookingAt.position.x > maxX * 1.2) {
       this.shrimpLookingAt = null
       this.startLooking()
     }

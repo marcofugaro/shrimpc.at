@@ -8,9 +8,6 @@ import { VERTICAL_GAP, HORIZONTAL_GAP } from 'scene/Delimiters'
 import { getRandomTransparentColor } from 'lib/three-utils'
 import { playAudioFromBuffer } from 'lib/audio-utils'
 
-// where the vans will die
-export const MAX_X_POSITION = 12
-
 // collision box dimensions
 // in order: x, y, and z width
 const VAN_DIMENSIONS = [7, 2.8, HORIZONTAL_GAP]
@@ -144,6 +141,8 @@ export default class VanComponent extends THREE.Object3D {
   }
 
   createVan() {
+    const maxX = this.webgl.frustumSize.width / 2
+
     const van = new Van({
       webgl: this.webgl,
       material: vanCollision.material,
@@ -156,7 +155,7 @@ export default class VanComponent extends THREE.Object3D {
       // movement damping is handled by the drag force
       // linearDamping: 0.98,
       position: new CANNON.Vec3(
-        -MAX_X_POSITION - VAN_DIMENSIONS[0],
+        -maxX - VAN_DIMENSIONS[0],
         _.random(0, VERTICAL_GAP / 2 - VAN_DIMENSIONS[1] / 2),
         0,
       ),
@@ -174,6 +173,8 @@ export default class VanComponent extends THREE.Object3D {
   }
 
   update(dt = 0, time = 0) {
+    const maxX = this.webgl.frustumSize.width / 2
+
     this.vans.forEach(van => {
       // apply a quadratic drag force to simulate water
       van.applyDrag(0.8)
@@ -182,7 +183,7 @@ export default class VanComponent extends THREE.Object3D {
       van.applyGenericForce(new CANNON.Vec3(400, 0, 0))
 
       // remove it if they exit the field of view
-      if (MAX_X_POSITION + VAN_DIMENSIONS[0] / 2 < van.position.x) {
+      if (maxX + VAN_DIMENSIONS[0] / 2 < van.position.x) {
         this.webgl.world.removeBody(van)
         this.remove(van.mesh)
         this.vans.splice(this.vans.findIndex(v => v.id === van.id), 1)
