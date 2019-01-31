@@ -37,9 +37,9 @@ class Head extends CANNON.Body {
     const headMaterial = new THREE.MeshStandardMaterial({
       displacementMap: assets.get(catHeadDisplacementKey),
       displacementScale: 1.2,
-      // displacementBias: 0,
 
       metalness: 0,
+      roughness: 1,
 
       map: assets.get(catHeadKey),
 
@@ -55,6 +55,9 @@ class Head extends CANNON.Body {
     headMesh.scale.setScalar(1.5)
     headMesh.position.y = 1
     headMesh.position.z = 0.01
+
+    // make it receive shadow
+    headMesh.receiveShadow = true
 
     this.mesh.add(headMesh)
 

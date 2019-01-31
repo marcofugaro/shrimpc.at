@@ -2,29 +2,39 @@
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/loadEnvMap.js
 import * as THREE from 'three'
-import EquiToCube from './EquiToCube'
-import loadTexture from './loadTexture'
 import clamp from 'lodash/clamp'
+// TODO import those from three.js when this issue will be solved
+// https://github.com/mrdoob/three.js/issues/9562
+import { HDRCubeTextureLoader } from './three/HDRCubeTextureLoader'
+import { PMREMGenerator } from './three/PMREMGenerator'
+import { PMREMCubeUVPacker } from './three/PMREMCubeUVPacker'
+import { EquirectangularToCubeGenerator } from './three/EquirectangularToCubeGenerator'
+import loadTexture from './loadTexture'
 
-export default async function loadEnvMap(options) {
+export default async function loadEnvMap(url, options) {
   const renderer = options.renderer
-  const basePath = options.url
 
-  if (!renderer)
-    throw new Error(`PBR Map requires renderer to passed in the options for ${basePath}!`)
+  if (!renderer) {
+    throw new Error(`PBR Map requires renderer to passed in the options for ${url}!`)
+  }
 
   if (options.equirectangular) {
-    const equiToCube = new EquiToCube(renderer)
-    try {
-      const texture = await loadTexture(basePath, { renderer })
-      equiToCube.convert(texture)
-      texture.dispose() // dispose original texture
-      texture.image.data = null // remove Image reference
-      return buildCubeMap(equiToCube.cubeTexture, options)
-    } catch (err) {
-      throw new Error(err)
-    }
+    const texture = await loadTexture(url, { renderer })
+
+    const cubemapGenerator = new EquirectangularToCubeGenerator(texture, { resolution: 1024 })
+
+    const cubeMapTexture = cubemapGenerator.update(renderer)
+
+    // renderTarget is used for the scene.background
+    cubeMapTexture.renderTarget = cubemapGenerator.renderTarget
+
+    texture.dispose() // dispose original texture
+    texture.image.data = null // remove Image reference
+
+    return buildCubeMap(cubeMapTexture, options)
   }
+
+  const basePath = url
 
   const isHDR = options.hdr
   const extension = isHDR ? '.hdr' : '.png'
@@ -33,7 +43,7 @@ export default async function loadEnvMap(options) {
   if (isHDR) {
     // load a float HDR texture
     return new Promise((resolve, reject) => {
-      new THREE.HDRCubeTextureLoader().load(
+      new HDRCubeTextureLoader().load(
         THREE.UnsignedByteType,
         urls,
         map => resolve(buildCubeMap(map, options)),
@@ -60,17 +70,19 @@ export default async function loadEnvMap(options) {
 function buildCubeMap(cubeMap, options) {
   if (options.pbr || typeof options.level === 'number') {
     // prefilter the environment map for irradiance
-    const pmremGenerator = new THREE.PMREMGenerator(cubeMap)
+    const pmremGenerator = new PMREMGenerator(cubeMap)
     pmremGenerator.update(options.renderer)
     if (options.pbr) {
-      const pmremCubeUVPacker = new THREE.PMREMCubeUVPacker(pmremGenerator.cubeLods)
+      const pmremCubeUVPacker = new PMREMCubeUVPacker(pmremGenerator.cubeLods)
       pmremCubeUVPacker.update(options.renderer)
       const target = pmremCubeUVPacker.CubeUVRenderTarget
       cubeMap = target.texture
+      pmremCubeUVPacker.dispose()
     } else {
       const idx = clamp(Math.floor(options.level), 0, pmremGenerator.cubeLods.length)
       cubeMap = pmremGenerator.cubeLods[idx].texture
     }
+    pmremGenerator.dispose()
   }
   if (options.mapping) cubeMap.mapping = options.mapping
   return cubeMap
@@ -78,11 +90,11 @@ function buildCubeMap(cubeMap, options) {
 
 function genCubeUrls(prefix, postfix) {
   return [
-    prefix + 'px' + postfix,
-    prefix + 'nx' + postfix,
-    prefix + 'py' + postfix,
-    prefix + 'ny' + postfix,
-    prefix + 'pz' + postfix,
-    prefix + 'nz' + postfix,
+    `${prefix}px${postfix}`,
+    `${prefix}nx${postfix}`,
+    `${prefix}py${postfix}`,
+    `${prefix}ny${postfix}`,
+    `${prefix}pz${postfix}`,
+    `${prefix}nz${postfix}`,
   ]
 }

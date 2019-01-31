@@ -35,6 +35,11 @@ class Van extends CannonSuperBody {
       child.position.set(0, -1.98, 0)
       child.rotation.y = Math.PI / 2
       child.scale.multiplyScalar(16 / VAN_DIMENSIONS[0])
+
+      // we don't cast chadows because otherwise the
+      // shrimps inside would appear dark
+      // child.castShadow = true
+      child.receiveShadow = true
     })
 
     this.mesh.add(van)
@@ -180,7 +185,7 @@ export default class VanComponent extends THREE.Object3D {
       van.applyDrag(0.8)
 
       // the force moving the van left
-      van.applyGenericForce(new CANNON.Vec3(400, 0, 0))
+      van.applyGenericForce(new CANNON.Vec3(100, 0, 0))
 
       // remove it if they exit the field of view
       if (maxX + VAN_DIMENSIONS[0] / 2 < van.position.x) {

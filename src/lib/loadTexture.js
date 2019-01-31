@@ -35,7 +35,7 @@ function setTextureParams(url, texture, opt) {
     texture.format = opt.format
   } else {
     // choose a nice default format
-    const isJPEG = url.search(/\.(jpg|jpeg)$/) > 0 || url.search(/^data\:image\/jpeg/) === 0
+    const isJPEG = url.search(/\.(jpg|jpeg)$/) > 0 || url.search(/^data:image\/jpeg/) === 0
     texture.format = isJPEG ? THREE.RGBFormat : THREE.RGBAFormat
   }
   if (opt.repeat) texture.repeat.copy(opt.repeat)

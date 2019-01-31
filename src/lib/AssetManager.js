@@ -1,10 +1,12 @@
 // Inspiration for this class goes to Matt DesLauriers @mattdesl,
 // really awesome dude, give him a follow!
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/AssetManager.js
-import { GLTFLoader } from 'lib/GLTFLoader'
 import pMap from 'p-map'
 import prettyMs from 'pretty-ms'
 import loadImage from 'image-promise'
+// TODO import the GLTFLoader from three.js when this issue will be solved
+// https://github.com/mrdoob/three.js/issues/9562
+import { GLTFLoader } from './three/GLTFLoader'
 import loadTexture from './loadTexture'
 import loadEnvMap from './loadEnvMap'
 
@@ -149,8 +151,8 @@ class AssetManager {
         })
       case 'json':
         return fetch(url).then(response => response.json())
-      case 'envMap':
-        return loadEnvMap({ renderer, ...options })
+      case 'env-map':
+        return loadEnvMap(url, { renderer, ...options })
       case 'svg':
       case 'image':
         return loadImage(url, { crossorigin: 'anonymous' })

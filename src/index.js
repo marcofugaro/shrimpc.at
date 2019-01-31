@@ -1,4 +1,3 @@
-import * as THREE from 'three'
 import CANNON from 'cannon'
 import TWEEN from '@tweenjs/tween.js'
 import WebGLApp from 'lib/WebGLApp'
@@ -11,6 +10,10 @@ import Body from 'scene/Body'
 import Van from 'scene/Van'
 import { initCustomCollisions } from 'scene/collisions'
 import { getFrustumSliceSize } from 'lib/three-utils'
+import { addLights } from './scene/lights'
+import { ShaderPass } from './lib/three/ShaderPass'
+import passVert from './scene/shaders/pass.vert'
+import waterFrag from './scene/shaders/water.frag'
 
 window.DEBUG = window.location.search.includes('debug')
 
@@ -22,8 +25,9 @@ const webgl = new WebGLApp({
   canvas,
   backgroundAlpha: 0,
   alpha: true,
+  // postprocessing: true,
   showFps: window.DEBUG,
-  controls: window.DEBUG && {
+  orbitControls: window.DEBUG && {
     distance: 15,
   },
   panelInputs: window.DEBUG && [
@@ -71,34 +75,23 @@ assets.load({ renderer: webgl.renderer }).then(() => {
 
   initCustomCollisions(webgl.world)
 
-  // turn on shadows in the renderer
-  // TODO are those useful? do some tests
-  // webgl.renderer.shadowMap.enabled = true
-  // webgl.renderer.shadowMap.type = THREE.PCFSoftShadowMap // default THREE.PCFShadowMap
-  //
-  const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6)
-  hemiLight.color.setHSL(0.6, 1, 0.6)
-  hemiLight.groundColor.setHSL(0.095, 1, 0.75)
-  webgl.scene.add(hemiLight)
+  addLights(webgl)
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, 1)
-  dirLight.color.setHSL(0.1, 1, 0.95)
-  dirLight.castShadow = true
-  webgl.scene.add(dirLight)
-
-  // TODO are those useful? do some tests
-  // dirLight.shadow.mapSize.width = 2048
-  // dirLight.shadow.mapSize.height = 2048
-  //
-  // const d = 50
-  //
-  // dirLight.shadow.camera.left = -d
-  // dirLight.shadow.camera.right = d
-  // dirLight.shadow.camera.top = d
-  // dirLight.shadow.camera.bottom = -d
-  //
-  // dirLight.shadow.camera.far = 3500
-  // dirLight.shadow.bias = -0.0001
+  // postprocessing
+  // const water = new ShaderPass({
+  //   vertexShader: passVert,
+  //   fragmentShader: waterFrag,
+  //   uniforms: {
+  //     tDiffuse: { type: 't', value: new THREE.Texture() },
+  //     t: { type: 'f', value: 0 },
+  //   },
+  // })
+  // // webgl.composer.addPass(water)
+  // const temp = new THREE.Group()
+  // temp.update = (dt = 0, time = 0) => {
+  //   water.uniforms['t'].value = webgl.time
+  // }
+  // webgl.scene.add(temp)
 
   // calculate the frustum dimensions on the z = 0 plane
   // it will be used to check if the elements go outside of it

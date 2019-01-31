@@ -18,10 +18,6 @@ const shrimpGltfKey = assets.queue({
   type: 'gltf',
 })
 
-// TODO test shadows
-// sphere.castShadow = true; //default is false
-// sphere.receiveShadow = false; //default
-
 const debugColor = getRandomTransparentColor(0.75)
 
 class Shrimp extends CannonSuperBody {
@@ -90,13 +86,26 @@ class Shrimp extends CannonSuperBody {
 
         meshIndex++
       })
+
+      // uuuuugh... oops, too late to remove this piece of code
+      // ideally this would not be here
+      // sorry
+      this.mesh.traverse(child => {
+        if (!child.isMesh) {
+          return
+        }
+
+        child.rotateY(THREE.Math.degToRad(23))
+        child.rotateX(THREE.Math.degToRad(90))
+        child.scale.multiplyScalar(0.88)
+      })
     }
 
     const shrimpGltf = assets.get(shrimpGltfKey)
-    this.mesh.copy(shrimpGltf.scene)
+    const shrimp = shrimpGltf.scene.clone()
 
     // position the shrimp correctly
-    this.mesh.traverse(child => {
+    shrimp.traverse(child => {
       if (!child.isMesh) {
         return
       }
@@ -104,7 +113,12 @@ class Shrimp extends CannonSuperBody {
       child.rotateY(THREE.Math.degToRad(23))
       child.rotateX(THREE.Math.degToRad(90))
       child.scale.multiplyScalar(0.88)
+
+      child.castShadow = true
+      child.receiveShadow = true
     })
+
+    this.mesh.add(shrimp)
   }
 
   update(dt = 0, time = 0) {

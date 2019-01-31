@@ -7,6 +7,8 @@ import createTouches from 'touches'
 import dataURIToBlob from 'datauritoblob'
 import Stats from 'stats.js'
 import controlPanel from 'control-panel'
+import { EffectComposer } from './three/EffectComposer'
+import { RenderPass } from './three/RenderPass'
 
 export default class WebGLApp {
   tmpTarget = new THREE.Vector3()
@@ -32,15 +34,6 @@ export default class WebGLApp {
     this.renderer.sortObjects = false
     this.canvas = this.renderer.domElement
 
-    // really basic touch handler that propagates through the scene
-    this.touchHandler = createTouches(this.canvas, {
-      target: this.canvas,
-      filtered: true,
-    })
-    this.touchHandler.on('start', (ev, pos) => this.traverse('onTouchStart', ev, pos))
-    this.touchHandler.on('end', (ev, pos) => this.traverse('onTouchEnd', ev, pos))
-    this.touchHandler.on('move', (ev, pos) => this.traverse('onTouchMove', ev, pos))
-
     this.renderer.setClearColor(background, backgroundAlpha)
 
     // clamp pixel ratio for performance
@@ -51,13 +44,44 @@ export default class WebGLApp {
     // setup a basic camera
     this.camera = new THREE.PerspectiveCamera(fov, 1, near, far)
 
-    if (options.controls) {
-      // set up a simple orbit controller
-      this.controls = createOrbitControls({
+    this.scene = new THREE.Scene()
+
+    this.time = 0
+    this.isRunning = false
+    this._lastTime = performance.now()
+    this._rafID = null
+
+    // handle resize events
+    window.addEventListener('resize', this.resize)
+    window.addEventListener('orientationchange', this.resize)
+
+    // force an initial resize event
+    this.resize()
+
+    // __________________________ADDONS__________________________
+
+    // really basic touch handler that propagates through the scene
+    this.touchHandler = createTouches(this.canvas, {
+      target: this.canvas,
+      filtered: true,
+    })
+    this.touchHandler.on('start', (ev, pos) => this.traverse('onTouchStart', ev, pos))
+    this.touchHandler.on('end', (ev, pos) => this.traverse('onTouchEnd', ev, pos))
+    this.touchHandler.on('move', (ev, pos) => this.traverse('onTouchMove', ev, pos))
+
+    // expose a composer for postprocessing passes
+    if (options.postprocessing) {
+      this.composer = new EffectComposer(this.renderer)
+      this.composer.addPass(new RenderPass(this.scene, this.camera))
+    }
+
+    // set up a simple orbit controller
+    if (options.orbitControls) {
+      this.orbitControls = createOrbitControls({
         element: this.canvas,
         parent: window,
         distance: 4,
-        ...(options.controls instanceof Object ? options.controls : {}),
+        ...(options.orbitControls instanceof Object ? options.orbitControls : {}),
       })
     }
 
@@ -66,20 +90,6 @@ export default class WebGLApp {
 
     // Attach Tween.js
     if (options.tween) this.tween = options.tween
-
-    this.time = 0
-    this.isRunning = false
-    this._lastTime = performance.now()
-    this._rafID = null
-
-    this.scene = new THREE.Scene()
-
-    // handle resize events
-    window.addEventListener('resize', this.resize)
-    window.addEventListener('orientationchange', this.resize)
-
-    // force an initial resize event
-    this.resize()
 
     // show the fps meter
     if (options.showFps) {
@@ -119,6 +129,11 @@ export default class WebGLApp {
     }
     this.camera.updateProjectionMatrix()
 
+    // resize also the composer
+    if (this.composer) {
+      this.composer.setSize(pixelRatio * width, pixelRatio * height)
+    }
+
     // recursively tell all child objects to resize
     this.scene.traverse(obj => {
       if (typeof obj.resize === 'function') {
@@ -152,13 +167,13 @@ export default class WebGLApp {
   }
 
   update = (dt = 0, time = 0) => {
-    if (this.controls) {
-      this.controls.update()
+    if (this.orbitControls) {
+      this.orbitControls.update()
 
       // reposition to orbit controls
-      this.camera.up.fromArray(this.controls.up)
-      this.camera.position.fromArray(this.controls.position)
-      this.tmpTarget.fromArray(this.controls.target)
+      this.camera.up.fromArray(this.orbitControls.up)
+      this.camera.position.fromArray(this.orbitControls.position)
+      this.tmpTarget.fromArray(this.orbitControls.target)
       this.camera.lookAt(this.tmpTarget)
     }
 
@@ -190,7 +205,22 @@ export default class WebGLApp {
   }
 
   draw = () => {
-    this.renderer.render(this.scene, this.camera)
+    if (this.composer) {
+      // make sure to always render the last pass
+      this.composer.passes.forEach((pass, i, passes) => {
+        const isLastElement = i === passes.length - 1
+
+        if (isLastElement) {
+          pass.renderToScreen = true
+        } else {
+          pass.renderToScreen = false
+        }
+      })
+
+      this.composer.render()
+    } else {
+      this.renderer.render(this.scene, this.camera)
+    }
     return this
   }
 
@@ -242,10 +272,8 @@ function saveDataURI(name, dataURI) {
   link.download = name
   link.href = window.URL.createObjectURL(blob)
   link.onclick = () => {
-    setTimeout(() => {
-      window.URL.revokeObjectURL(blob)
-      link.removeAttribute('href')
-    }, 0)
+    window.URL.revokeObjectURL(blob)
+    link.removeAttribute('href')
   }
   link.click()
 }
