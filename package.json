@@ -52,6 +52,7 @@
     "lodash": "^4.17.11",
     "orbit-controls": "^1.2.4",
     "p-map": "^2.0.0",
+    "pixi.js": "5.0.0-rc",
     "pretty-ms": "^4.0.0",
     "stats.js": "^0.17.0",
     "three": "^0.100.0",

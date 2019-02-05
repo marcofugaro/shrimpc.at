@@ -2,7 +2,7 @@ import * as THREE from 'three'
 
 export function addLights(webgl) {
   // turn on shadows
-  webgl.renderer.shadowMap.enabled = true
+  // webgl.renderer.shadowMap.enabled = true
 
   // soft shadows
   webgl.renderer.shadowMap.type = THREE.PCFSoftShadowMap

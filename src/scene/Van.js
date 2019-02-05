@@ -133,7 +133,7 @@ export default class VanComponent extends THREE.Object3D {
       }),
     ]).then(([vanKey, hornKey]) => {
       window.addEventListener('keydown', e => {
-        if (e.key === ' ') {
+        if (e.key === ' ' || e.key === 'Enter') {
           this.createVan()
 
           const hornBuffer = assets.get(hornKey)

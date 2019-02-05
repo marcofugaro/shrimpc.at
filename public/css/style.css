@@ -2,15 +2,12 @@ body {
   height: 100vh;
 }
 
-video {
-  display: block;
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-}
-
 canvas {
   position: fixed;
   top: 0;
   left: 0;
+}
+
+video {
+  display: none;
 }

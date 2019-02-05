@@ -11,7 +11,8 @@ import { EffectComposer } from './three/EffectComposer'
 import { RenderPass } from './three/RenderPass'
 
 export default class WebGLApp {
-  tmpTarget = new THREE.Vector3()
+  #tmpTarget = new THREE.Vector3()
+  #updateListeners = []
 
   constructor({
     background = '#000',
@@ -29,10 +30,12 @@ export default class WebGLApp {
       preserveDrawingBuffer: true,
       failIfMajorPerformanceCaveat: true,
       ...options,
+      // render to an offscreen canvas if we use pixi.js
+      canvas: options.pixi ? document.createElement('canvas') : options.canvas,
     })
 
     this.renderer.sortObjects = false
-    this.canvas = this.renderer.domElement
+    this.canvas = options.canvas
 
     this.renderer.setClearColor(background, backgroundAlpha)
 
@@ -90,6 +93,32 @@ export default class WebGLApp {
 
     // Attach Tween.js
     if (options.tween) this.tween = options.tween
+
+    // Init Pixi.js
+    if (options.pixi) {
+      const PIXI = options.pixi
+
+      this.pixi = new PIXI.Application({
+        view: this.canvas,
+        resizeTo: window,
+        antialias: true,
+        transparent: true,
+        autoDensity: true,
+        resolution: this.pixelRatio,
+        ...options.pixiOptions,
+      })
+
+      // make its direct children sortable
+      this.pixi.stage.sortableChildren = true
+
+      // Render three.js as a pixi layer
+      const threeTexture = PIXI.Texture.from(this.renderer.domElement)
+      this.threeSprite = new PIXI.Sprite(threeTexture)
+      // TODO find a more efficient way to do this
+      this.threeSprite.scale.x /= this.pixelRatio
+      this.threeSprite.scale.y /= this.pixelRatio
+      this.pixi.stage.addChild(this.threeSprite)
+    }
 
     // show the fps meter
     if (options.showFps) {
@@ -151,11 +180,12 @@ export default class WebGLApp {
   }
 
   // convenience function to trigger a PNG download of the canvas
-  saveScreenshot = ({ width = 2560, height = 1440, fileName = 'image.png' }) => {
+  saveScreenshot = ({ width = 2560, height = 1440, fileName = 'image.png' } = {}) => {
     // force a specific output size
     this.resize({ width, height, pixelRatio: 1 })
     this.draw()
 
+    // TODO fix this with pixi
     const dataURI = this.canvas.toDataURL('image/png')
 
     // reset to default size
@@ -173,8 +203,8 @@ export default class WebGLApp {
       // reposition to orbit controls
       this.camera.up.fromArray(this.orbitControls.up)
       this.camera.position.fromArray(this.orbitControls.position)
-      this.tmpTarget.fromArray(this.orbitControls.target)
-      this.camera.lookAt(this.tmpTarget)
+      this.#tmpTarget.fromArray(this.orbitControls.target)
+      this.camera.lookAt(this.#tmpTarget)
     }
 
     // recursively tell all child objects to update
@@ -201,7 +231,21 @@ export default class WebGLApp {
       this.tween.update()
     }
 
+    if (this.pixi) {
+      // tell pixi that threejs has changed
+      this.threeSprite.texture.update()
+
+      this.pixi.render()
+    }
+
+    // call the update listeners
+    this.#updateListeners.forEach(fn => fn(dt, time))
+
     return this
+  }
+
+  onUpdate(fn) {
+    this.#updateListeners.push(fn)
   }
 
   draw = () => {
@@ -271,9 +315,10 @@ function saveDataURI(name, dataURI) {
   const link = document.createElement('a')
   link.download = name
   link.href = window.URL.createObjectURL(blob)
-  link.onclick = () => {
+  link.onclick = setTimeout(() => {
     window.URL.revokeObjectURL(blob)
     link.removeAttribute('href')
-  }
+  }, 0)
+
   link.click()
 }

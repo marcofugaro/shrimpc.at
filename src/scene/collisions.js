@@ -71,6 +71,13 @@ export function initCustomCollisions(world) {
   )
 
   world.addContactMaterial(
+    new CANNON.ContactMaterial(vanCollision.material, shrimpCollision.material, {
+      friction: 1,
+      restitution: 0.5,
+    }),
+  )
+
+  world.addContactMaterial(
     new CANNON.ContactMaterial(shrimpCollision.material, delimiterCollision.material, {
       friction: 0,
       restitution: 0,
