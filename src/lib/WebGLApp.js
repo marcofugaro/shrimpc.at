@@ -236,6 +236,13 @@ export default class WebGLApp {
       this.threeSprite.texture.update()
 
       this.pixi.render()
+
+      // recursively tell all child containers to update
+      this.pixi.stage.children.forEach(container => {
+        if (typeof container.update === 'function') {
+          container.update(dt, time)
+        }
+      })
     }
 
     // call the update listeners
