@@ -42,6 +42,7 @@ const webgl = new WebGLApp({
   world: new CANNON.World(),
   tween: TWEEN,
   pixi: PIXI,
+  // PERF cap dpi because of performance issues with the combination three + pixi
   maxPixelRatio: 1,
 })
 
