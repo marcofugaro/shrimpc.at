@@ -16,6 +16,7 @@ import { addLights } from './scene/lights'
 import { addFilters } from './scene/filters'
 
 window.DEBUG = window.location.search.includes('debug')
+window.SHOW_FPS = window.location.search.includes('fps')
 
 // Grab our canvas
 const canvas = document.querySelector('#main')
@@ -25,7 +26,7 @@ const webgl = new WebGLApp({
   canvas,
   backgroundAlpha: 0,
   alpha: true,
-  showFps: true,
+  showFps: window.DEBUG || window.SHOW_FPS,
   orbitControls: window.DEBUG && {
     distance: 15,
   },

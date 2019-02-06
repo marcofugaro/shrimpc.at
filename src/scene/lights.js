@@ -2,6 +2,7 @@ import * as THREE from 'three'
 
 export function addLights(webgl) {
   // turn on shadows
+  // PERF disable because was lowering fps by too much
   // webgl.renderer.shadowMap.enabled = true
 
   // soft shadows
@@ -22,12 +23,13 @@ export function addLights(webgl) {
   webgl.scene.add(dirLight)
 
   // higher values give better quality shadows
-  dirLight.shadow.mapSize.width = 2 ** 11
-  dirLight.shadow.mapSize.height = 2 ** 11
+  // lower values give better performance
+  dirLight.shadow.mapSize.width = 2 ** 9
+  dirLight.shadow.mapSize.height = 2 ** 9
 
   // the size of the ortographic camera frustum
   // bigger means more diffuse shadows
-  const size = 30
+  const size = 10
   dirLight.shadow.camera.left = -size
   dirLight.shadow.camera.right = size
   dirLight.shadow.camera.top = size

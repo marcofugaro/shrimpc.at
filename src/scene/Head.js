@@ -56,9 +56,6 @@ class Head extends CANNON.Body {
     headMesh.position.y = 1
     headMesh.position.z = 0.01
 
-    // make it receive shadow
-    headMesh.receiveShadow = true
-
     this.mesh.add(headMesh)
 
     if (window.DEBUG) {
