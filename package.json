@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
+    "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.2.3",
     "@wildpeaks/three-webpack-plugin": "^2.0.0",
     "babel-loader": "^8.0.5",
