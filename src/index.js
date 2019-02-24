@@ -1,6 +1,7 @@
 import CANNON from 'cannon'
 import TWEEN from '@tweenjs/tween.js'
 import * as PIXI from 'pixi.js'
+import Shake from 'shake.js'
 import { initCustomCollisions } from 'scene/collisions'
 import { getFrustumSliceSize } from 'lib/three-utils'
 import WebGLApp from './lib/WebGLApp'
@@ -17,6 +18,9 @@ import { addFilters } from './scene/filters'
 
 window.DEBUG = window.location.search.includes('debug')
 window.SHOW_FPS = window.location.search.includes('fps')
+
+// Init shake.js
+new Shake().start()
 
 // Grab our canvas
 const canvas = document.querySelector('#main')

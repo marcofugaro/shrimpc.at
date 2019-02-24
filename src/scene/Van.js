@@ -141,6 +141,10 @@ export default class VanComponent extends THREE.Object3D {
         }
       })
 
+      window.addEventListener('shake', () => {
+        this.createVan()
+      })
+
       console.log('Tip! Press Space 😉')
     })
   }
