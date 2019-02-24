@@ -1,5 +1,10 @@
 body {
   height: 100vh;
+  background: #7df9ff; /* electric blue */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 canvas {
@@ -8,6 +13,14 @@ canvas {
   left: 0;
 }
 
-video {
-  display: none;
+.loader {
+  font-size: 70px;
+  animation: spin 1s ease infinite;
+  transform-origin: 50% 45%;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(-360deg);
+  }
 }

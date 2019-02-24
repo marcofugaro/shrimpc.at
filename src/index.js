@@ -11,7 +11,7 @@ import Arms from './scene/Arms'
 import Head from './scene/Head'
 import Body from './scene/Body'
 import Van from './scene/Van'
-import BackgroundVideo from './scene/BackgroundVideo'
+import addBackgorundVideo from './scene/backgroundVideo'
 import { addLights } from './scene/lights'
 import { addFilters } from './scene/filters'
 
@@ -55,7 +55,7 @@ if (window.DEBUG) {
 webgl.canvas.style.visibility = 'hidden'
 
 // Load any queued assets
-assets.load({ renderer: webgl.renderer }).then(() => {
+assets.load({ renderer: webgl.renderer }).then(async () => {
   // Move the camera behind
   webgl.camera.position.set(0, 0, 15)
 
@@ -78,8 +78,22 @@ assets.load({ renderer: webgl.renderer }).then(() => {
   addLights(webgl)
 
   // PIXI.js components
-  webgl.pixi.stage.backgroundVideo = new BackgroundVideo({ webgl })
-  webgl.pixi.stage.addChild(webgl.pixi.stage.backgroundVideo)
+  // webgl.pixi.stage.component = new Component({ webgl })
+  // webgl.pixi.stage.addChild(webgl.pixi.stage.component)
+  //
+  // for example:
+  // class Component extends PIXI.Container {
+  //   constructor({ webgl, ...options }) {
+  //     super(options)
+  //     this.webgl = webgl
+  //
+  //     ...
+  //   }
+  // }
+
+  // wait for the video to load a bit
+  const videoSprite = await addBackgorundVideo(webgl)
+  webgl.pixi.stage.addChild(videoSprite)
 
   addFilters(webgl)
 
