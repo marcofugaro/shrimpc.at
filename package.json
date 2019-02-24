@@ -22,24 +22,24 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.2.2",
+    "@babel/core": "^7.3.3",
     "@babel/polyfill": "^7.2.5",
-    "@babel/preset-env": "^7.2.3",
+    "@babel/preset-env": "^7.3.1",
     "@wildpeaks/three-webpack-plugin": "^2.0.0",
     "babel-loader": "^8.0.5",
     "babel-plugin-lodash": "^3.3.4",
     "babel-preset-proposals": "^0.1.0",
     "chalk": "^2.4.2",
-    "eslint-config-accurapp": "^4.1.6",
+    "eslint-config-accurapp": "^4.2.0",
     "event-hooks-webpack-plugin": "^2.1.1",
     "glslify-loader": "^2.0.0",
     "html-webpack-plugin": "4.0.0-beta.5",
     "indent-string": "^3.2.0",
     "raw-loader": "^1.0.0",
-    "react-dev-utils": "^7.0.1",
-    "webpack": "^4.28.3",
-    "webpack-cli": "^3.2.1",
-    "webpack-dev-server": "^3.1.14",
+    "react-dev-utils": "^7.0.3",
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.2.0",
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
@@ -52,11 +52,12 @@
     "image-promise": "^6.0.0",
     "lodash": "^4.17.11",
     "orbit-controls": "^1.2.4",
+    "p-event": "^2.3.1",
     "p-map": "^2.0.0",
-    "pixi.js": "5.0.0-rc",
+    "pixi.js": "5.0.0-rc.2",
     "pretty-ms": "^4.0.0",
     "stats.js": "^0.17.0",
-    "three": "^0.100.0",
+    "three": "^0.101.1",
     "touches": "^1.2.2"
   }
 }
