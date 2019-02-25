@@ -1,6 +1,6 @@
 body {
   height: 100vh;
-  background: #7df9ff; /* electric blue */
+  background: linear-gradient(#7df9ff, #1d7cf2); /* electric blue to peafowl */
 
   display: flex;
   justify-content: center;

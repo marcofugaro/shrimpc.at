@@ -20,7 +20,7 @@ window.DEBUG = window.location.search.includes('debug')
 window.SHOW_FPS = window.location.search.includes('fps')
 
 // Init shake.js
-new Shake().start()
+new Shake({ timeout: 500 }).start()
 
 // Grab our canvas
 const canvas = document.querySelector('#main')
