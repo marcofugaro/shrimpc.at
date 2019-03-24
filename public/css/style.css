@@ -19,6 +19,14 @@ canvas {
   transform-origin: 50% 45%;
 }
 
+/* on some android devices you can't go bigger */
+/* than 50px with an emoji */
+@media (max-width: 767px) {
+  .loader {
+    font-size: 50px;
+  }
+}
+
 @keyframes spin {
   to {
     transform: rotate(-360deg);

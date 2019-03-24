@@ -167,7 +167,7 @@ module.exports = merge.smart(
       filename: 'app.[chunkhash:8].js',
       chunkFilename: '[name].[contenthash:8].chunk.js',
       // change this if you're deploying on a subfolder
-      publicPath: '/',
+      publicPath: '',
     },
     plugins: [
       // TODO use webpack's api when it will be implemented
