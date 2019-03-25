@@ -18,7 +18,7 @@ Wanna understand more how it works? Go to:
 
 ## Highlights
 
-- Simulate quadratic drag force in cannon.js!
+- Simulate quadratic drag force in cannon.js! [[link to code](https://github.com/marcofugaro/shrimpc.at/blob/master/src/lib/CannonSuperBody.js)]
 
 ```js
 class CannonSuperBody extends CANNON.Body {
@@ -46,9 +46,11 @@ class CannonSuperBody extends CANNON.Body {
 }
 ```
 
-![](screenshots/drag-force.gif)
+<img src="screenshots/drag-force.gif" width="500">
 
-- Shrimps jumping up and down in the van (this was fun!)
+---
+
+- Shrimps jumping up and down in the van (this was fun!) [[link to code](https://github.com/marcofugaro/shrimpc.at/blob/b6651e24c0cea9c0b1149426640f3f106902c336/src/scene/Van.js#L101-L110)]
 
 ```js
 // make the shrimps jump up and down
@@ -57,13 +59,17 @@ this.vanShrimps.forEach((shrimp, i) => {
 })
 ```
 
-![](screenshots/happy.gif)
+<img src="screenshots/happy.gif" width="500">
 
-- 3D cat face created starting from this image. I used blender!
+---
 
-![](design/original-fat-cat.jpg)
-![](screenshots/blender.png)
-![](public/assets/cat-head-displacement.png)
+- 3D effect for the cat face was made using a displacement imege on a plane geometry. I created the displacement image using Blender, here is the process:
+
+<img src="design/original-fat-cat.jpg" width="300">
+<img src="screenshots/blender.png" width="600">
+<img src="public/assets/cat-head-displacement.png" width="300">
+
+---
 
 - Random displacement to fry the shrimp!
 
