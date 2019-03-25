@@ -66,7 +66,9 @@ this.vanShrimps.forEach((shrimp, i) => {
 - 3D effect for the cat face was made using a displacement imege on a plane geometry. I created the displacement image using Blender, here is the process:
 
 <img src="design/original-fat-cat.jpg" width="300">
+
 ![](screenshots/blender.png)
+
 <img src="public/assets/cat-head-displacement.png" width="300">
 
 ---
