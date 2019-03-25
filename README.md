@@ -1,5 +1,7 @@
 # [shrimpc.at](http://shrimpc.at)
 
+> Inspired from [picklecat](https://dn.ht/picklecat/)
+
 [![screenshot](public/assets/screenshot.jpg)](http://shrimpc.at)
 
 Wanna understand more how it works? Go to:
