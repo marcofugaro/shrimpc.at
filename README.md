@@ -46,6 +46,8 @@ class CannonSuperBody extends CANNON.Body {
 }
 ```
 
+![](screenshots/drag-force.gif)
+
 - Shrimps jumping up and down in the van (this was fun!)
 
 ```js
@@ -55,7 +57,13 @@ this.vanShrimps.forEach((shrimp, i) => {
 })
 ```
 
+![](screenshots/happy.gif)
+
 - 3D cat face created starting from this image. I used blender!
+
+![](design/original-fat-cat.jpg)
+![](screenshots/blender.png)
+![](public/assets/cat-head-displacement.png)
 
 - Random displacement to fry the shrimp!
 
