@@ -110,9 +110,11 @@ class Shrimp extends CannonSuperBody {
         return
       }
 
-      child.rotateY(THREE.Math.degToRad(-23))
-      child.rotateX(THREE.Math.degToRad(90))
-      child.scale.multiplyScalar(0.88)
+      child.rotateX(THREE.Math.degToRad(-90))
+      child.rotateZ(THREE.Math.degToRad(-5))
+      child.rotateY(THREE.Math.degToRad(3))
+      child.scale.multiplyScalar(0.6)
+      child.translateX(-0.1)
 
       child.castShadow = true
       child.receiveShadow = true

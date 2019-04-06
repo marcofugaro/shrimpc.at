@@ -68,16 +68,16 @@ class Van extends CannonSuperBody {
         // make the driver big, the second small, and the others random
         switch (i) {
           case 0:
-            child.rotateY(-Math.PI / 2.7)
-            child.scale.multiplyScalar(0.65)
-            break
-          case 1:
-            child.rotateY(-Math.PI / 2.3)
+            child.rotateZ(Math.PI / 3.3)
             child.scale.multiplyScalar(0.45)
             break
+          case 1:
+            child.rotateZ(Math.PI / 2.8)
+            child.scale.multiplyScalar(0.3)
+            break
           default:
-            child.rotateY(-Math.PI / _.random(2.3, 2.7))
-            child.scale.multiplyScalar(_.random(0.4, 0.65))
+            child.rotateZ(Math.PI / _.random(2.8, 3.3))
+            child.scale.multiplyScalar(_.random(0.25, 0.45))
         }
 
         const x = 2 - Math.floor(i / 2) * 1.4
