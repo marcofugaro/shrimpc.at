@@ -17,12 +17,12 @@ export const shrimpCollision = {
       delimiterCollision.id |
       shrimpCollision.id |
       headCollision.id |
-      vanCollision.id
+      vehicleCollision.id
     )
   },
 }
 
-export const vanCollision = {
+export const vehicleCollision = {
   id: getCollisionId(),
   material: new CANNON.Material('van'),
   get collideWith() {
@@ -30,7 +30,7 @@ export const vanCollision = {
       armCollision.id |
       headCollision.id |
       shrimpCollision.id |
-      vanCollision.id |
+      vehicleCollision.id |
       delimiterCollision.id
     )
   },
@@ -40,7 +40,7 @@ export const delimiterCollision = {
   id: getCollisionId(),
   material: new CANNON.Material('delimiter'),
   get collideWith() {
-    return shrimpCollision.id | vanCollision.id
+    return shrimpCollision.id | vehicleCollision.id
   },
 }
 
@@ -48,7 +48,7 @@ export const armCollision = {
   id: getCollisionId(),
   material: new CANNON.Material('arm'),
   get collideWith() {
-    return shrimpCollision.id | armCollision.id | vanCollision.id
+    return shrimpCollision.id | armCollision.id | vehicleCollision.id
   },
 }
 
@@ -56,7 +56,7 @@ export const headCollision = {
   id: getCollisionId(),
   material: new CANNON.Material('head'),
   get collideWith() {
-    return shrimpCollision.id | vanCollision.id
+    return shrimpCollision.id | vehicleCollision.id
   },
 }
 
@@ -71,7 +71,7 @@ export function initCustomCollisions(world) {
   )
 
   world.addContactMaterial(
-    new CANNON.ContactMaterial(vanCollision.material, shrimpCollision.material, {
+    new CANNON.ContactMaterial(vehicleCollision.material, shrimpCollision.material, {
       friction: 1,
       restitution: 0.5,
     }),
@@ -85,7 +85,7 @@ export function initCustomCollisions(world) {
   )
 
   world.addContactMaterial(
-    new CANNON.ContactMaterial(vanCollision.material, delimiterCollision.material, {
+    new CANNON.ContactMaterial(vehicleCollision.material, delimiterCollision.material, {
       friction: 0,
       restitution: 0,
     }),

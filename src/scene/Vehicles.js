@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
 import assets from 'lib/AssetManager'
-import { vanCollision } from 'scene/collisions'
+import { vehicleCollision } from 'scene/collisions'
 import Fiat126, { FIAT_DIMENSIONS } from 'scene/Fiat126'
 import Van, { VAN_DIMENSIONS } from 'scene/Van'
 import { VERTICAL_GAP } from 'scene/Delimiters'
@@ -10,6 +10,7 @@ import { playAudioFromBuffer } from 'lib/audio-utils'
 
 export default class Vehicles extends THREE.Object3D {
   vehicles = []
+  shouldGoFiat = false
 
   constructor({ webgl, ...options }) {
     super(options)
@@ -54,22 +55,23 @@ export default class Vehicles extends THREE.Object3D {
   createVehicle() {
     const maxX = this.webgl.frustumSize.width / 2
 
-    const shouldGoFiat = Math.random() > 0
-    const Vehicle = shouldGoFiat ? Fiat126 : Van
-    const DIMENSIONS = shouldGoFiat ? FIAT_DIMENSIONS : VAN_DIMENSIONS
+    const Vehicle = this.shouldGoFiat ? Fiat126 : Van
+    const DIMENSIONS = this.shouldGoFiat ? FIAT_DIMENSIONS : VAN_DIMENSIONS
 
     // TODO use Audio api instead
     const hornBuffer = assets.get(
-      shouldGoFiat ? 'assets/small-car-horn.mp3' : 'assets/striscia-clacson.mp3',
+      this.shouldGoFiat ? 'assets/small-car-horn.mp3' : 'assets/striscia-clacson.mp3',
     )
     playAudioFromBuffer(hornBuffer)
+
+    this.shouldGoFiat = !this.shouldGoFiat
 
     const vehicle = new Vehicle({
       webgl: this.webgl,
       // the material is the same as the van
-      material: vanCollision.material,
-      collisionFilterGroup: vanCollision.id,
-      collisionFilterMask: vanCollision.collideWith,
+      material: vehicleCollision.material,
+      collisionFilterGroup: vehicleCollision.id,
+      collisionFilterMask: vehicleCollision.collideWith,
       type: CANNON.Body.DYNAMIC,
       mass: 50,
       // simulate the water
