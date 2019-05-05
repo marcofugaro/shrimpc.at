@@ -11,7 +11,7 @@ import Delimiters from './scene/Delimiters'
 import Arms from './scene/Arms'
 import Head from './scene/Head'
 import Body from './scene/Body'
-import Van from './scene/Van'
+import Vehicles from './scene/Vehicles'
 import addBackgorundVideo from './scene/backgroundVideo'
 import { addLights } from './scene/lights'
 import { addFilters } from './scene/filters'
@@ -74,8 +74,8 @@ assets.load({ renderer: webgl.renderer }).then(async () => {
   webgl.scene.add(webgl.scene.head)
   webgl.scene.shrimps = new Shrimps({ webgl })
   webgl.scene.add(webgl.scene.shrimps)
-  webgl.scene.van = new Van({ webgl })
-  webgl.scene.add(webgl.scene.van)
+  webgl.scene.vehicles = new Vehicles({ webgl })
+  webgl.scene.add(webgl.scene.vehicles)
 
   initCustomCollisions(webgl.world)
 
