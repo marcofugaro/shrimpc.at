@@ -1,8 +1,9 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import { getRandomTransparentColor } from 'lib/three-utils'
+import CannonSuperBody from 'lib/CannonSuperBody'
 
-export default class CannonSphere extends CANNON.Body {
+export default class CannonSphere extends CannonSuperBody {
   mesh = new THREE.Object3D()
 
   constructor({ webgl, radius, ...options }) {

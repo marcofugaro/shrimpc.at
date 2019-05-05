@@ -6,6 +6,7 @@ import CannonSuperBody from 'lib/CannonSuperBody'
 import { shrimpCollision } from 'scene/collisions'
 import { VERTICAL_GAP } from 'scene/Delimiters'
 import { getRandomTransparentColor } from 'lib/three-utils'
+import Bubble from 'scene/Bubble'
 
 // the interval between the spawn of shrimps (seconds)
 export let SHRIMP_INTERVAL = 4
@@ -15,6 +16,11 @@ export const SHRIMP_HEIGHT = 0.5
 
 const shrimpGltfKey = assets.queue({
   url: 'assets/shrimp.glb',
+  type: 'gltf',
+})
+
+const shrimpFriedGltfKey = assets.queue({
+  url: 'assets/shrimp-fried.glb',
   type: 'gltf',
 })
 
@@ -102,31 +108,67 @@ class Shrimp extends CannonSuperBody {
     }
 
     const shrimpGltf = assets.get(shrimpGltfKey)
-    const shrimp = shrimpGltf.scene.clone()
+    this.shrimpMesh = shrimpGltf.scene.children[0].clone()
+    this.alignShrimp(this.shrimpMesh)
+    this.mesh.add(this.shrimpMesh)
 
-    // position the shrimp correctly
-    shrimp.traverse(child => {
-      if (!child.isMesh) {
-        return
+    const shrimpFriedGltf = assets.get(shrimpFriedGltfKey)
+    this.shrimpFriedMesh = shrimpFriedGltf.scene.children[0].clone()
+    this.alignShrimp(this.shrimpFriedMesh)
+    this.shrimpFriedMesh.visible = false
+    this.mesh.add(this.shrimpFriedMesh)
+
+    // add the collide event with the arm
+    this.addEventListener('collide', e => {
+      if (e.body === webgl.scene.arms.leftArm || e.body === webgl.scene.arms.rightArm) {
+        this.fry()
       }
-
-      child.rotateX(THREE.Math.degToRad(-90))
-      child.rotateZ(THREE.Math.degToRad(-5))
-      child.rotateY(THREE.Math.degToRad(3))
-      child.scale.multiplyScalar(0.6)
-      child.translateX(-0.1)
-
-      child.castShadow = true
-      child.receiveShadow = true
     })
+  }
 
-    this.mesh.add(shrimp)
+  alignShrimp(shrimp) {
+    // position the shrimp correctly
+    shrimp.rotateX(THREE.Math.degToRad(-90))
+    shrimp.rotateZ(THREE.Math.degToRad(-5))
+    shrimp.rotateY(THREE.Math.degToRad(3))
+    shrimp.scale.multiplyScalar(0.6)
+    shrimp.translateX(-0.1)
+
+    shrimp.castShadow = true
+    shrimp.receiveShadow = true
   }
 
   update(dt = 0, time = 0) {
     // sync the mesh to the physical body
     this.mesh.position.copy(this.position)
     this.mesh.quaternion.copy(this.quaternion)
+  }
+
+  fry() {
+    if (this.isFried) {
+      return
+    }
+    this.isFried = true
+
+    // TODO animate this??
+    this.shrimpMesh.visible = false
+    this.shrimpFriedMesh.visible = true
+
+    this.shrimpMesh.material.needsupdate = true
+    this.shrimpFriedMesh.material.needsupdate = true
+
+    // for (let i = 0; i < 30; i++) {
+    //   const position = this.position.clone()
+
+    //   position.y -= 0.5
+
+    //   const bubble = new Bubble({ webgl: this.webgl, position })
+
+    //   // add the body to the cannon.js world
+    //   this.webgl.world.addBody(bubble)
+    //   // and the mesh to the three.js scene
+    //   this.webgl.scene.add(bubble.mesh)
+    // }
   }
 }
 
