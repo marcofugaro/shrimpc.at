@@ -1,40 +1,48 @@
 import * as THREE from 'three'
-import CANNON from 'cannon'
-import { bubbleCollision } from 'scene/collisions'
-import CannonSphere from 'lib/CannonSphere'
+import { quadOut } from 'eases'
+import _ from 'lodash'
+import { SceneUtils } from 'lib/three/SceneUtils'
 
-export default class Bubble extends CannonSphere {
+// how much a bubble takes to reach full size, in seconds
+const BLOWUP_TIME = 0.8
+
+export default class Bubble extends THREE.Object3D {
   constructor({ webgl, ...options }) {
-    super({
-      webgl,
-      ...options,
-      material: bubbleCollision.material,
-      collisionFilterGroup: bubbleCollision.id,
-      collisionFilterMask: bubbleCollision.collideWith,
-      type: CANNON.Body.DYNAMIC,
-      mass: 0.1,
-      // simulate the water
-      angularDamping: 0.98,
-      // movement damping is handled by the drag force
-      // linearDamping: 0.98,
-      radius: 0.1,
-    })
+    super()
+    this.webgl = webgl
+
+    const geometry = new THREE.SphereGeometry(0.08, 8, 8)
+    const material = new THREE.MeshBasicMaterial({ color: 0xffff00 })
+    this.bubble = new THREE.Mesh(geometry, material)
+
+    this.bubble.scale.setScalar(0)
+    this.startTime = this.webgl.time
+
+    this.add(this.bubble)
   }
 
-  update(dt = 0, time = 0) {
-    // sync the mesh to the physical body
-    this.mesh.position.copy(this.position)
-    this.mesh.quaternion.copy(this.quaternion)
+  update(dt, time) {
+    if (time - this.startTime <= BLOWUP_TIME) {
+      const scale = quadOut((time - this.startTime) / BLOWUP_TIME)
+      this.bubble.scale.setScalar(scale)
+    } else {
+      this.detach()
+      this.bubble.position.y += 0.05
 
-    // apply a quadratic drag force to simulate water
-    this.applyDrag(0.8)
-    // the force moving the bubble up
-    this.applyGenericForce(new CANNON.Vec3(0, 0.8, 0))
-    // // remove it if they exit the field of view
-    // if (maxX * 1.3 < shrimp.position.x) {
-    //   this.webgl.world.removeBody(shrimp)
-    //   this.remove(shrimp.mesh)
-    //   this.shrimps.splice(this.shrimps.findIndex(s => s.id === shrimp.id), 1)
-    // }
+      // remove it if they exit the field of view
+      const maxY = this.webgl.frustumSize.height / 2
+      if (maxY * 1.3 < this.bubble.position.y) {
+        requestAnimationFrame(() => {
+          this.bubble.geometry.dispose()
+          this.bubble.material.dispose()
+          this.webgl.scene.remove(this.bubble)
+        })
+      }
+    }
   }
+
+  detach = _.once(() => {
+    SceneUtils.detach(this.bubble, this.bubble.parent, this.webgl.scene)
+    SceneUtils.attach(this.bubble, this.webgl.scene, this.webgl.scene)
+  })
 }

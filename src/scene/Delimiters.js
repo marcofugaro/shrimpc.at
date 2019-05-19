@@ -19,18 +19,18 @@ class Delimiter extends CANNON.Body {
     const groundShape = new CANNON.Plane()
     this.addShape(groundShape)
 
-    if (window.DEBUG) {
-      const geometry = new THREE.PlaneGeometry(12, 12)
-      const material = new THREE.MeshLambertMaterial(getRandomTransparentColor())
-      material.side = THREE.DoubleSide
-      const groundMesh = new THREE.Mesh(geometry, material)
-      this.mesh.add(groundMesh)
+    // if (window.DEBUG) {
+    //   const geometry = new THREE.PlaneGeometry(12, 12)
+    //   const material = new THREE.MeshLambertMaterial(getRandomTransparentColor())
+    //   material.side = THREE.DoubleSide
+    //   const groundMesh = new THREE.Mesh(geometry, material)
+    //   this.mesh.add(groundMesh)
 
-      // sync the mesh to the physical body
-      // only once, no need to animate them
-      this.mesh.position.copy(this.position)
-      this.mesh.quaternion.copy(this.quaternion)
-    }
+    //   // sync the mesh to the physical body
+    //   // only once, no need to animate them
+    //   this.mesh.position.copy(this.position)
+    //   this.mesh.quaternion.copy(this.quaternion)
+    // }
   }
 }
 

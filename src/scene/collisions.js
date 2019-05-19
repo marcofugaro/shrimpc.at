@@ -25,7 +25,7 @@ export const shrimpCollision = {
 
 export const vehicleCollision = {
   id: getCollisionId(),
-  material: new CANNON.Material('van'),
+  material: new CANNON.Material('vehicle'),
   get collideWith() {
     return (
       armCollision.id |
