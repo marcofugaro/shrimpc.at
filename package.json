@@ -50,7 +50,7 @@
     "datauritoblob": "^1.0.0",
     "eases": "^1.0.8",
     "image-promise": "^6.0.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "orbit-controls": "^1.2.4",
     "p-event": "^2.3.1",
     "p-map": "^2.0.0",
