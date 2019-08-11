@@ -162,7 +162,7 @@ export default class Shrimp extends CannonSuperBody {
 
       this.shrimpMesh.material.needsupdate = true
       this.shrimpFriedMesh.material.needsupdate = true
-    }, SPAWN_TIME * 0.23)
+    }, SPAWN_TIME * 0.2)
 
     const vertices = this.shrimpMesh.geometry.getAttribute('position').array
     const normals = this.shrimpMesh.geometry.getAttribute('normal').array

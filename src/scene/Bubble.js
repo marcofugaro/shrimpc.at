@@ -51,7 +51,7 @@ export default class Bubble extends THREE.Object3D {
       // translate it along the shrimp normal
       const translateVector = this.moveAlong
         .clone()
-        .multiplyScalar(quadOut((time - this.startTime) / this.blowupTime) * 0.012)
+        .multiplyScalar(quadOut((time - this.startTime) / this.blowupTime) * 0.015)
       this.bubble.position.add(translateVector)
     } else {
       this.detach()
