@@ -8,6 +8,9 @@ import Bubble from 'scene/Bubble'
 import { impulse } from 'lib/easing-utils'
 import { playAudio } from 'lib/audio-utils'
 
+const BUBBLES_NUMBER = 400
+const SPAWN_TIME = 3200 // ms
+
 const shrimpGltfKey = assets.queue({
   url: 'assets/shrimp.glb',
   type: 'gltf',
@@ -142,24 +145,29 @@ export default class Shrimp extends CannonSuperBody {
   }
 
   fry = _.once(() => {
-    const fryingSound = assets.get('assets/fryingsound.mp3')
-    // play the sound with the Web Audio Api because it
-    // doesn't happen just after a click/tap event
-    playAudio(fryingSound, this.webgl.audioContext)
+    // don't play the sound it it has been played just now,
+    // it sounds weird otherwise
+    if (this.webgl.time - (window.lastPlayedFry || 0) > 0.2) {
+      window.lastPlayedFry = this.webgl.time
+      const fryingSound = assets.get('assets/fryingsound.mp3')
+      // play the sound with the Web Audio Api because it
+      // doesn't happen just after a click/tap event
+      playAudio(fryingSound, this.webgl.audioContext)
+    }
 
     // TODO animate this??
-    // this.shrimpMesh.visible = false
-    // this.shrimpFriedMesh.visible = true
+    setTimeout(() => {
+      this.shrimpMesh.visible = false
+      this.shrimpFriedMesh.visible = true
 
-    // this.shrimpMesh.material.needsupdate = true
-    // this.shrimpFriedMesh.material.needsupdate = true
-
-    const bubblesNumber = 100
-    const spawnTime = 1500 // ms
+      this.shrimpMesh.material.needsupdate = true
+      this.shrimpFriedMesh.material.needsupdate = true
+    }, SPAWN_TIME * 0.23)
 
     const vertices = this.shrimpMesh.geometry.getAttribute('position').array
+    const normals = this.shrimpMesh.geometry.getAttribute('normal').array
     const verticesCount = this.shrimpMesh.geometry.getAttribute('position').count
-    for (let i = 0; i < bubblesNumber; i++) {
+    for (let i = 0; i < BUBBLES_NUMBER; i++) {
       const index = _.random(0, verticesCount) * 3
       const x = vertices[index]
       const y = vertices[index + 1]
@@ -167,11 +175,21 @@ export default class Shrimp extends CannonSuperBody {
       const position = new THREE.Vector3(x, y, z)
       position.applyMatrix4(this.shrimpMesh.matrix)
 
+      const xNormal = normals[index]
+      const yNormal = normals[index + 1]
+      const zNormal = normals[index + 2]
+      const normal = new THREE.Vector3(xNormal, yNormal, zNormal)
+      normal.applyMatrix4(this.shrimpMesh.matrix)
+
       setTimeout(() => {
-        const bubble = new Bubble({ webgl: this.webgl })
+        const bubble = new Bubble({
+          webgl: this.webgl,
+          moveAlong: normal,
+          originalPosition: position,
+        })
         bubble.position.copy(position)
         this.mesh.add(bubble)
-      }, impulse(i / bubblesNumber, 8) * spawnTime)
+      }, impulse(i / BUBBLES_NUMBER, 13) * SPAWN_TIME)
     }
   })
 }

@@ -5,7 +5,7 @@ import { SceneUtils } from 'lib/three/SceneUtils'
 import assets from 'lib/AssetManager'
 
 // how much a bubble takes to reach full size, in seconds
-const BLOWUP_TIME = 0.8
+const BLOWUP_TIME = 0.7
 
 const envMapKey = assets.queue({
   url: 'assets/env-map-equirectangular.jpg',
@@ -17,14 +17,19 @@ export default class Bubble extends THREE.Object3D {
   constructor({ webgl, ...options }) {
     super()
     this.webgl = webgl
+    this.moveAlong = options.moveAlong
+    this.originalPosition = options.originalPosition
 
-    const geometry = new THREE.SphereGeometry(0.08, 8, 8)
+    // give some randomness to the time they blow up
+    this.blowupTime = BLOWUP_TIME + (Math.random() * 2 - 1) * 0.2
+
+    const geometry = new THREE.SphereBufferGeometry(0.12, 8, 8)
     const material = new THREE.MeshStandardMaterial({
-      roughness: 0.1,
+      roughness: 0.3,
       metalness: 1,
       transparent: true,
       depthWrite: false,
-      opacity: 0.5,
+      opacity: 0.6,
       envMap: assets.get(envMapKey),
       refractionRatio: 0.95,
     })
@@ -38,12 +43,19 @@ export default class Bubble extends THREE.Object3D {
   }
 
   update(dt, time) {
-    if (time - this.startTime <= BLOWUP_TIME) {
-      const scale = quadOut((time - this.startTime) / BLOWUP_TIME)
+    if (time - this.startTime <= this.blowupTime) {
+      // make it grow
+      const scale = quadOut((time - this.startTime) / this.blowupTime)
       this.bubble.scale.setScalar(scale)
+
+      // translate it along the shrimp normal
+      const translateVector = this.moveAlong
+        .clone()
+        .multiplyScalar(quadOut((time - this.startTime) / this.blowupTime) * 0.012)
+      this.bubble.position.add(translateVector)
     } else {
       this.detach()
-      this.bubble.position.y += 0.05
+      this.bubble.position.y += 0.1
 
       // remove it if they exit the field of view
       const maxY = this.webgl.frustumSize.height / 2
