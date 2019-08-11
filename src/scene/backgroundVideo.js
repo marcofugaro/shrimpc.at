@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js'
-import pEvent from 'p-event'
 
 // it needs to be async because of the video loading stuff,
 // otherwise this would stay in the constructor
@@ -7,10 +6,13 @@ export default async function addBackgorundVideo(webgl) {
   // Render the video in pixi as a pixi layer
   const url = 'assets/3d-fish-school.mp4'
   const videoTexture = PIXI.Texture.from(url, {
-    // cap the video at 30, the source video framerate,
-    // otherwise it would be the renderer's fps
-    // BUG if I uncomment this line the shrimps bug out 🤔
-    // resourceOptions: { updateFPS: 30 },
+    resourceOptions: {
+      // cap the video at 30, the source video framerate,
+      // otherwise it would be the renderer's fps
+      // BUG if I uncomment this line the shrimps bug out 🤔
+      // updateFPS: 30,
+      autoPlay: false,
+    },
   })
 
   const video = videoTexture.baseTexture.resource.source
@@ -18,8 +20,9 @@ export default async function addBackgorundVideo(webgl) {
   video.muted = true
   video.loop = true
 
-  // wait for the video to load so we have its width and height
-  await pEvent(video, 'canplay')
+  // BUG play now the video because of this bug
+  // https://github.com/pixijs/pixi.js/issues/5996
+  await video.play()
 
   const videoSprite = new PIXI.Sprite(videoTexture)
 
