@@ -2,9 +2,16 @@ import * as THREE from 'three'
 import { quadOut } from 'eases'
 import _ from 'lodash'
 import { SceneUtils } from 'lib/three/SceneUtils'
+import assets from 'lib/AssetManager'
 
 // how much a bubble takes to reach full size, in seconds
 const BLOWUP_TIME = 0.8
+
+const envMapKey = assets.queue({
+  url: 'assets/env-map-equirectangular.jpg',
+  type: 'env-map',
+  equirectangular: true,
+})
 
 export default class Bubble extends THREE.Object3D {
   constructor({ webgl, ...options }) {
@@ -12,7 +19,16 @@ export default class Bubble extends THREE.Object3D {
     this.webgl = webgl
 
     const geometry = new THREE.SphereGeometry(0.08, 8, 8)
-    const material = new THREE.MeshBasicMaterial({ color: 0xffff00 })
+    const material = new THREE.MeshStandardMaterial({
+      roughness: 0.1,
+      metalness: 1,
+      transparent: true,
+      depthWrite: false,
+      opacity: 0.5,
+      envMap: assets.get(envMapKey),
+      refractionRatio: 0.95,
+    })
+
     this.bubble = new THREE.Mesh(geometry, material)
 
     this.bubble.scale.setScalar(0)
