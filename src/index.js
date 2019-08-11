@@ -2,6 +2,7 @@ import CANNON from 'cannon'
 import TWEEN from '@tweenjs/tween.js'
 import * as PIXI from 'pixi.js'
 import Shake from 'shake.js'
+import webAudioTouchUnlock from 'web-audio-touch-unlock'
 import { initCustomCollisions } from 'scene/collisions'
 import { getFrustumSliceSize } from 'lib/three-utils'
 import WebGLApp from './lib/WebGLApp'
@@ -20,7 +21,7 @@ window.DEBUG = window.location.search.includes('debug')
 window.SHOW_FPS = window.location.search.includes('fps')
 
 // Init shake.js
-new Shake({ timeout: 500 }).start()
+new Shake({ threshold: 10, timeout: 250 }).start()
 
 // Grab our canvas
 const canvas = document.querySelector('#main')
@@ -54,6 +55,11 @@ const webgl = new WebGLApp({
 if (window.DEBUG) {
   window.webgl = webgl
 }
+
+// init the Web Audio API context and unlock it when
+// a touch event happens
+webgl.audioContext = new (window.AudioContext || window.webkitAudioContext)()
+webAudioTouchUnlock(webgl.audioContext)
 
 // Hide canvas
 webgl.canvas.style.visibility = 'hidden'

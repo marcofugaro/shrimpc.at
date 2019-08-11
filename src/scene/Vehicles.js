@@ -6,7 +6,7 @@ import { vehicleCollision } from 'scene/collisions'
 import Fiat126, { FIAT_DIMENSIONS } from 'scene/Fiat126'
 import Van, { VAN_DIMENSIONS } from 'scene/Van'
 import { VERTICAL_GAP } from 'scene/Delimiters'
-import { playAudioFromBuffer } from 'lib/audio-utils'
+import { playAudio } from 'lib/audio-utils'
 
 export default class Vehicles extends THREE.Object3D {
   vehicles = []
@@ -58,11 +58,10 @@ export default class Vehicles extends THREE.Object3D {
     const Vehicle = this.shouldGoFiat ? Fiat126 : Van
     const DIMENSIONS = this.shouldGoFiat ? FIAT_DIMENSIONS : VAN_DIMENSIONS
 
-    // TODO use Audio api instead
     const hornBuffer = assets.get(
       this.shouldGoFiat ? 'assets/small-car-horn.mp3' : 'assets/striscia-clacson.mp3',
     )
-    playAudioFromBuffer(hornBuffer)
+    playAudio(hornBuffer, this.webgl.audioContext)
 
     this.shouldGoFiat = !this.shouldGoFiat
 

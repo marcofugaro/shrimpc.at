@@ -7430,6 +7430,11 @@ wbuf@^1.1.0, wbuf@^1.7.3:
   dependencies:
     minimalistic-assert "^1.0.0"
 
+web-audio-touch-unlock@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/web-audio-touch-unlock/-/web-audio-touch-unlock-1.0.1.tgz#98162e3898a51bc5a4f407354ea9305113feb032"
+  integrity sha512-Rx3B/KydujLJGu/qD7UEOBk27zAZmFeM8A6U7Tso5xqVqCiIC8vMbmVxXViVUfOBi/lGcNiOpIgjY7CCT/slCw==
+
 webpack-cli@^3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-3.2.3.tgz#13653549adfd8ccd920ad7be1ef868bacc22e346"

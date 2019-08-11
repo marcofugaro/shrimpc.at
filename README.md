@@ -72,9 +72,3 @@ this.vanShrimps.forEach((shrimp, i) => {
 ![](screenshots/blender.png)
 
 <img src="public/assets/cat-head-displacement.png" width="300">
-
----
-
-- Random displacement to fry the shrimp!
-
-TODO

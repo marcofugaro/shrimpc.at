@@ -6,6 +6,7 @@ import CannonSuperBody from 'lib/CannonSuperBody'
 import { getRandomTransparentColor } from 'lib/three-utils'
 import Bubble from 'scene/Bubble'
 import { impulse } from 'lib/easing-utils'
+import { playAudio } from 'lib/audio-utils'
 
 const shrimpGltfKey = assets.queue({
   url: 'assets/shrimp.glb',
@@ -141,6 +142,11 @@ export default class Shrimp extends CannonSuperBody {
   }
 
   fry = _.once(() => {
+    const fryingSound = assets.get('assets/fryingsound.mp3')
+    // play the sound with the Web Audio Api because it
+    // doesn't happen just after a click/tap event
+    playAudio(fryingSound, this.webgl.audioContext)
+
     // TODO animate this??
     // this.shrimpMesh.visible = false
     // this.shrimpFriedMesh.visible = true

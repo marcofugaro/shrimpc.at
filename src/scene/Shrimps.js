@@ -4,6 +4,7 @@ import _ from 'lodash'
 import Shrimp from 'scene/Shrimp'
 import { shrimpCollision } from 'scene/collisions'
 import { VERTICAL_GAP } from 'scene/Delimiters'
+import assets from 'lib/AssetManager'
 
 // the interval between the spawn of shrimps (seconds)
 export let SHRIMP_INTERVAL = 4
@@ -22,6 +23,14 @@ export default class Shrimps extends THREE.Object3D {
         this.shrimpInterval = SHRIMP_INTERVAL
       })
     }
+
+    // not loaded with the other assets because
+    // it's not needed immediately
+    assets.loadSingle({
+      url: 'assets/fryingsound.mp3',
+      type: 'audio',
+      renderer: webgl.renderer,
+    })
   }
 
   update(dt = 0, time = 0) {
