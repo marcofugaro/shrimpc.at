@@ -9,4 +9,7 @@ void main() {
   gl_FragColor.b += 0.08;
   gl_FragColor.r -= 0.02;
   gl_FragColor.g -= 0.02;
+
+  // gamma correction
+  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(0.8));
 }

@@ -54,7 +54,7 @@ export default class Arm extends CannonSuperBody {
         color: 0xffffff,
         depthTest: false,
         transparent: true,
-        opacity: window.DEBUG ? 0.6 : 1,
+        opacity: 1, // window.DEBUG ? 0.6 : 1,
       }),
     )
     sprite.center.x = options.spriteCenter.x
@@ -81,7 +81,7 @@ export default class Arm extends CannonSuperBody {
       new CANNON.Quaternion().setFromEuler(0, 0, THREE.Math.degToRad(20)),
     )
 
-    if (window.DEBUG) {
+    if (false) {
       const handMesh = new THREE.Mesh(
         new THREE.SphereGeometry(hand.radius, 32, 32),
         new THREE.MeshLambertMaterial(debugColor),

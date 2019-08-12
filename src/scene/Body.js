@@ -18,7 +18,7 @@ export default class Body extends THREE.Object3D {
         color: 0xffffff,
         depthTest: false,
         transparent: true,
-        opacity: window.DEBUG ? 0.6 : 1,
+        opacity: 1, // window.DEBUG ? 0.6 : 1,
       }),
     )
 

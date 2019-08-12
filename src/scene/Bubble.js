@@ -23,14 +23,15 @@ export default class Bubble extends THREE.Object3D {
     // give some randomness to the time they blow up
     this.blowupTime = BLOWUP_TIME + (Math.random() * 2 - 1) * 0.2
 
-    const geometry = new THREE.SphereBufferGeometry(0.12, 8, 8)
+    const geometry = new THREE.SphereGeometry(0.12, 8, 8)
     const material = new THREE.MeshStandardMaterial({
-      roughness: 0.3,
-      metalness: 1,
+      roughness: 0.6,
+      metalness: 0.6,
       transparent: true,
       depthWrite: false,
-      opacity: 0.6,
+      opacity: 0.4,
       envMap: assets.get(envMapKey),
+      envMapIntensity: 0.7,
       refractionRatio: 0.95,
     })
 
@@ -38,6 +39,8 @@ export default class Bubble extends THREE.Object3D {
 
     this.bubble.scale.setScalar(0)
     this.startTime = this.webgl.time
+
+    this.bubble.receiveShadow = true
 
     this.add(this.bubble)
   }
@@ -61,8 +64,6 @@ export default class Bubble extends THREE.Object3D {
       const maxY = this.webgl.frustumSize.height / 2
       if (maxY * 1.3 < this.bubble.position.y) {
         requestAnimationFrame(() => {
-          this.bubble.geometry.dispose()
-          this.bubble.material.dispose()
           this.webgl.scene.remove(this.bubble)
         })
       }

@@ -58,7 +58,7 @@ class Head extends CANNON.Body {
 
     this.mesh.add(headMesh)
 
-    if (window.DEBUG) {
+    if (false) {
       this.mesh.add(
         new THREE.Mesh(
           new THREE.SphereGeometry(head.radius, 32, 32),
