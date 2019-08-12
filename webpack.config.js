@@ -97,6 +97,8 @@ module.exports = merge.smart(
       https: PROTOCOL === 'https',
       host: HOST,
       port: PORT,
+      // allow the site to be ported through ngrok
+      disableHostCheck: true,
       public: urls.lanUrlForConfig,
       publicPath: '/',
       contentBase: './public/',

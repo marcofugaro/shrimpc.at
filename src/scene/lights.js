@@ -3,7 +3,9 @@ import * as THREE from 'three'
 export function addLights(webgl) {
   // turn on shadows
   // PERF disable because was lowering fps by too much
-  webgl.renderer.shadowMap.enabled = true
+  if (webgl.gpu.tier > 0) {
+    webgl.renderer.shadowMap.enabled = true
+  }
 
   // soft shadows
   webgl.renderer.shadowMap.type = THREE.PCFSoftShadowMap

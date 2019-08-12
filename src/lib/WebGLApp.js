@@ -7,6 +7,7 @@ import createTouches from 'touches'
 import dataURIToBlob from 'datauritoblob'
 import Stats from 'stats.js'
 import controlPanel from 'control-panel'
+import { getGPUTier } from 'detect-gpu'
 import { EffectComposer } from './three/EffectComposer'
 import { RenderPass } from './three/RenderPass'
 
@@ -134,6 +135,14 @@ export default class WebGLApp {
         position: 'top-right',
         ...(options.panelOptions instanceof Object ? options.panelOptions : {}),
       })
+    }
+
+    // detect the gpu info
+    const gpu = getGPUTier({ glContext: this.renderer.getContext() })
+    this.gpu = {
+      name: gpu.type,
+      tier: Number(gpu.tier.slice(-1)),
+      isMobile: gpu.tier.toLowerCase().includes('mobile'),
     }
   }
 
