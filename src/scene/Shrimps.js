@@ -35,6 +35,7 @@ export default class Shrimps extends THREE.Object3D {
 
   update(dt = 0, time = 0) {
     const maxX = this.webgl.frustumSize.width / 2
+    const maxY = this.webgl.frustumSize.height / 2
 
     // spawn new shrimps
     if (!this.lastSpawnTimestamp || time - this.lastSpawnTimestamp > this.shrimpInterval) {
@@ -87,13 +88,16 @@ export default class Shrimps extends THREE.Object3D {
 
       // remove it if they exit the field of view
       if (maxX * 1.3 < shrimp.position.x) {
-        this.webgl.world.removeBody(shrimp)
         shrimp.mesh.traverse(child => {
-          if (child.isMesh) {
-            child.material.dispose()
-            child.geometry.dispose()
+          // remove the bubbles
+          if (child.bubble) {
+            requestAnimationFrame(() => {
+              this.webgl.scene.remove(child.bubble)
+            })
           }
         })
+
+        this.webgl.world.removeBody(shrimp)
         this.remove(shrimp.mesh)
         this.shrimps.splice(this.shrimps.findIndex(s => s.id === shrimp.id), 1)
       }
