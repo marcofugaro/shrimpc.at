@@ -58,7 +58,7 @@
     "pretty-ms": "^4.0.0",
     "shake.js": "^1.2.2",
     "stats.js": "^0.17.0",
-    "three": "^0.101.1",
+    "three": "^0.107.0",
     "touches": "^1.2.2",
     "web-audio-touch-unlock": "^1.0.1"
   }
