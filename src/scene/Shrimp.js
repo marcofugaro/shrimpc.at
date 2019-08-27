@@ -118,7 +118,7 @@ export default class Shrimp extends CannonSuperBody {
     // add the collide event with the arm
     this.addEventListener('collide', e => {
       if (e.body === webgl.scene.arms.leftArm || e.body === webgl.scene.arms.rightArm) {
-        this.fry()
+        // this.fry()
       }
     })
   }
