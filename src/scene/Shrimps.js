@@ -27,7 +27,7 @@ export default class Shrimps extends THREE.Object3D {
     // not loaded with the other assets because
     // it's not needed immediately
     assets.loadSingle({
-      url: 'assets/fryingsound.mp3',
+      url: 'assets/sounds/fryingsound_lowpass.mp3',
       type: 'audio',
       renderer: webgl.renderer,
     })

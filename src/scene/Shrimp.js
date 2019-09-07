@@ -118,7 +118,7 @@ export default class Shrimp extends CannonSuperBody {
     // add the collide event with the arm
     this.addEventListener('collide', e => {
       if (e.body === webgl.scene.arms.leftArm || e.body === webgl.scene.arms.rightArm) {
-        // this.fry()
+        this.fry()
       }
     })
   }
@@ -149,7 +149,7 @@ export default class Shrimp extends CannonSuperBody {
     // it sounds weird otherwise
     if (this.webgl.time - (window.lastPlayedFry || 0) > 0.2) {
       window.lastPlayedFry = this.webgl.time
-      const fryingSound = assets.get('assets/fryingsound.mp3')
+      const fryingSound = assets.get('assets/sounds/fryingsound_lowpass.mp3')
       // play the sound with the Web Audio Api because it
       // doesn't happen just after a click/tap event
       playAudio(fryingSound, this.webgl.audioContext)

@@ -25,7 +25,7 @@ export default class Vehicles extends THREE.Object3D {
         renderer: webgl.renderer,
       }),
       assets.loadSingle({
-        url: 'assets/striscia-clacson.mp3',
+        url: 'assets/sounds/striscia-clacson_lowpass.mp3',
         type: 'audio',
         renderer: webgl.renderer,
       }),
@@ -35,7 +35,7 @@ export default class Vehicles extends THREE.Object3D {
         renderer: webgl.renderer,
       }),
       assets.loadSingle({
-        url: 'assets/small-car-horn.mp3',
+        url: 'assets/sounds/small-car-horn_lowpass.mp3',
         type: 'audio',
         renderer: webgl.renderer,
       }),
@@ -59,7 +59,7 @@ export default class Vehicles extends THREE.Object3D {
     const DIMENSIONS = this.shouldGoFiat ? FIAT_DIMENSIONS : VAN_DIMENSIONS
 
     const hornBuffer = assets.get(
-      this.shouldGoFiat ? 'assets/small-car-horn.mp3' : 'assets/striscia-clacson.mp3',
+      this.shouldGoFiat ? 'assets/sounds/small-car-horn_lowpass.mp3' : 'assets/sounds/striscia-clacson_lowpass.mp3',
     )
     playAudio(hornBuffer, this.webgl.audioContext)
 
