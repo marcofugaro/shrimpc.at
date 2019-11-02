@@ -1,9 +1,9 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
-import Arm from 'scene/Arm'
-import { armCollision } from 'scene/collisions'
-import { mouseToCoordinates } from 'lib/three-utils'
-import assets from 'lib/AssetManager'
+import Arm from './Arm'
+import { armCollision } from './collisions'
+import { mouseToCoordinates } from '../lib/three-utils'
+import assets from '../lib/AssetManager'
 
 const rightArmSpriteKey = assets.queue({
   url: 'assets/cat-right-arm.png',

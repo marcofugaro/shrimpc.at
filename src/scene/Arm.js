@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import TWEEN from '@tweenjs/tween.js'
-import CannonSphere from 'lib/CannonSphere'
-import CannonSuperBody from 'lib/CannonSuperBody'
-import { getRandomTransparentColor } from 'lib/three-utils'
-import { CAT_OFFSET_Y } from 'scene/Head'
+import CannonSphere from '../lib/CannonSphere'
+import CannonSuperBody from '../lib/CannonSuperBody'
+import { getRandomTransparentColor } from '../lib/three-utils'
+import { CAT_OFFSET_Y } from './Head'
 
 // basic dimensions
 export const PAW_RADIUS = 1.2

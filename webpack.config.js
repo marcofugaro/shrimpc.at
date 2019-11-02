@@ -8,7 +8,6 @@ const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeM
 const { prepareUrls } = require('react-dev-utils/WebpackDevServerUtils')
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages')
 const prettyMs = require('pretty-ms')
-const ThreeWebpackPlugin = require('@wildpeaks/three-webpack-plugin')
 const EventHooksPlugin = require('event-hooks-webpack-plugin')
 const chalk = require('chalk')
 const indentString = require('indent-string')
@@ -16,7 +15,11 @@ const _ = require('lodash')
 
 const PROTOCOL = 'http'
 const HOST = '0.0.0.0'
-const PORT = 8080
+// check if the port is already in use, if so use the next port
+const DEFAULT_PORT = '8080'
+const PORT = execSync(`detect-port ${DEFAULT_PORT}`)
+  .toString()
+  .trim()
 const urls = prepareUrls(PROTOCOL, HOST, PORT)
 
 // make the console >tree command look pretty
@@ -33,7 +36,6 @@ function beautifyTree(tree) {
   return beautify(tree)
 }
 
-// beautifyTree(execSync('tree --du -h --dirsfirst build/').toString())
 module.exports = merge.smart(
   {
     module: {
@@ -58,13 +60,7 @@ module.exports = merge.smart(
         inject: true,
         template: './public/index.html',
       }),
-      // Makes you import normally from `three/examples/js` files
-      new ThreeWebpackPlugin(),
     ],
-    // import files without doing the ../../../
-    resolve: {
-      modules: ['node_modules', 'src'],
-    },
     // automatically split vendor and app code
     optimization: {
       splitChunks: {
@@ -113,9 +109,9 @@ module.exports = merge.smart(
       // Sssh...
       quiet: true,
       clientLogLevel: 'none',
-      // uncomment these lines to enable HMR
+      // enable HMR
+      // TODO do code to enable HMR from the client-side
       // hot: true,
-      // hotOnly: true,
       after() {
         // try to open into the already existing tab
         openBrowser(urls.localUrlForBrowser)
@@ -130,14 +126,14 @@ module.exports = merge.smart(
         // debounced because it gets called two times somehow
         beforeCompile: _.debounce(() => {
           console.clear()
-          console.log('⏳ Compiling...')
+          console.log('⏳  Compiling...')
         }, 0),
         done(stats) {
           if (stats.hasErrors()) {
             const statsJson = stats.toJson({ all: false, warnings: true, errors: true })
             const messages = formatWebpackMessages(statsJson)
             console.clear()
-            console.log(chalk.red('❌ Failed to compile.'))
+            console.log(chalk.red('❌  Failed to compile.'))
             console.log()
             console.log(messages.errors[0])
             return
@@ -145,7 +141,7 @@ module.exports = merge.smart(
 
           const time = prettyMs(stats.endTime - stats.startTime)
           console.clear()
-          console.log(chalk.green(`✅ Compiled successfully in ${chalk.cyan(time)}`))
+          console.log(chalk.green(`✅  Compiled successfully in ${chalk.cyan(time)}`))
           console.log()
           console.log(`  ${chalk.bold(`Local`)}:           ${chalk.cyan(urls.localUrlForTerminal)}`)
           console.log(`  ${chalk.bold(`On your network`)}: ${chalk.cyan(urls.lanUrlForTerminal)}`)
@@ -168,7 +164,7 @@ module.exports = merge.smart(
     devtool: 'source-map',
     output: {
       path: path.resolve(__dirname, 'build'),
-      filename: 'app.[chunkhash:8].js',
+      filename: 'app.[contenthash:8].js',
       chunkFilename: '[name].[contenthash:8].chunk.js',
       // change this if you're deploying on a subfolder
       publicPath: '',
@@ -179,23 +175,40 @@ module.exports = merge.smart(
       new EventHooksPlugin({
         // debounced because it gets called two times somehow
         beforeCompile: _.debounce(() => {
-          console.log('⏳ Compiling...')
+          console.log('⏳  Compiling...')
         }, 0),
         done(stats) {
           if (stats.hasErrors()) {
             const statsJson = stats.toJson({ all: false, warnings: true, errors: true })
             const messages = formatWebpackMessages(statsJson)
-            console.log(chalk.red('❌ Failed to compile.'))
+            console.log(chalk.red('❌  Failed to compile.'))
             console.log()
             console.log(messages.errors[0])
           }
         },
         afterEmit() {
-          const tree = execSync('tree --du -h --dirsfirst build/').toString()
-          console.log(chalk.green(`✅ Compiled successfully!`))
+          console.log(chalk.green(`✅  Compiled successfully!`))
           console.log(`The folder ${chalk.bold(`build/`)} is ready to be deployed`)
           console.log()
-          console.log(beautifyTree(tree))
+
+          try {
+            const tree = execSync('tree --du -h --dirsfirst build/').toString()
+            console.log(beautifyTree(tree))
+          } catch (e) {
+            console.log(
+              chalk.yellow(
+                `⚠️  Homerew and the tree package are required for the file tree output,`,
+              ),
+              `please install them with the following command:`,
+            )
+            console.log()
+            console.log(
+              chalk.cyan(
+                `  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" && brew install tree`,
+              ),
+            )
+          }
+
           console.log()
         },
       }),

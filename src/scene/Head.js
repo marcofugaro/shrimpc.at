@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
-import { headCollision } from 'scene/collisions'
-import { getRandomTransparentColor } from 'lib/three-utils'
-import assets from 'lib/AssetManager'
 import { mapRange, degToRad, lerp } from 'canvas-sketch-util/math'
+import { headCollision } from './collisions'
+import { getRandomTransparentColor } from '../lib/three-utils'
+import assets from '../lib/AssetManager'
 import eases from 'eases'
 
 export const HEAD_RADIUS = 2.5

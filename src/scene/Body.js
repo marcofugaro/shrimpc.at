@@ -1,6 +1,6 @@
 import * as THREE from 'three'
-import { CAT_OFFSET_Y } from 'scene/Head'
-import assets from 'lib/AssetManager'
+import { CAT_OFFSET_Y } from './Head'
+import assets from '../lib/AssetManager'
 
 const catBodyKey = assets.queue({
   url: 'assets/cat-body.png',

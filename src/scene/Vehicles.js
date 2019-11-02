@@ -1,12 +1,12 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
-import assets from 'lib/AssetManager'
-import { vehicleCollision } from 'scene/collisions'
-import Fiat126, { FIAT_DIMENSIONS } from 'scene/Fiat126'
-import Van, { VAN_DIMENSIONS } from 'scene/Van'
-import { VERTICAL_GAP } from 'scene/Delimiters'
-import { playAudio } from 'lib/audio-utils'
+import assets from '../lib/AssetManager'
+import { vehicleCollision } from './collisions'
+import Fiat126, { FIAT_DIMENSIONS } from './Fiat126'
+import Van, { VAN_DIMENSIONS } from './Van'
+import { VERTICAL_GAP } from './Delimiters'
+import { playAudio } from '../lib/audio-utils'
 
 export default class Vehicles extends THREE.Object3D {
   vehicles = []

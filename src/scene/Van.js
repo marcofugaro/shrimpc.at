@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
-import assets from 'lib/AssetManager'
-import CannonSuperBody from 'lib/CannonSuperBody'
-import { HORIZONTAL_GAP } from 'scene/Delimiters'
-import { getRandomTransparentColor } from 'lib/three-utils'
+import assets from '../lib/AssetManager'
+import CannonSuperBody from '../lib/CannonSuperBody'
+import { HORIZONTAL_GAP } from './Delimiters'
+import { getRandomTransparentColor } from '../lib/three-utils'
 
 // collision box dimensions
 // in order: x, y, and z width

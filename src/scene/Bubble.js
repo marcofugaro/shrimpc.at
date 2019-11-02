@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import { quadOut } from 'eases'
 import _ from 'lodash'
-import { SceneUtils } from 'lib/three/SceneUtils'
-import assets from 'lib/AssetManager'
+import { SceneUtils } from '../lib/three/SceneUtils'
+import assets from '../lib/AssetManager'
 
 // how much a bubble takes to reach full size, in seconds
 const BLOWUP_TIME = 0.7

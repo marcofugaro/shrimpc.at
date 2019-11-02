@@ -1,12 +1,12 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
-import assets from 'lib/AssetManager'
-import CannonSuperBody from 'lib/CannonSuperBody'
-import { getRandomTransparentColor } from 'lib/three-utils'
-import Bubble from 'scene/Bubble'
-import { impulse } from 'lib/easing-utils'
-import { playAudio } from 'lib/audio-utils'
+import assets from '../lib/AssetManager'
+import CannonSuperBody from '../lib/CannonSuperBody'
+import { getRandomTransparentColor } from '../lib/three-utils'
+import Bubble from './Bubble'
+import { impulse } from '../lib/easing-utils'
+import { playAudio } from '../lib/audio-utils'
 
 const BUBBLES_NUMBER = 400
 const SPAWN_TIME = 3200 // ms
