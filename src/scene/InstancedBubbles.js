@@ -26,17 +26,19 @@ export default class InstancedBubbles extends THREE.Group {
 
     const geometry = new THREE.SphereBufferGeometry(0.12, 8, 8)
     const material = new THREE.MeshStandardMaterial({
-      // roughness: 0.6,
-      // metalness: 0.6,
-      // transparent: true,
-      // depthWrite: false,
-      // opacity: 0.3,
-      // envMap: assets.get(envMapKey),
-      // envMapIntensity: 0.7,
-      // refractionRatio: 0.95,
-
-      roughness: 1,
-      metalness: 0,
+      roughness: 0.6,
+      metalness: 0.6,
+      transparent: true,
+      depthWrite: false,
+      opacity: 0.3,
+      envMap: assets.get(envMapKey),
+      envMapIntensity: 0.7,
+      refractionRatio: 0.95,
+      // BUG on mobile if would glitch out if
+      // it didn't had this 1px transparent texture in the map
+      map: new THREE.TextureLoader().load(
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII='
+      ),
     })
 
     this.mesh = new THREE.InstancedMesh(geometry, material, INSTANCED_COUNT)
