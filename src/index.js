@@ -14,6 +14,7 @@ import Arms from './scene/Arms'
 import Head from './scene/Head'
 import Body from './scene/Body'
 import Vehicles from './scene/Vehicles'
+import InstancedBubbles from './scene/InstancedBubbles'
 import addBackgorundVideo from './scene/backgroundVideo'
 import { addLights } from './scene/lights'
 import { addFilters } from './scene/filters'
@@ -83,6 +84,8 @@ assets.load({ renderer: webgl.renderer }).then(async () => {
   webgl.scene.add(webgl.scene.shrimps)
   webgl.scene.vehicles = new Vehicles({ webgl })
   webgl.scene.add(webgl.scene.vehicles)
+  webgl.scene.instancedBubbles = new InstancedBubbles({ webgl })
+  webgl.scene.add(webgl.scene.instancedBubbles)
 
   initCustomCollisions(webgl.world)
 

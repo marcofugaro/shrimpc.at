@@ -8,7 +8,7 @@ import Van, { VAN_DIMENSIONS } from './Van'
 import { VERTICAL_GAP } from './Delimiters'
 import { playAudio } from '../lib/audio-utils'
 
-export default class Vehicles extends THREE.Object3D {
+export default class Vehicles extends THREE.Group {
   vehicles = []
   shouldGoFiat = false
 
@@ -59,7 +59,9 @@ export default class Vehicles extends THREE.Object3D {
     const DIMENSIONS = this.shouldGoFiat ? FIAT_DIMENSIONS : VAN_DIMENSIONS
 
     const hornBuffer = assets.get(
-      this.shouldGoFiat ? 'assets/sounds/small-car-horn_lowpass.mp3' : 'assets/sounds/striscia-clacson_lowpass.mp3',
+      this.shouldGoFiat
+        ? 'assets/sounds/small-car-horn_lowpass.mp3'
+        : 'assets/sounds/striscia-clacson_lowpass.mp3'
     )
     playAudio(hornBuffer, this.webgl.audioContext)
 
@@ -80,7 +82,7 @@ export default class Vehicles extends THREE.Object3D {
       position: new CANNON.Vec3(
         -maxX - DIMENSIONS[0],
         _.random(0, VERTICAL_GAP / 2 - DIMENSIONS[1] / 2),
-        0,
+        0
       ),
     })
 

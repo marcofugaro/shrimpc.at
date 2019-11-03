@@ -7,7 +7,7 @@ const catBodyKey = assets.queue({
   type: 'texture',
 })
 
-export default class Body extends THREE.Object3D {
+export default class Body extends THREE.Group {
   constructor({ webgl, ...options }) {
     super(options)
     this.webgl = webgl
@@ -19,7 +19,7 @@ export default class Body extends THREE.Object3D {
         depthTest: false,
         transparent: true,
         opacity: 1, // window.DEBUG ? 0.6 : 1,
-      }),
+      })
     )
 
     // position it

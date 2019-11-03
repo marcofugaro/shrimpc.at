@@ -15,7 +15,7 @@ const leftArmSpriteKey = assets.queue({
   type: 'texture',
 })
 
-export default class Arms extends THREE.Object3D {
+export default class Arms extends THREE.Group {
   rightArm
   leftArm
 

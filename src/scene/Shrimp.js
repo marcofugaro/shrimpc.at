@@ -4,12 +4,14 @@ import _ from 'lodash'
 import assets from '../lib/AssetManager'
 import CannonSuperBody from '../lib/CannonSuperBody'
 import { getRandomTransparentColor } from '../lib/three-utils'
-import Bubble from './Bubble'
 import { impulse } from '../lib/easing-utils'
 import { playAudio } from '../lib/audio-utils'
 
+// how many bubbles to put on a shrimp
 const BUBBLES_NUMBER = 400
-const SPAWN_TIME = 3200 // ms
+
+// how much to fry the shrimp for
+const FRY_TIME = 3200 // ms
 
 const shrimpGltfKey = assets.queue({
   url: 'assets/shrimp.glb',
@@ -39,7 +41,7 @@ export default class Shrimp extends CannonSuperBody {
     this.addShape(
       shrimpShape1,
       new CANNON.Vec3(0.7, -0.05, -0.15),
-      new CANNON.Quaternion().setFromEuler(0, THREE.Math.degToRad(5), 0),
+      new CANNON.Quaternion().setFromEuler(0, THREE.Math.degToRad(5), 0)
     )
 
     const radius2 = 0.3
@@ -48,7 +50,7 @@ export default class Shrimp extends CannonSuperBody {
     this.addShape(
       shrimpShape2,
       new CANNON.Vec3(0, 0, -0.65),
-      new CANNON.Quaternion().setFromEuler(0, THREE.Math.degToRad(70), 0),
+      new CANNON.Quaternion().setFromEuler(0, THREE.Math.degToRad(70), 0)
     )
 
     const radius3 = 0.2
@@ -57,7 +59,7 @@ export default class Shrimp extends CannonSuperBody {
     this.addShape(
       shrimpShape3,
       new CANNON.Vec3(-0.7, 0, 0.1),
-      new CANNON.Quaternion().setFromEuler(0, THREE.Math.degToRad(-40), 0),
+      new CANNON.Quaternion().setFromEuler(0, THREE.Math.degToRad(-40), 0)
     )
 
     if (false) {
@@ -118,7 +120,7 @@ export default class Shrimp extends CannonSuperBody {
     // add the collide event with the arm
     this.addEventListener('collide', e => {
       if (e.body === webgl.scene.arms.leftArm || e.body === webgl.scene.arms.rightArm) {
-        // this.fry()
+        this.fry()
       }
     })
   }
@@ -162,34 +164,31 @@ export default class Shrimp extends CannonSuperBody {
 
       this.shrimpMesh.material.needsupdate = true
       this.shrimpFriedMesh.material.needsupdate = true
-    }, SPAWN_TIME * 0.2)
+    }, FRY_TIME * 0.2)
 
     const vertices = this.shrimpMesh.geometry.getAttribute('position').array
     const normals = this.shrimpMesh.geometry.getAttribute('normal').array
     const verticesCount = this.shrimpMesh.geometry.getAttribute('position').count
+
     for (let i = 0; i < BUBBLES_NUMBER; i++) {
       const index = _.random(0, verticesCount) * 3
       const x = vertices[index]
       const y = vertices[index + 1]
       const z = vertices[index + 2]
-      const position = new THREE.Vector3(x, y, z)
-      position.applyMatrix4(this.shrimpMesh.matrix)
+      const vertex = new THREE.Vector3(x, y, z)
 
       const xNormal = normals[index]
       const yNormal = normals[index + 1]
       const zNormal = normals[index + 2]
       const normal = new THREE.Vector3(xNormal, yNormal, zNormal)
-      normal.applyMatrix4(this.shrimpMesh.matrix)
 
       setTimeout(() => {
-        const bubble = new Bubble({
-          webgl: this.webgl,
-          moveAlong: normal,
-          originalPosition: position,
+        this.webgl.scene.instancedBubbles.spawnBubble({
+          normal,
+          vertex,
+          matrixWorld: this.shrimpMesh.matrixWorld,
         })
-        bubble.position.copy(position)
-        this.mesh.add(bubble)
-      }, impulse(i / BUBBLES_NUMBER, 13) * SPAWN_TIME)
+      }, impulse(i / BUBBLES_NUMBER, 13) * FRY_TIME)
     }
   })
 }

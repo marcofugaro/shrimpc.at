@@ -34,7 +34,7 @@ class Delimiter extends CANNON.Body {
   }
 }
 
-export default class Delimiters extends THREE.Object3D {
+export default class Delimiters extends THREE.Group {
   delimiters = []
 
   constructor({ webgl, ...options }) {

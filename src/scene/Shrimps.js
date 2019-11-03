@@ -9,7 +9,7 @@ import assets from '../lib/AssetManager'
 // the interval between the spawn of shrimps (seconds)
 export let SPAWN_INTERVAL = 4
 
-export default class Shrimps extends THREE.Object3D {
+export default class Shrimps extends THREE.Group {
   shrimps = []
   spawnInterval = SPAWN_INTERVAL
 
@@ -32,7 +32,6 @@ export default class Shrimps extends THREE.Object3D {
 
   update(dt = 0, time = 0) {
     const maxX = this.webgl.frustumSize.width / 2
-    const maxY = this.webgl.frustumSize.height / 2
 
     // spawn new shrimps
     if (!this.lastSpawnTimestamp || time - this.lastSpawnTimestamp > this.spawnInterval) {
@@ -56,13 +55,13 @@ export default class Shrimps extends THREE.Object3D {
           _.random(-maxX, maxX * 0.3),
           // up the visible frustum
           (VERTICAL_GAP / 2) * 1.2,
-          0,
+          0
         ),
         // orient them randomly
         quaternion: new CANNON.Quaternion().setFromEuler(
           0,
           _.random(0, Math.PI),
-          _.random(0, Math.PI),
+          _.random(0, Math.PI)
         ),
       })
 
@@ -86,15 +85,6 @@ export default class Shrimps extends THREE.Object3D {
 
       // remove it if they exit the field of view
       if (maxX * 1.3 < shrimp.position.x) {
-        shrimp.mesh.traverse(child => {
-          // remove the bubbles
-          if (child.bubble) {
-            requestAnimationFrame(() => {
-              this.webgl.scene.remove(child.bubble)
-            })
-          }
-        })
-
         this.webgl.world.removeBody(shrimp)
         this.remove(shrimp.mesh)
         this.shrimps.splice(this.shrimps.findIndex(s => s.id === shrimp.id), 1)
