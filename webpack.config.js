@@ -19,7 +19,8 @@ const HOST = '0.0.0.0'
 const DEFAULT_PORT = '8080'
 const PORT = execSync(`detect-port ${DEFAULT_PORT}`)
   .toString()
-  .trim()
+  .replace(/\D/g, '')
+
 const urls = prepareUrls(PROTOCOL, HOST, PORT)
 
 // make the console >tree command look pretty
@@ -197,15 +198,15 @@ module.exports = merge.smart(
           } catch (e) {
             console.log(
               chalk.yellow(
-                `⚠️  Homerew and the tree package are required for the file tree output,`,
+                `⚠️  Homerew and the tree package are required for the file tree output,`
               ),
-              `please install them with the following command:`,
+              `please install them with the following command:`
             )
             console.log()
             console.log(
               chalk.cyan(
-                `  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" && brew install tree`,
-              ),
+                `  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" && brew install tree`
+              )
             )
           }
 
@@ -241,5 +242,5 @@ module.exports = merge.smart(
         }),
       ],
     },
-  },
+  }
 )

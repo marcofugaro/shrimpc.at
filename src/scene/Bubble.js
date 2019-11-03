@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { quadOut } from 'eases'
 import _ from 'lodash'
-import { SceneUtils } from '../lib/three/SceneUtils'
+import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils'
 import assets from '../lib/AssetManager'
 
 // how much a bubble takes to reach full size, in seconds
