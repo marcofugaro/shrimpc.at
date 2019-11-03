@@ -131,20 +131,20 @@ assets.load({ renderer: webgl.renderer }).then(async () => {
   console.log('Source code at https://github.com/marcofugaro/shrimpc.at')
   console.log(
     `%c
-     ___________________
-    < Hint: press Space >
-     -------------------
-               /
-    %c/¯¯¯¯¯\\   %c/%c
-    ( #|\\_ü|
-    ( #\\
-      \\#\\
-      /||\\
-
+     ___________________     
+    < Hint: press Space >    
+     -------------------     
+               /             
+    %c/¯¯¯¯¯\\   %c/%c              
+    ( #|\\_ü|                 
+    ( #\\                     
+      \\#\\                    
+      /||\\                   
+                             
 `,
     'background: #1d7cf2; color: white;',
     'background: #1d7cf2; color: #ffcc00;',
     'background: #1d7cf2; color: white;',
-    'background: #1d7cf2; color: #ffcc00;',
+    'background: #1d7cf2; color: #ffcc00;'
   )
 })
