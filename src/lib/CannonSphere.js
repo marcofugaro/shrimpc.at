@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
-import { getRandomTransparentColor } from 'lib/three-utils'
-import CannonSuperBody from 'lib/CannonSuperBody'
+import { getRandomTransparentColor } from './three-utils'
+import CannonSuperBody from './CannonSuperBody'
 
 export default class CannonSphere extends CannonSuperBody {
   mesh = new THREE.Object3D()
@@ -16,8 +16,8 @@ export default class CannonSphere extends CannonSuperBody {
       this.mesh.add(
         new THREE.Mesh(
           new THREE.SphereGeometry(radius, 32, 32),
-          new THREE.MeshLambertMaterial(getRandomTransparentColor()),
-        ),
+          new THREE.MeshLambertMaterial(getRandomTransparentColor())
+        )
       )
     }
 

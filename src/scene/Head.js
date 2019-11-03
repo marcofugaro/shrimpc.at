@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
-import { headCollision } from 'scene/collisions'
-import { getRandomTransparentColor } from 'lib/three-utils'
-import assets from 'lib/AssetManager'
 import { mapRange, degToRad, lerp } from 'canvas-sketch-util/math'
+import { headCollision } from './collisions'
+import { getRandomTransparentColor } from '../lib/three-utils'
+import assets from '../lib/AssetManager'
 import eases from 'eases'
 
 export const HEAD_RADIUS = 2.5
@@ -62,8 +62,8 @@ class Head extends CANNON.Body {
       this.mesh.add(
         new THREE.Mesh(
           new THREE.SphereGeometry(head.radius, 32, 32),
-          new THREE.MeshLambertMaterial(getRandomTransparentColor()),
-        ),
+          new THREE.MeshLambertMaterial(getRandomTransparentColor())
+        )
       )
     }
   }
@@ -75,7 +75,7 @@ class Head extends CANNON.Body {
   }
 }
 
-export default class HeadComponent extends THREE.Object3D {
+export default class HeadComponent extends THREE.Group {
   head
   rotationX = 0
   rotationY = 0
@@ -120,7 +120,7 @@ export default class HeadComponent extends THREE.Object3D {
       -MAX_HEAD_ROTATION_Y,
       // the magic number is because the head is not
       // at the center of the page
-      MAX_HEAD_ROTATION_Y * 0.18,
+      MAX_HEAD_ROTATION_Y * 0.18
     )
   }
 
@@ -169,7 +169,7 @@ export default class HeadComponent extends THREE.Object3D {
       -maxX * 0.75,
       maxX * 0.75,
       -MAX_HEAD_ROTATION_X,
-      MAX_HEAD_ROTATION_X,
+      MAX_HEAD_ROTATION_X
     )
     this.rotationY = mapRange(
       this.shrimpLookingAt.position.y,
@@ -178,7 +178,7 @@ export default class HeadComponent extends THREE.Object3D {
       -MAX_HEAD_ROTATION_Y,
       // the magic number is because the head is not
       // at the center of the page
-      MAX_HEAD_ROTATION_Y * 0.18,
+      MAX_HEAD_ROTATION_Y * 0.18
     )
 
     // start again if the shrimp is a goner

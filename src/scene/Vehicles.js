@@ -1,14 +1,14 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
-import assets from 'lib/AssetManager'
-import { vehicleCollision } from 'scene/collisions'
-import Fiat126, { FIAT_DIMENSIONS } from 'scene/Fiat126'
-import Van, { VAN_DIMENSIONS } from 'scene/Van'
-import { VERTICAL_GAP } from 'scene/Delimiters'
-import { playAudio } from 'lib/audio-utils'
+import assets from '../lib/AssetManager'
+import { vehicleCollision } from './collisions'
+import Fiat126, { FIAT_DIMENSIONS } from './Fiat126'
+import Van, { VAN_DIMENSIONS } from './Van'
+import { VERTICAL_GAP } from './Delimiters'
+import { playAudio } from '../lib/audio-utils'
 
-export default class Vehicles extends THREE.Object3D {
+export default class Vehicles extends THREE.Group {
   vehicles = []
   shouldGoFiat = false
 
@@ -59,7 +59,9 @@ export default class Vehicles extends THREE.Object3D {
     const DIMENSIONS = this.shouldGoFiat ? FIAT_DIMENSIONS : VAN_DIMENSIONS
 
     const hornBuffer = assets.get(
-      this.shouldGoFiat ? 'assets/sounds/small-car-horn_lowpass.mp3' : 'assets/sounds/striscia-clacson_lowpass.mp3',
+      this.shouldGoFiat
+        ? 'assets/sounds/small-car-horn_lowpass.mp3'
+        : 'assets/sounds/striscia-clacson_lowpass.mp3'
     )
     playAudio(hornBuffer, this.webgl.audioContext)
 
@@ -80,7 +82,7 @@ export default class Vehicles extends THREE.Object3D {
       position: new CANNON.Vec3(
         -maxX - DIMENSIONS[0],
         _.random(0, VERTICAL_GAP / 2 - DIMENSIONS[1] / 2),
-        0,
+        0
       ),
     })
 
@@ -110,12 +112,6 @@ export default class Vehicles extends THREE.Object3D {
       // remove it if they exit the field of view
       if (maxX + vehicle.DIMENSIONS[0] / 2 < vehicle.position.x) {
         this.webgl.world.removeBody(vehicle)
-        vehicle.mesh.traverse(child => {
-          if (child.isMesh) {
-            child.material.dispose()
-            child.geometry.dispose()
-          }
-        })
         this.remove(vehicle.mesh)
         this.vehicles.splice(this.vehicles.findIndex(v => v.id === vehicle.id), 1)
       }

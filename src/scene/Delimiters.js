@@ -1,8 +1,8 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
 import _ from 'lodash'
-import { delimiterCollision } from 'scene/collisions'
-import { getRandomTransparentColor } from 'lib/three-utils'
+import { delimiterCollision } from './collisions'
+import { getRandomTransparentColor } from '../lib/three-utils'
 
 // horizontal gap between the restricting planes
 export const HORIZONTAL_GAP = 2.2
@@ -34,7 +34,7 @@ class Delimiter extends CANNON.Body {
   }
 }
 
-export default class Delimiters extends THREE.Object3D {
+export default class Delimiters extends THREE.Group {
   delimiters = []
 
   constructor({ webgl, ...options }) {

@@ -6,14 +6,17 @@ import createOrbitControls from 'orbit-controls'
 import createTouches from 'touches'
 import dataURIToBlob from 'datauritoblob'
 import Stats from 'stats.js'
-import controlPanel from 'control-panel'
+import State from 'controls-state'
+import wrapGUI from 'controls-gui'
 import { getGPUTier } from 'detect-gpu'
-import { EffectComposer } from './three/EffectComposer'
-import { RenderPass } from './three/RenderPass'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 
 export default class WebGLApp {
-  #tmpTarget = new THREE.Vector3()
   #updateListeners = []
+  #tmpTarget = new THREE.Vector3()
+  #rafID
+  #lastTime
 
   constructor({
     background = '#000',
@@ -128,13 +131,10 @@ export default class WebGLApp {
       document.body.appendChild(this.stats.dom)
     }
 
-    // initialize the control panel
-    if (options.panelInputs) {
-      this.panel = controlPanel(options.panelInputs, {
-        theme: 'dark',
-        position: 'top-right',
-        ...(options.panelOptions instanceof Object ? options.panelOptions : {}),
-      })
+    // initialize the controls-state
+    if (options.controls) {
+      const controlsState = State(options.controls)
+      this.controls = options.hideControls ? controlsState : wrapGUI(controlsState)
     }
 
     // detect the gpu info

@@ -2,17 +2,19 @@ import CANNON from 'cannon'
 import TWEEN from '@tweenjs/tween.js'
 import * as PIXI from 'pixi.js'
 import Shake from 'shake.js'
+import State from 'controls-state'
 import webAudioTouchUnlock from 'web-audio-touch-unlock'
-import { initCustomCollisions } from 'scene/collisions'
-import { getFrustumSliceSize } from 'lib/three-utils'
+import { initCustomCollisions } from './scene/collisions'
+import { getFrustumSliceSize } from './lib/three-utils'
 import WebGLApp from './lib/WebGLApp'
 import assets from './lib/AssetManager'
-import Shrimps, { SHRIMP_INTERVAL } from './scene/Shrimps'
+import Shrimps, { SPAWN_INTERVAL } from './scene/Shrimps'
 import Delimiters from './scene/Delimiters'
 import Arms from './scene/Arms'
 import Head from './scene/Head'
 import Body from './scene/Body'
 import Vehicles from './scene/Vehicles'
+import InstancedBubbles from './scene/InstancedBubbles'
 import addBackgorundVideo from './scene/backgroundVideo'
 import { addLights } from './scene/lights'
 import { addFilters } from './scene/filters'
@@ -35,15 +37,15 @@ const webgl = new WebGLApp({
   orbitControls: window.DEBUG && {
     distance: 15,
   },
-  panelInputs: window.DEBUG && [
-    {
-      type: 'range',
-      label: 'Shrimp Spawn Interval',
+  controls: {
+    spawnInterval: State.Slider(SPAWN_INTERVAL, {
+      label: 'Shrimp spawn interval',
       min: 0,
       max: 5,
-      initial: SHRIMP_INTERVAL,
-    },
-  ],
+      step: 0.1,
+    }),
+  },
+  hideControls: !window.DEBUG,
   world: new CANNON.World(),
   tween: TWEEN,
   pixi: PIXI,
@@ -82,6 +84,8 @@ assets.load({ renderer: webgl.renderer }).then(async () => {
   webgl.scene.add(webgl.scene.shrimps)
   webgl.scene.vehicles = new Vehicles({ webgl })
   webgl.scene.add(webgl.scene.vehicles)
+  webgl.scene.instancedBubbles = new InstancedBubbles({ webgl })
+  webgl.scene.add(webgl.scene.instancedBubbles)
 
   initCustomCollisions(webgl.world)
 
@@ -144,6 +148,6 @@ assets.load({ renderer: webgl.renderer }).then(async () => {
     'background: #1d7cf2; color: white;',
     'background: #1d7cf2; color: #ffcc00;',
     'background: #1d7cf2; color: white;',
-    'background: #1d7cf2; color: #ffcc00;',
+    'background: #1d7cf2; color: #ffcc00;'
   )
 })
