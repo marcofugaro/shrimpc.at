@@ -112,12 +112,6 @@ export default class Vehicles extends THREE.Group {
       // remove it if they exit the field of view
       if (maxX + vehicle.DIMENSIONS[0] / 2 < vehicle.position.x) {
         this.webgl.world.removeBody(vehicle)
-        vehicle.mesh.traverse(child => {
-          if (child.isMesh) {
-            child.material.dispose()
-            child.geometry.dispose()
-          }
-        })
         this.remove(vehicle.mesh)
         this.vehicles.splice(this.vehicles.findIndex(v => v.id === vehicle.id), 1)
       }
