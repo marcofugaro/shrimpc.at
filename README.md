@@ -14,7 +14,6 @@ Wanna understand more how it works? Go to:
 - [**cannon.js**](https://github.com/schteppe/cannon.js) for physics
 - [**tween.js**](https://github.com/tweenjs/tween.js/) to animate the arms
 - [**pixi.js**](https://github.com/pixijs/pixi.js) for the postprocessing
-- **yourmom.js** for everything else
 
 [**threejs-modern-app**](https://github.com/marcofugaro/threejs-modern-app) was used as a starter-kit, to glue all those libraries together, also as a component organizer, three.js boilerplate concealer and asset loader.
 
