@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
-import _ from 'lodash'
+import _ from 'lodash-es'
 import { delimiterCollision } from './collisions'
 import { getRandomTransparentColor } from '../lib/three-utils'
 
@@ -42,7 +42,7 @@ export default class Delimiters extends THREE.Group {
     this.webgl = webgl
 
     // create the delimiters
-    this.delimiters = _.range(0, 4).map(i => {
+    this.delimiters = _.range(0, 4).map((i) => {
       let position = new CANNON.Vec3()
       let quaternion = new CANNON.Quaternion()
       switch (i) {
@@ -78,7 +78,7 @@ export default class Delimiters extends THREE.Group {
       })
     })
 
-    this.delimiters.forEach(delimiter => {
+    this.delimiters.forEach((delimiter) => {
       // add the body to the cannon.js world
       webgl.world.addBody(delimiter)
       // and the mesh to the three.js scene

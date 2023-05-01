@@ -4,7 +4,7 @@
 import pMap from 'p-map'
 import prettyMs from 'pretty-ms'
 import loadImage from 'image-promise'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import loadTexture from './loadTexture'
 import loadEnvMap from './loadEnvMap'
 
@@ -33,7 +33,7 @@ class AssetManager {
   }
 
   _getQueued(url) {
-    return this.#queue.find(item => item.url === url)
+    return this.#queue.find((item) => item.url === url)
   }
 
   _extractType(url) {
@@ -58,7 +58,7 @@ class AssetManager {
   }
 
   // Fetch a loaded asset by URL
-  get = url => {
+  get = (url) => {
     if (!url) throw new TypeError('Must specify an URL for AssetManager.get()')
     if (!(url in this.#cache)) {
       throw new Error(`The asset ${url} is not in the loaded files.`)
@@ -109,7 +109,7 @@ class AssetManager {
     const total = queue.length
     if (total === 0) {
       // resolve first this functions and then call the progress listeners
-      setTimeout(() => this.#onProgressListeners.forEach(fn => fn(1)), 0)
+      setTimeout(() => this.#onProgressListeners.forEach((fn) => fn(1)), 0)
       return
     }
 
@@ -135,13 +135,13 @@ class AssetManager {
         }
 
         const percent = (i + 1) / total
-        this.#onProgressListeners.forEach(fn => fn(percent))
+        this.#onProgressListeners.forEach((fn) => fn(percent))
       },
       { concurrency: this.#asyncConcurrency }
     )
 
     if (window.DEBUG) {
-      const errors = this.#logs.filter(log => log.type === 'error')
+      const errors = this.#logs.filter((log) => log.type === 'error')
 
       this.groupLog(
         `📦 Assets loaded in ${prettyMs(Date.now() - loadingStart)} ⏱ ${
@@ -165,12 +165,12 @@ class AssetManager {
     switch (type) {
       case 'gltf':
         return new Promise((resolve, reject) => {
-          new GLTFLoader().load(url, resolve, null, err =>
+          new GLTFLoader().load(url, resolve, null, (err) =>
             reject(new Error(`Could not load GLTF asset ${url}:\n${err}`))
           )
         })
       case 'json':
-        return fetch(url).then(response => response.json())
+        return fetch(url).then((response) => response.json())
       case 'env-map':
         return loadEnvMap(url, { renderer, ...options })
       case 'svg':
@@ -182,12 +182,12 @@ class AssetManager {
         // You might not want to load big audio files and
         // store them in memory, that might be inefficient.
         // Rather load them outside of the queue
-        return fetch(url).then(response => response.arrayBuffer())
+        return fetch(url).then((response) => response.arrayBuffer())
       case 'video':
         // You might not want to load big video files and
         // store them in memory, that might be inefficient.
         // Rather load them outside of the queue
-        return fetch(url).then(response => response.blob())
+        return fetch(url).then((response) => response.blob())
       default:
         throw new Error(`Could not load ${url}, the type ${type} is unknown!`)
     }
@@ -203,7 +203,7 @@ class AssetManager {
 
   groupLog(...text) {
     console.groupCollapsed(...text)
-    this.#logs.forEach(log => {
+    this.#logs.forEach((log) => {
       console[log.type](...log.text)
     })
     console.groupEnd()

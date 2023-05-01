@@ -9,8 +9,8 @@ import Stats from 'stats.js'
 import State from 'controls-state'
 import wrapGUI from 'controls-gui'
 import { getGPUTier } from 'detect-gpu'
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 
 export default class WebGLApp {
   #updateListeners = []
@@ -173,7 +173,7 @@ export default class WebGLApp {
     }
 
     // recursively tell all child objects to resize
-    this.scene.traverse(obj => {
+    this.scene.traverse((obj) => {
       if (typeof obj.resize === 'function') {
         obj.resize({
           width,
@@ -217,7 +217,7 @@ export default class WebGLApp {
     }
 
     // recursively tell all child objects to update
-    this.scene.traverse(obj => {
+    this.scene.traverse((obj) => {
       if (typeof obj.update === 'function') {
         obj.update(dt, time)
       }
@@ -228,7 +228,7 @@ export default class WebGLApp {
       this.world.step(dt)
 
       // recursively tell all child bodies to update
-      this.world.bodies.forEach(body => {
+      this.world.bodies.forEach((body) => {
         if (typeof body.update === 'function') {
           body.update(dt, time)
         }
@@ -247,7 +247,7 @@ export default class WebGLApp {
       this.pixi.render()
 
       // recursively tell all child containers to update
-      this.pixi.stage.children.forEach(container => {
+      this.pixi.stage.children.forEach((container) => {
         if (typeof container.update === 'function') {
           container.update(dt, time)
         }
@@ -255,7 +255,7 @@ export default class WebGLApp {
     }
 
     // call the update listeners
-    this.#updateListeners.forEach(fn => fn(dt, time))
+    this.#updateListeners.forEach((fn) => fn(dt, time))
 
     return this
   }
@@ -316,7 +316,7 @@ export default class WebGLApp {
   }
 
   traverse = (fn, ...args) => {
-    this.scene.traverse(child => {
+    this.scene.traverse((child) => {
       if (typeof child[fn] === 'function') {
         child[fn].apply(child, args)
       }

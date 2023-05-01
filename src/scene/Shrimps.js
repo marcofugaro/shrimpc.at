@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
-import _ from 'lodash'
+import _ from 'lodash-es'
 import Shrimp from './Shrimp'
 import { shrimpCollision } from './collisions'
 import { VERTICAL_GAP } from './Delimiters'
@@ -76,7 +76,7 @@ export default class Shrimps extends THREE.Group {
       this.shrimps.push(shrimp)
     }
 
-    this.shrimps.forEach(shrimp => {
+    this.shrimps.forEach((shrimp) => {
       // apply a quadratic drag force to simulate water
       shrimp.applyDrag(0.8)
 
@@ -87,7 +87,10 @@ export default class Shrimps extends THREE.Group {
       if (maxX * 1.3 < shrimp.position.x) {
         this.webgl.world.removeBody(shrimp)
         this.remove(shrimp.mesh)
-        this.shrimps.splice(this.shrimps.findIndex(s => s.id === shrimp.id), 1)
+        this.shrimps.splice(
+          this.shrimps.findIndex((s) => s.id === shrimp.id),
+          1
+        )
       }
     })
   }

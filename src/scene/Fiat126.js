@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
-import _ from 'lodash'
+import _ from 'lodash-es'
 import assets from '../lib/AssetManager'
 import CannonSuperBody from '../lib/CannonSuperBody'
 import { HORIZONTAL_GAP } from './Delimiters'
@@ -21,45 +21,45 @@ export default class Fiat126 extends CannonSuperBody {
     super(options)
     this.webgl = webgl
 
-    const fiat126Shape = new CANNON.Box(new CANNON.Vec3(...FIAT_DIMENSIONS.map(d => d * 0.5)))
+    const fiat126Shape = new CANNON.Box(new CANNON.Vec3(...FIAT_DIMENSIONS.map((d) => d * 0.5)))
     this.addShape(fiat126Shape, new CANNON.Vec3(0, -0.4, 0))
 
     const fiat126TopShape = new CANNON.Box(
-      new CANNON.Vec3(...FIAT_TOP_DIMENSIONS.map(d => d * 0.5)),
+      new CANNON.Vec3(...FIAT_TOP_DIMENSIONS.map((d) => d * 0.5))
     )
     this.addShape(fiat126TopShape, new CANNON.Vec3(-0.7, 0.7, 0))
 
     const fiat126WindshieldShape = new CANNON.Box(
-      new CANNON.Vec3(...FIAT_TOP_DIMENSIONS.map(d => d * 0.5)),
+      new CANNON.Vec3(...FIAT_TOP_DIMENSIONS.map((d) => d * 0.5))
     )
     this.addShape(
       fiat126WindshieldShape,
       new CANNON.Vec3(0.7, 0.25, 0),
-      new CANNON.Quaternion().setFromEuler(0, 0, THREE.Math.degToRad(48)),
+      new CANNON.Quaternion().setFromEuler(0, 0, THREE.Math.degToRad(48))
     )
 
     if (window.DEBUG) {
       const baseMesh = new THREE.Mesh(
         new THREE.BoxGeometry(...FIAT_DIMENSIONS),
-        new THREE.MeshLambertMaterial(debugColor),
+        new THREE.MeshLambertMaterial(debugColor)
       )
       this.mesh.add(baseMesh)
 
       const topMesh = new THREE.Mesh(
         new THREE.BoxGeometry(...FIAT_TOP_DIMENSIONS),
-        new THREE.MeshLambertMaterial(debugColor),
+        new THREE.MeshLambertMaterial(debugColor)
       )
       this.mesh.add(topMesh)
 
       const windshieldMesh = new THREE.Mesh(
         new THREE.BoxGeometry(...FIAT_WINDSHIELD_DIMENSIONS),
-        new THREE.MeshLambertMaterial(debugColor),
+        new THREE.MeshLambertMaterial(debugColor)
       )
       this.mesh.add(windshieldMesh)
 
       // sync the shapes to their meshes
       let meshIndex = 0
-      this.mesh.traverse(child => {
+      this.mesh.traverse((child) => {
         if (!child.isMesh) {
           return
         }
@@ -78,7 +78,7 @@ export default class Fiat126 extends CannonSuperBody {
     const fiat126 = fiat126Gltf.scene.clone()
 
     // position the fiat126 correctly
-    fiat126.traverse(child => {
+    fiat126.traverse((child) => {
       if (!child.isMesh) {
         return
       }
@@ -103,7 +103,7 @@ export default class Fiat126 extends CannonSuperBody {
 
     // position the shrimps in the fiat126
     this.shrimps.forEach((shrimp, i) => {
-      shrimp.traverse(child => {
+      shrimp.traverse((child) => {
         if (!child.isMesh) {
           return
         }
@@ -131,7 +131,7 @@ export default class Fiat126 extends CannonSuperBody {
 
     // make the shrimps jump up and down
     this.shrimps.forEach((shrimp, i) => {
-      shrimp.traverse(child => {
+      shrimp.traverse((child) => {
         if (!child.isMesh) {
           return
         }

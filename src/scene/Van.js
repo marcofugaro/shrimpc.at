@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
-import _ from 'lodash'
+import _ from 'lodash-es'
 import assets from '../lib/AssetManager'
 import CannonSuperBody from '../lib/CannonSuperBody'
 import { HORIZONTAL_GAP } from './Delimiters'
@@ -23,7 +23,7 @@ export default class Van extends CannonSuperBody {
     const van = vanGltf.scene.clone()
 
     // position the van correctly
-    van.traverse(child => {
+    van.traverse((child) => {
       if (!child.isMesh) {
         return
       }
@@ -42,7 +42,7 @@ export default class Van extends CannonSuperBody {
 
     this.mesh.add(van)
 
-    const vanShape = new CANNON.Box(new CANNON.Vec3(...VAN_DIMENSIONS.map(d => d * 0.5)))
+    const vanShape = new CANNON.Box(new CANNON.Vec3(...VAN_DIMENSIONS.map((d) => d * 0.5)))
     this.addShape(vanShape)
 
     if (window.DEBUG) {
@@ -58,7 +58,7 @@ export default class Van extends CannonSuperBody {
 
     // position the shrimps in the van
     this.vanShrimps.forEach((shrimp, i) => {
-      shrimp.traverse(child => {
+      shrimp.traverse((child) => {
         if (!child.isMesh) {
           return
         }
@@ -98,7 +98,7 @@ export default class Van extends CannonSuperBody {
 
     // make the shrimps jump up and down
     this.vanShrimps.forEach((shrimp, i) => {
-      shrimp.traverse(child => {
+      shrimp.traverse((child) => {
         if (!child.isMesh) {
           return
         }

@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
-import _ from 'lodash'
+import _ from 'lodash-es'
 import assets from '../lib/AssetManager'
 import { vehicleCollision } from './collisions'
 import Fiat126, { FIAT_DIMENSIONS } from './Fiat126'
@@ -40,7 +40,7 @@ export default class Vehicles extends THREE.Group {
         renderer: webgl.renderer,
       }),
     ]).then(() => {
-      window.addEventListener('keydown', e => {
+      window.addEventListener('keydown', (e) => {
         if (e.key === ' ' || e.key === 'Enter') {
           this.createVehicle()
         }
@@ -102,7 +102,7 @@ export default class Vehicles extends THREE.Group {
   update(dt = 0, time = 0) {
     const maxX = this.webgl.frustumSize.width / 2
 
-    this.vehicles.forEach(vehicle => {
+    this.vehicles.forEach((vehicle) => {
       // apply a quadratic drag force to simulate water
       vehicle.applyDrag(0.8)
 
@@ -113,7 +113,10 @@ export default class Vehicles extends THREE.Group {
       if (maxX + vehicle.DIMENSIONS[0] / 2 < vehicle.position.x) {
         this.webgl.world.removeBody(vehicle)
         this.remove(vehicle.mesh)
-        this.vehicles.splice(this.vehicles.findIndex(v => v.id === vehicle.id), 1)
+        this.vehicles.splice(
+          this.vehicles.findIndex((v) => v.id === vehicle.id),
+          1
+        )
       }
     })
   }

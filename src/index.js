@@ -3,7 +3,7 @@ import TWEEN from '@tweenjs/tween.js'
 import * as PIXI from 'pixi.js'
 import Shake from 'shake.js'
 import State from 'controls-state'
-import webAudioTouchUnlock from 'web-audio-touch-unlock'
+// import webAudioTouchUnlock from 'web-audio-touch-unlock'
 import { initCustomCollisions } from './scene/collisions'
 import { getFrustumSliceSize } from './lib/three-utils'
 import WebGLApp from './lib/WebGLApp'
@@ -61,7 +61,7 @@ if (window.DEBUG) {
 // init the Web Audio API context and unlock it when
 // a touch event happens
 webgl.audioContext = new (window.AudioContext || window.webkitAudioContext)()
-webAudioTouchUnlock(webgl.audioContext)
+// webAudioTouchUnlock(webgl.audioContext)
 
 // Hide canvas
 webgl.canvas.style.visibility = 'hidden'
@@ -134,16 +134,16 @@ assets.load({ renderer: webgl.renderer }).then(async () => {
   console.log('Source code at https://github.com/marcofugaro/shrimpc.at')
   console.log(
     `%c
-     ___________________     
-    < Hint: press Space >    
-     -------------------     
-               /             
-    %c/¯¯¯¯¯\\   %c/%c              
-    ( #|\\_ü|                 
-    ( #\\                     
-      \\#\\                    
-      /||\\                   
-                             
+     ___________________
+    < Hint: press Space >
+     -------------------
+               /
+    %c/¯¯¯¯¯\\   %c/%c
+    ( #|\\_ü|
+    ( #\\
+      \\#\\
+      /||\\
+
 `,
     'background: #1d7cf2; color: white;',
     'background: #1d7cf2; color: #ffcc00;',

@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
-import _ from 'lodash'
+import _ from 'lodash-es'
 import { mapRange, degToRad, lerp } from 'canvas-sketch-util/math'
 import { headCollision } from './collisions'
 import { getRandomTransparentColor } from '../lib/three-utils'
@@ -139,7 +139,7 @@ export default class HeadComponent extends THREE.Group {
 
   startLooking() {
     const shrimps = this.webgl.scene.shrimps.shrimps
-    const shrimp = _.sample(shrimps.filter(s => s.position.x < 0))
+    const shrimp = _.sample(shrimps.filter((s) => s.position.x < 0))
 
     // 404 no shrimp found
     // try again later

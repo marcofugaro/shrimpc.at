@@ -3,10 +3,10 @@
 // https://github.com/mattdesl/threejs-app/blob/master/src/util/loadEnvMap.js
 import * as THREE from 'three'
 import clamp from 'lodash/clamp'
-import { HDRCubeTextureLoader } from 'three/examples/jsm/loaders/HDRCubeTextureLoader'
-import { PMREMGenerator } from 'three/examples/jsm/pmrem/PMREMGenerator'
-import { PMREMCubeUVPacker } from 'three/examples/jsm/pmrem/PMREMCubeUVPacker'
-import { EquirectangularToCubeGenerator } from 'three/examples/jsm/loaders/EquirectangularToCubeGenerator'
+import { HDRCubeTextureLoader } from 'three/examples/jsm/loaders/HDRCubeTextureLoader.js'
+import { PMREMGenerator } from 'three/examples/jsm/pmrem/PMREMGenerator.js'
+import { PMREMCubeUVPacker } from 'three/examples/jsm/pmrem/PMREMCubeUVPacker.js'
+import { EquirectangularToCubeGenerator } from 'three/examples/jsm/loaders/EquirectangularToCubeGenerator.js'
 import loadTexture from './loadTexture'
 
 export default async function loadEnvMap(url, options) {
@@ -44,7 +44,7 @@ export default async function loadEnvMap(url, options) {
       new HDRCubeTextureLoader().load(
         THREE.UnsignedByteType,
         urls,
-        map => resolve(buildCubeMap(map, options)),
+        (map) => resolve(buildCubeMap(map, options)),
         null,
         () => reject(new Error(`Could not load PBR map: ${basePath}`))
       )
@@ -55,7 +55,7 @@ export default async function loadEnvMap(url, options) {
   return new Promise((resolve, reject) => {
     new THREE.CubeTextureLoader().load(
       urls,
-      cubeMap => {
+      (cubeMap) => {
         cubeMap.encoding = THREE.RGBM16Encoding
         resolve(buildCubeMap(cubeMap, options))
       },

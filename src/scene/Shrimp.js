@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import CANNON from 'cannon'
-import _ from 'lodash'
+import _ from 'lodash-es'
 import assets from '../lib/AssetManager'
 import CannonSuperBody from '../lib/CannonSuperBody'
 import { getRandomTransparentColor } from '../lib/three-utils'
@@ -79,7 +79,7 @@ export default class Shrimp extends CannonSuperBody {
 
       // sync the shapes to their meshes
       let meshIndex = 0
-      this.mesh.traverse(child => {
+      this.mesh.traverse((child) => {
         if (!child.isMesh) {
           return
         }
@@ -95,7 +95,7 @@ export default class Shrimp extends CannonSuperBody {
       // uuuuugh... oops, too late to remove this piece of code
       // ideally this would not be here
       // sorry
-      this.mesh.traverse(child => {
+      this.mesh.traverse((child) => {
         if (!child.isMesh) {
           return
         }
@@ -118,7 +118,7 @@ export default class Shrimp extends CannonSuperBody {
     this.mesh.add(this.shrimpFriedMesh)
 
     // add the collide event with the arm
-    this.addEventListener('collide', e => {
+    this.addEventListener('collide', (e) => {
       if (e.body === webgl.scene.arms.leftArm || e.body === webgl.scene.arms.rightArm) {
         // this.fry()
       }

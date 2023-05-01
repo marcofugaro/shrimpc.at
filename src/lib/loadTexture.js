@@ -18,7 +18,7 @@ export default async function loadTexture(url, options) {
     if (options.renderer) {
       // Force texture to be uploaded to GPU immediately,
       // this will avoid "jank" on first rendered frame
-      options.renderer.initTexture(texture)
+      // options.renderer.initTexture(texture)
     }
     return texture
   } catch (err) {

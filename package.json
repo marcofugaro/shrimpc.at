@@ -4,39 +4,15 @@
   "repository": "marcofugaro/shrimpcat",
   "author": "Marco Fugaro",
   "license": "MIT",
+  "type": "module",
   "scripts": {
-    "start": "NODE_ENV=development webpack-dev-server",
+    "postinstall": "yarn clean-browsersync",
+    "clean-browsersync": "sed -i -e 's/sourceMappingURL/_/g' ./node_modules/browser-sync-client/dist/index.js",
+    "start": "cross-env NODE_ENV=development node ./esbuild.js",
     "prebuild": "yarn clean; yarn copy-public",
-    "build": "NODE_ENV=production webpack",
-    "clean": "rm -rf build",
-    "copy-public": "cp -r public build"
-  },
-  "browserslist": {
-    "production": [
-      ">0.25%",
-      "not ie 11",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 Chrome version"
-    ]
-  },
-  "devDependencies": {
-    "@babel/core": "^7.6.4",
-    "babel-loader": "^8.0.6",
-    "babel-preset-accurapp": "^4.1.5",
-    "chalk": "^2.4.2",
-    "eslint-config-accurapp": "^4.2.8",
-    "event-hooks-webpack-plugin": "^2.1.4",
-    "glslify-loader": "^2.0.0",
-    "html-webpack-plugin": "4.0.0-beta.5",
-    "indent-string": "^4.0.0",
-    "raw-loader": "^3.1.0",
-    "react-dev-utils": "^9.1.0",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "3.7.2",
-    "webpack-merge": "^4.2.2"
+    "build": "cross-env NODE_ENV=production node ./esbuild.js",
+    "clean": "rimraf build/; rimraf public/app.js; rimraf public/app.js.map",
+    "copy-public": "cpr public/ build/"
   },
   "dependencies": {
     "@tweenjs/tween.js": "^17.2.0",
@@ -48,15 +24,33 @@
     "detect-gpu": "^1.1.0",
     "eases": "^1.0.8",
     "image-promise": "^6.0.0",
-    "lodash": "^4.17.15",
+    "lodash-es": "^4.17.21",
     "orbit-controls": "^1.2.4",
     "p-map": "^3.0.0",
     "pixi.js": "5.1.1",
     "pretty-ms": "^5.0.0",
     "shake.js": "^1.2.2",
     "stats.js": "^0.17.0",
-    "three": "^0.110.0",
+    "three": "0.109.0",
     "touches": "^1.2.2",
     "web-audio-touch-unlock": "^1.0.1"
+  },
+  "devDependencies": {
+    "address": "^1.2.2",
+    "browser-sync": "^2.27.11",
+    "chalk": "4.1.2",
+    "cpr": "^3.0.1",
+    "cross-env": "^7.0.3",
+    "esbuild": "^0.16.10",
+    "esbuild-plugin-glslify": "^1.0.1",
+    "esbuild-plugin-glslify-inline": "^1.1.0",
+    "eslint": "^8.30.0",
+    "eslint-config-prettier": "^8.5.0",
+    "glslify": "^7.1.1",
+    "indent-string": "^5.0.0",
+    "ora": "^6.1.2",
+    "react-dev-utils": "^12.0.1",
+    "rimraf": "^3.0.2",
+    "tree-node-cli": "^1.6.0"
   }
 }
